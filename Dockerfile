@@ -19,6 +19,6 @@ COPY --chown=${USER}:${USER} package*.json ./
 RUN npm install
 VOLUME [ "/home/evobot" ]
 
-COPY --chown=${USER}:${USER}  . .
+COPY --chown=${USER}:${USER}    . .
 
 ENTRYPOINT [ "npm", "run", "prod" ]

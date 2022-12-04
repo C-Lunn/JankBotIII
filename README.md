@@ -10,7 +10,7 @@
 
 ## Requirements
 
-1. Discord Bot Token **[Guide](https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot)**  
+1. Discord Bot Token **[Guide](https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot)**    
 1.1. Enable 'Message Content Intent' in Discord Developer Portal
 2. Node.js 16.11.0 or newer
 
@@ -32,13 +32,13 @@ Copy or Rename `config.json.example` to `config.json` and fill out the values:
 
 ```json
 {
-  "TOKEN": "",
-  "MAX_PLAYLIST_SIZE": 10,
-  "PREFIX": "!",
-  "PRUNING": false,
-  "LOCALE": "en",
-  "DEFAULT_VOLUME": 100,
-  "STAY_TIME": 30
+    "TOKEN": "",
+    "MAX_PLAYLIST_SIZE": 10,
+    "PREFIX": "!",
+    "PRUNING": false,
+    "LOCALE": "en",
+    "DEFAULT_VOLUME": 100,
+    "STAY_TIME": 30
 }
 ```
 

@@ -23,16 +23,18 @@
     "array-move": "^3.0.1",
     "discord.js": "^13",
     "dotenv": "^16.0.3",
+    "express": "^4.18.2",
     "ffmpeg-static": "^4.4.1",
     "i18n": "^0.15.1",
     "lyrics-finder": "^21.0.5",
     "soundcloud-downloader": "^0.2.3",
     "string-progressbar": "^1.0.4",
     "youtube-sr": "~4.3.0",
-    "ytdl-core": "~4.9.0",
+    "ytdl-core": "^4.11.2",
     "ytdl-core-discord": "^1.3.1"
   },
   "devDependencies": {
+    "@types/express": "^4.17.14",
     "@types/i18n": "^0.13.5",
     "@types/node": "^18.11.9",
     "cz-conventional-changelog": "^3.0.1",
@@ -41,10 +43,10 @@
   },
   "optionalDependencies": {
     "@discordjs/opus": "^0.9.0",
+    "libsodium-wrappers": "^0.7.10",
     "opusscript": "^0.0.8",
     "sodium-native": "^3.4.1",
-    "tweetnacl": "^1.0.3",
-    "libsodium-wrappers": "^0.7.10"
+    "tweetnacl": "^1.0.3"
   },
   "config": {
     "commitizen": {
