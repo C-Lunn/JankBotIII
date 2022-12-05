@@ -3,14 +3,8 @@ import { Bot } from "../structs/Bot";
 import JankbotCmd from "./JankbotCommand";
 
 export default class JankbotMusicCmd extends JankbotCmd {
-    constructor(name: string, 
-                description: string,
-                bot: Bot,
-                run: (bot: Bot, message: Message, args: string[]) => Promise<void>,
-                aliases?: string[],
-                permissions?: string[],
-                cooldown?: number) {
-        super(name, description, bot, run, false, aliases, permissions, cooldown);
+    constructor() {
+        super();
     }
 
     override execute(message: Message, args: string[]) {
@@ -24,6 +18,24 @@ export default class JankbotMusicCmd extends JankbotCmd {
         } else {
             this.run(this.bot, message, args);
         }
+    }
+
+    public static music_factory(name: string,
+                            description: string,
+                            bot: Bot,
+                            run: (bot: Bot, message: Message, args: string[]) => Promise<void>,
+                            aliases?: string[],
+                            permissions?: string[],
+                            cooldown?: number) {
+        const inst = new JankbotMusicCmd();
+        inst.name = name;
+        inst.description = description;
+        inst.aliases = aliases;
+        inst.permissions = permissions;
+        inst.cooldown = cooldown;
+        inst.bot = bot;
+        inst.run = run;
+        return inst;
     }
 }
 

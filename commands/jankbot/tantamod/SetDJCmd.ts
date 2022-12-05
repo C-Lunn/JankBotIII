@@ -4,7 +4,15 @@ import { Bot } from "../../../structs/Bot";
 
 export default class SetDjCmd extends JankbotCmd {
     constructor(bot: Bot) {
-        super("dj", "Set DJ Mode", bot, async (bot: Bot, message: Message, args: string[]) => {
+        super();
+        this.name = "dj";
+        this.description = "Sets the DJ mode on or off.";
+        this.aliases = ["djmode"];
+        this._is_tantamod = true;
+        this.bot = bot;
+    }
+
+    public override async run(bot: Bot, message: Message, args: string[]) {
             if (args[0] == "on") {
                 if (bot.getDJMode(message.guildId!)) {
                     message.reply("DJ mode is already on.");
@@ -39,8 +47,7 @@ export default class SetDjCmd extends JankbotCmd {
             } else {
                 message.reply("Invalid argument. Example use: `!dj on 1h 30m`");
             }
-        }, true);
-    }
+        }
 }
 
 function strToMs(str: string): number {

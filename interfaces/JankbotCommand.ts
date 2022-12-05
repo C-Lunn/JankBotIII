@@ -9,25 +9,8 @@ export default class JankbotCmd implements Command {
     public permissions?: string[];
     public cooldown?: number;
     protected bot: Bot;
-    protected run: (bot: Bot, message: Message, args: string[]) => Promise<void>;
     protected _is_tantamod: boolean;
-
-    constructor(name: string, 
-                description: string,
-                bot: Bot,
-                run: (bot: Bot, message: Message, args: string[]) => Promise<void>,
-                is_tantamod: boolean = false,
-                aliases?: string[],
-                permissions?: string[],
-                cooldown?: number) {
-        this.name = name;
-        this.description = description;
-        this.aliases = aliases;
-        this.permissions = permissions;
-        this.cooldown = cooldown;
-        this.run = run;
-        this.bot = bot;
-        this._is_tantamod = is_tantamod;
+    constructor() {
     }
 
     execute(message: Message, args: string[]) {
@@ -36,5 +19,29 @@ export default class JankbotCmd implements Command {
         } else {
             this.run(this.bot, message, args);
         }
+    }
+
+    public async run (bot: Bot, message: Message, args: string[]) {
+        console.log("Command not implemented.");
+    }
+
+    public static factory(name: string, 
+                description: string,
+                bot: Bot,
+                run: (bot: Bot, message: Message, args: string[]) => Promise<void>,
+                is_tantamod: boolean = false,
+                aliases?: string[],
+                permissions?: string[],
+                cooldown?: number) {
+        const inst = new JankbotCmd();
+        inst.name = name;
+        inst.description = description;
+        inst.aliases = aliases;
+        inst.permissions = permissions;
+        inst.cooldown = cooldown;
+        inst.bot = bot;
+        inst.run = run;
+        inst._is_tantamod = is_tantamod;
+        return inst;
     }
 }

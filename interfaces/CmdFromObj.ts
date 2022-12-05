@@ -9,9 +9,9 @@ export default function CmdFromObj(obj: Command, bot: Bot): JankbotCmd {
         obj.execute(message, args);
     }
     if (obj.category === "music") {
-        return new JankbotMusicCmd(obj.name, obj.description, bot, runWrapper, obj.aliases, obj.permissions, obj.cooldown);
+        return JankbotMusicCmd.music_factory(obj.name, obj.description, bot, runWrapper, obj.aliases, obj.permissions, obj.cooldown);
     } else {
-        return new JankbotCmd(obj.name, obj.description, bot, runWrapper, obj.is_tantamod ?? false, obj.aliases, obj.permissions, obj.cooldown);
+        return JankbotCmd.factory(obj.name, obj.description, bot, runWrapper, obj.is_tantamod ?? false, obj.aliases, obj.permissions, obj.cooldown);
     }
 
 }

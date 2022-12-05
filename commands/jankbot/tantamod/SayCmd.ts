@@ -4,7 +4,16 @@ import { Bot } from "../../../structs/Bot";
 
 export default class SayCmd extends JankbotCmd {
     constructor(bot: Bot) {
-        super("say", "Say", bot, async (bot: Bot, message: Message, args: string[]) => {
+        super();
+        this.name = "say";
+        this.description = "Make the bot say something";
+        this.aliases = ["s"];
+        this.permissions = ["MANAGE_MESSAGES"];
+        this._is_tantamod = true;
+        this.bot = bot;
+    }
+
+    public override async run(bot: Bot, message: Message, args: string[]) {
             if(/^<#\d+>/.test(args[0])) {
                 const channel = message.guild!.channels.cache.get(args[0].slice(2, -1));
                 if(channel) {
@@ -24,6 +33,5 @@ export default class SayCmd extends JankbotCmd {
                     }
                 }
             }
-        }, true);
     }
 }

@@ -1,10 +1,9 @@
-import { Client, Collection, Snowflake } from "discord.js";
+import { Client, Collection, Message, Snowflake } from "discord.js";
 import { readdirSync } from "fs";
 import { join } from "path";
 import SlayCmd from "../commands/jankbot/general/SlayCmd";
 import SayCmd from "../commands/jankbot/tantamod/SayCmd";
 import SetDjCmd from "../commands/jankbot/tantamod/SetDJCmd";
-import TantamodTestCmd from "../commands/jankbot/tantamod/TantamodTestCmd";
 import CmdFromObj from "../interfaces/CmdFromObj";
 import { Command } from "../interfaces/Command";
 import { checkPermissions } from "../utils/checkPermissions";
@@ -13,6 +12,7 @@ import { i18n } from "../utils/i18n";
 import { MissingPermissionsException } from "../utils/MissingPermissionsException";
 import { MusicQueue } from "./MusicQueue";
 import express from 'express';
+import TimeCmd from "../commands/jankbot/general/TimeCmd";
 
 const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -80,10 +80,10 @@ export class Bot {
         }
 
         for (const c of [
-            new TantamodTestCmd(this),
             new SetDjCmd(this),
             new SlayCmd(this),
             new SayCmd(this),
+            new TimeCmd(this)
         ]) {
             this.commands.set(c.name, c);
         }

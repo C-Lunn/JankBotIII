@@ -6,6 +6,7 @@ config.json
 !/sounds/putmusichere.mp3
 /dist
 .github/
+*.key.ts
 
 # Logs
 logs
