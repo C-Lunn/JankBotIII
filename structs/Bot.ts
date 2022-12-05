@@ -13,6 +13,7 @@ import { MissingPermissionsException } from "../utils/MissingPermissionsExceptio
 import { MusicQueue } from "./MusicQueue";
 import express from 'express';
 import TimeCmd from "../commands/jankbot/general/TimeCmd";
+import DurstCmd from "../commands/jankbot/general/DurstCmd";
 
 const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -33,6 +34,10 @@ export class Bot {
 
         this.client.on("warn", (info) => console.log(info));
         this.client.on("error", console.error);
+
+        process.on('unhandledRejection', error => {
+            console.log('Test error:', error);
+        });
 
         this.importCommands();
         this.onMessageCreate();
@@ -83,7 +88,8 @@ export class Bot {
             new SetDjCmd(this),
             new SlayCmd(this),
             new SayCmd(this),
-            new TimeCmd(this)
+            new TimeCmd(this),
+            new DurstCmd(this)
         ]) {
             this.commands.set(c.name, c);
         }

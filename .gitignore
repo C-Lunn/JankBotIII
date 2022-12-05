@@ -8,6 +8,10 @@ config.json
 .github/
 *.key.ts
 
+resource/durst/
+resource/Jankedex/
+resource/muselogos/
+
 # Logs
 logs
 *.log
