@@ -1,9 +1,15 @@
 import { AudioResource, createAudioResource, StreamType } from "@discordjs/voice";
+import { get } from "https";
+import internal, { Readable } from "stream";
 import youtube from "youtube-sr";
 import { getInfo } from "ytdl-core";
 import ytdl from "ytdl-core-discord";
 import { i18n } from "../utils/i18n";
-import { videoPattern } from "../utils/patterns";
+import { videoPattern, discordCdnRegex } from "../utils/patterns";
+import { ffprobe } from "fluent-ffmpeg";
+import { createWriteStream, fstat, writeFileSync } from "fs";
+import createEstimator, { FetchDataReader } from 'mp3-duration-estimate'
+import { threadId } from "worker_threads";
 
 export interface SongData {
     url: string;
@@ -11,19 +17,29 @@ export interface SongData {
     duration: number;
 }
 
+export class NotAMusicError extends Error {
+    constructor() {
+        super("Not a music file.");
+    }
+}
+
+
 export class Song {
     public readonly url: string;
     public readonly title: string;
-    public readonly duration: number;
+    public duration: number;
+    public added_by: string;
 
-    public constructor({ url, title, duration }: SongData) {
+    public constructor({ url, title, duration }: SongData, added_by: string) {
         this.url = url;
         this.title = title;
         this.duration = duration;
+        this.added_by = added_by;
     }
 
-    public static async from(url: string = "", search: string = "") {
+    public static async from(url: string = "", search: string = "", added_by: string = ""): Promise<Song> {
         const isYoutubeUrl = videoPattern.test(url);
+        const isDiscordCdnUrl = discordCdnRegex.test(url);
         // const isScUrl = scRegex.test(url);
 
         let songInfo;
@@ -35,7 +51,26 @@ export class Song {
                 url: songInfo.videoDetails.video_url,
                 title: songInfo.videoDetails.title,
                 duration: parseInt(songInfo.videoDetails.lengthSeconds)
-            });
+            }, added_by);
+        } else if (isDiscordCdnUrl) {
+            const lcurl = url.toLowerCase();
+            if (lcurl.endsWith(".mp3") || lcurl.endsWith(".ogg") || lcurl.endsWith(".wav") || lcurl.endsWith(".flac")) {
+                let dur = 0;
+                if (lcurl.endsWith(".mp3")) {
+                    dur = await createEstimator(new FetchDataReader(fetch))(lcurl);
+                } else if (lcurl.toLowerCase().endsWith(".wav")) {
+                    dur = await this.getWAVLength(lcurl);
+                } else if (lcurl.endsWith(".flac")) {
+                    dur = await this.getFLACLength(lcurl);
+                }
+                return new this({
+                    url: url,
+                    title: url.split("/").pop()!.split(".").slice(0, -1).join(".") || "Unknown",
+                    duration: dur
+                }, added_by);
+            } else {
+                throw new NotAMusicError();
+            }
         } else {
             const result = await youtube.searchOne(search);
 
@@ -45,20 +80,68 @@ export class Song {
                 url: songInfo.videoDetails.video_url,
                 title: songInfo.videoDetails.title,
                 duration: parseInt(songInfo.videoDetails.lengthSeconds)
-            });
+            }, added_by);
         }
+    }
+
+    public static async getWAVLength(url: string) {
+        const rsp = (await fetch(url)).body!.getReader();
+        const chunks = [];
+        let length = 0;
+        while (length < 44) {
+            const { value, done } = await rsp.read();
+            if (done) break;
+            chunks.push(value);
+            length += value.length;
+        }
+        const header = new Uint8Array(length);
+        let offset = 0;
+        for (const chunk of chunks) {
+            header.set(chunk, offset);
+            offset += chunk.length;
+        }
+        const view = new DataView(header.buffer, header.byteOffset, header.byteLength);
+        const byte_rate = view.getUint32(28, true);
+        const payload_size = view.getUint32(40, true);
+        return payload_size / byte_rate;
+    }
+
+    public static async getFLACLength(url: string) {
+        const rsp = (await fetch(url)).body!.getReader();
+        const chunks = [];
+        let length = 0;
+        while (length < 26) {
+            const { value, done } = await rsp.read();
+            if (done) break;
+            chunks.push(value);
+            length += value.length;
+        }
+        const start = new Uint8Array(length);
+        let offset = 0;
+        for (const chunk of chunks) {
+            start.set(chunk, offset);
+            offset += chunk.length;
+        }
+        const view = new DataView(start.buffer, start.byteOffset, start.byteLength);
+        const sample_rate = view.getUint32(18, false) >> 12;
+        const total_samples = (view.getUint32(18) & 0b1111) << 32 | view.getUint32(22);
+        return total_samples / sample_rate;
     }
 
     public async makeResource(): Promise<AudioResource<Song> | void> {
         let stream;
 
-        let type = this.url.includes("youtube.com") ? StreamType.Opus : StreamType.OggOpus;
+        let type = this.url.includes("youtube.com") ? StreamType.Opus : StreamType.Arbitrary;
 
-        const source = this.url.includes("youtube") ? "youtube" : "soundcloud";
-
-        if (source === "youtube") {
+        if (this.url.includes("youtube") || this.url.includes("youtu.be")) {
             stream = await ytdl(this.url, { quality: "highestaudio", highWaterMark: 1 << 25 });
+        } else if (this.url.includes("discord")) {
+            const rs = (await fetch(this.url)).body;
+            if (rs) {
+                stream = rs as unknown as internal.Readable;  
+            }
         }
+
 
         if (!stream) return;
 

@@ -2,3 +2,4 @@ export const videoPattern = /^(https?:\/\/)?(www\.)?(m\.|music\.)?(youtube\.com|
 export const playlistPattern = /^.*(list=)([^#\&\?]*).*/;
 export const scRegex = /^https?:\/\/(soundcloud\.com)\/(.*)$/;
 export const mobileScRegex = /^https?:\/\/(soundcloud\.app\.goo\.gl)\/(.*)$/;
+export const discordCdnRegex = /^https?:\/\/(cdn\.discordapp\.com)\/(.*)$/;

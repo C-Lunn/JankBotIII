@@ -1,4 +1,4 @@
-import { Client, Collection, Message, Snowflake } from "discord.js";
+import { Client, Collection, Message, Snowflake, ClientEvents } from "discord.js";
 import { readdirSync } from "fs";
 import { join } from "path";
 import SlayCmd from "../commands/jankbot/general/SlayCmd";
@@ -14,6 +14,10 @@ import { MusicQueue } from "./MusicQueue";
 import express from 'express';
 import TimeCmd from "../commands/jankbot/general/TimeCmd";
 import DurstCmd from "../commands/jankbot/general/DurstCmd";
+import LogoCmd from "../commands/jankbot/general/LogoCmd";
+import StarCmd from "../commands/jankbot/tantamod/StarCmd";
+import { bot } from "..";
+import LeaveCmd from "../commands/jankbot/music/LeaveCmd";
 
 const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -23,6 +27,7 @@ export class Bot {
     public cooldowns = new Collection<string, Collection<Snowflake, number>>();
     public queues = new Collection<Snowflake, MusicQueue>();
     public _dj_mode = new Collection<Snowflake, NodeJS.Timeout>();
+    public _voice_is_surpressed = new Collection<Snowflake, boolean>();
 
     public constructor(public readonly client: Client) {
         this.client.login(config.TOKEN);
@@ -38,6 +43,16 @@ export class Bot {
         process.on('unhandledRejection', error => {
             console.log('Test error:', error);
         });
+
+        // this.client.on('voiceStateUpdate', async (_, n) => {
+        //     if (n.channelId !== null) {
+        //         console.log(n.channel?.type);
+        //         if (n.channel?.type === "GUILD_STAGE_VOICE") {
+        //             console.log("Unsurpressing")
+        //             await n.guild.me?.voice.setSuppressed(false); // Fine after being moved to a stage channel.
+        //         }
+        //     }
+        //   });
 
         this.importCommands();
         this.onMessageCreate();
@@ -89,7 +104,10 @@ export class Bot {
             new SlayCmd(this),
             new SayCmd(this),
             new TimeCmd(this),
-            new DurstCmd(this)
+            // new DurstCmd(this),
+            // new LogoCmd(this),
+            new StarCmd(this),
+            new LeaveCmd(this)
         ]) {
             this.commands.set(c.name, c);
         }
@@ -152,5 +170,18 @@ export class Bot {
                 }
             }
         });
+    }
+    
+    public getSurpressed(guild: string) {
+        return this._voice_is_surpressed.get(guild) ?? true;
+    }
+
+    public setSurpressed(guild: string, state: boolean) {
+        this._voice_is_surpressed.set(guild, state);
+    }
+
+    public async destroyQueue(guildId: Snowflake) {
+        this.queues.delete(guildId);
+        // leave here?
     }
 }

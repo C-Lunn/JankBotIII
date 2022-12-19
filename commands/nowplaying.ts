@@ -13,29 +13,34 @@ export default {
         if (!queue || !queue.songs.length)
             return message.reply(i18n.__("nowplaying.errorNotQueue")).catch(console.error);
 
-        const song = queue.songs[0];
+        const song = queue.activeSong();
         const seek = queue.resource.playbackDuration / 1000;
         const left = song.duration - seek;
 
         let nowPlaying = new MessageEmbed()
-            .setTitle(`Now Playing in ${message.guild!.channels.cache.get(queue.connection.joinConfig.channelId!)!.name}`)
+            .setTitle(`Now Playing | Queue Position: ${queue.activeIndex + 1} / ${queue.songs.length}`)
             .setDescription(`${song.title}\n${song.url}`)
             .setColor("#F8AA2A");
 
-        if (song.duration > 0) {
-            nowPlaying.addField(
-                "\u200b",
-                new Date(seek * 1000).toISOString().substr(11, 8) +
-                    "[" +
-                    splitBar(song.duration == 0 ? seek : song.duration, seek, 20)[0] +
-                    "]" +
-                    (song.duration == 0 ? " ◉ LIVE" : new Date(song.duration * 1000).toISOString().substr(11, 8)),
-                false
-            );
+        nowPlaying.addFields([{
+            name: "Added By",
+            value: `<@${song.added_by}>`,
+        },
+        {
+            name: "\u200b",
+            value: "<:play_the_jank:897769624077205525> " +
+                new Date(seek * 1000).toISOString().slice(11, 19) +
+                " [" +
+                    splitBar(song.duration == 0 ? seek : song.duration, seek, 20, undefined, "<:jankdacity:837717101866516501>")[0] +
+                "] " +
+                (song.duration == 0 ? " ◉ LIVE" : new Date(song.duration * 1000).toISOString().slice(11, 19))
+        }
+        ])
 
+        if (song.duration > 0) {
             nowPlaying.setFooter({
                 text: i18n.__mf("nowplaying.timeRemaining", {
-                    time: new Date(left * 1000).toISOString().substr(11, 8)
+                    time: new Date(left * 1000).toISOString().slice(11, 19)
                 })
             });
         }
