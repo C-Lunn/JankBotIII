@@ -17,8 +17,8 @@ export class Playlist {
                 return new Song({
                     title: video.title!,
                     url: `https://youtube.com/watch?v=${video.id}`,
-                    duration: video.duration / 1000
-                });
+                    duration: video.duration / 1000,
+                }, "Unknown");
             });
     }
 

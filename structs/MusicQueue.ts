@@ -12,8 +12,9 @@ import {
     VoiceConnectionState,
     VoiceConnectionStatus
 } from "@discordjs/voice";
-import { Message, TextChannel, User } from "discord.js";
+import { Message, MessageEmbed, TextChannel, User } from "discord.js";
 import { promisify } from "node:util";
+import { splitBar } from "string-progressbar";
 import { bot } from "../index";
 import { QueueOptions } from "../interfaces/QueueOptions";
 import { config } from "../utils/config";
@@ -70,6 +71,7 @@ export class MusicQueue {
     private _active_idx = 0;
     private queueLock = false;
     private readyLock = false;
+    private _last_np_msg: Message;
 
     public constructor(options: QueueOptions) {
         Object.assign(this, options);
@@ -234,6 +236,51 @@ export class MusicQueue {
 
     public get activeIndex() {
         return this._active_idx;
+    }
+
+    public async generate_np_msg() {
+        const song = this.activeSong();
+        const seek = this.resource.playbackDuration / 1000;
+        const left = song.duration - seek;
+
+        let nowPlaying = new MessageEmbed()
+            .setTitle(`${song.title}`)
+            .setDescription(`${song.url} \n Queue Position: ${this.activeIndex + 1} / ${this.songs.length}`)
+            .setColor("#F8AA2A");
+
+        nowPlaying.addFields([{
+            name: "Added By",
+            value: `<@${song.added_by}>`,
+        },
+        {
+            name: "\u200b",
+            value: "<:play_the_jank:897769624077205525> " +
+                new Date(seek * 1000).toISOString().slice(11, 19) +
+                " [" +
+                    splitBar(song.duration == 0 ? seek : song.duration, seek, 20, undefined, "<:jankdacity:837717101866516501>")[0] +
+                "] " +
+                (song.duration == 0 ? " ◉ LIVE" : new Date(song.duration * 1000).toISOString().slice(11, 19))
+        }
+        ])
+
+        if (song.duration > 0) {
+            nowPlaying.setFooter({
+                text: i18n.__mf("nowplaying.timeRemaining", {
+                    time: new Date(left * 1000).toISOString().slice(11, 19)
+                })
+            });
+        }
+
+        Message.
+
+        return new Message{ embeds: [nowPlaying] });
+    }
+
+    private _update_last_np_msg(msg: Message) {
+        if (this.last_np_msg) {
+            this.last_np_msg.delete();
+        }
+        this.last_np_msg = msg;
     }
 }
 
