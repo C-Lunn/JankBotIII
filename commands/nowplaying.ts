@@ -11,8 +11,14 @@ export default {
         const queue = bot.queues.get(message.guild!.id);
 
         if (!queue || !queue.songs.length)
-            return message.reply(i18n.__("nowplaying.errorNotQueue")).catch(console.error);
+            return message.reply("No queue for this server.").catch(console.error);
 
-        return await queue.generate_np_msg();
+        const msg = await queue.generate_np_msg();
+
+        const mg = await message.channel.send({ embeds: [msg] });
+
+        queue.set_and_update_np_msg(mg);
+
+        
     }
 };

@@ -70,11 +70,8 @@ export default {
         const queue = bot.queues.get(message.guild!.id);
         if (!queue || !queue.songs.length) return message.reply("There are no queues active.");
         let msg = "```\n";
-        for (const song of queue.songs) {
-            msg += `${queue.activeSong() === song ? "P " : "  "}${song.title}\n`;
-        }
-        msg += "```";
-        message.reply(msg);
+        const embed = queue.generate_queue_msg();
+        message.channel.send({ embeds: [embed] });
     }
 };
 

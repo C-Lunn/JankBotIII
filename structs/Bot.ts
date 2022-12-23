@@ -18,6 +18,7 @@ import LogoCmd from "../commands/jankbot/general/LogoCmd";
 import StarCmd from "../commands/jankbot/tantamod/StarCmd";
 import { bot } from "..";
 import LeaveCmd from "../commands/jankbot/music/LeaveCmd";
+import MSDiscordForum from "../commands/jankbot/general/MSDiscordForum";
 
 const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -107,7 +108,8 @@ export class Bot {
             // new DurstCmd(this),
             // new LogoCmd(this),
             new StarCmd(this),
-            new LeaveCmd(this)
+            new LeaveCmd(this),
+            new MSDiscordForum(this),
         ]) {
             this.commands.set(c.name, c);
         }

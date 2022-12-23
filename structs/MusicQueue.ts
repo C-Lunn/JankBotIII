@@ -12,7 +12,7 @@ import {
     VoiceConnectionState,
     VoiceConnectionStatus
 } from "@discordjs/voice";
-import { Message, MessageEmbed, TextChannel, User } from "discord.js";
+import { DiscordAPIError, Message, MessageEmbed, MessagePayload, TextChannel, User } from "discord.js";
 import { promisify } from "node:util";
 import { splitBar } from "string-progressbar";
 import { bot } from "../index";
@@ -71,7 +71,8 @@ export class MusicQueue {
     private _active_idx = 0;
     private queueLock = false;
     private readyLock = false;
-    private _last_np_msg: Message;
+    private _last_np_msg?: Message;
+    private _msg_update_timeout: NodeJS.Timeout;
 
     public constructor(options: QueueOptions) {
         Object.assign(this, options);
@@ -238,7 +239,7 @@ export class MusicQueue {
         return this._active_idx;
     }
 
-    public async generate_np_msg() {
+    public async generate_np_msg(): Promise<MessageEmbed> {
         const song = this.activeSong();
         const seek = this.resource.playbackDuration / 1000;
         const left = song.duration - seek;
@@ -254,33 +255,60 @@ export class MusicQueue {
         },
         {
             name: "\u200b",
-            value: "<:play_the_jank:897769624077205525> " +
+            value: "<:play_the_jank:897769624077205525> `" +
                 new Date(seek * 1000).toISOString().slice(11, 19) +
-                " [" +
-                    splitBar(song.duration == 0 ? seek : song.duration, seek, 20, undefined, "<:jankdacity:837717101866516501>")[0] +
-                "] " +
-                (song.duration == 0 ? " ◉ LIVE" : new Date(song.duration * 1000).toISOString().slice(11, 19))
+                "` [" +
+                    splitBar(song.duration == 0 ? seek : song.duration, seek, 10, undefined, "<:jankdacity:837717101866516501>")[0] +
+                "] `" +
+                (song.duration == 0 ? " ◉ LIVE" : new Date(song.duration * 1000).toISOString().slice(11, 19)) + "`"
         }
         ])
 
         if (song.duration > 0) {
             nowPlaying.setFooter({
-                text: i18n.__mf("nowplaying.timeRemaining", {
-                    time: new Date(left * 1000).toISOString().slice(11, 19)
-                })
+                text: `Time Remaining: ${new Date(left * 1000).toISOString().slice(11, 19)}`
             });
         }
-
-        Message.
-
-        return new Message{ embeds: [nowPlaying] });
+        return nowPlaying;
     }
 
-    private _update_last_np_msg(msg: Message) {
-        if (this.last_np_msg) {
-            this.last_np_msg.delete();
+    private async _update_last_np_msg(msg: Message) {
+        if (this._last_np_msg) {
+            const embed: MessageEmbed = await this.generate_np_msg();
+            msg.edit({
+                embeds: [embed]
+            });
         }
-        this.last_np_msg = msg;
+        if (this._state === QueueState.Playing || this._state == QueueState.Paused) {
+            this._msg_update_timeout = setTimeout(() => this._update_last_np_msg(msg), 2500);
+        } else {
+            this._last_np_msg = undefined;
+        }
+    }
+
+    public async set_and_update_np_msg(msg: Message) {
+        this._last_np_msg = msg;
+        if (this._msg_update_timeout) {
+            clearTimeout(this._msg_update_timeout);
+        }
+        setTimeout(() => this._update_last_np_msg(msg), 2500);
+    }
+
+    public generate_queue_msg(): MessageEmbed {
+        let ptr = this._active_idx;
+        const queue_lines = [];
+        for (let i = this._active_idx-1; i >= 0; i--) {
+            queue_lines.push(`**${i + 1}.** ${this.songs[i].title} \`[${new Date(this.songs[i].duration * 1000).toISOString().slice(11, 19)}]\` (Added by <@${this.songs[i].added_by}>)`);
+        }
+        queue_lines.reverse();
+        queue_lines.push(`<:play_the_jank:897769624077205525> **${this._active_idx + 1}.** ${this.songs[this._active_idx].title} \`[${new Date(this.songs[this._active_idx].duration * 1000).toISOString().slice(11, 19)}]\` (Added by <@${this.songs[this._active_idx].added_by}>)`);
+        for (let i = queue_lines.length; i < 11 && i < this.songs.length; i++) {
+            queue_lines.push(`**${i + 1}.** ${this.songs[i].title} \`[${new Date(this.songs[i].duration * 1000).toISOString().slice(11, 19)}]\` (Added by <@${this.songs[i].added_by}>)`);
+        }
+
+        return new MessageEmbed()
+                        .setTitle("Showing [1-10] of " + this.songs.length + " songs in queue")
+                        .setDescription(queue_lines.join("\n"))
     }
 }
 
