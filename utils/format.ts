@@ -54,8 +54,7 @@ export class TS {
         }
 
         let out = "";
-        out = `${pad(this.s)}`;
-        if (Math.abs(this.ts) >= MINUTE_THRES) out = `${pad(this.m)}:${out}`;
+        out = `${pad(this.m)}:${pad(this.s)}`;
         if (Math.abs(this.ts) >= HOUR_THRES) out = `${pad(this.h)}:${out}`;
         out = `${this.sign}${out}`;
 
