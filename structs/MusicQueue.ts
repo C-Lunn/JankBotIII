@@ -12,12 +12,14 @@ import {
     VoiceConnectionState,
     VoiceConnectionStatus
 } from "@discordjs/voice";
-import { DiscordAPIError, Message, MessageEmbed, MessagePayload, TextChannel, User } from "discord.js";
+import { DiscordAPIError, Message, MessageActionRow, MessageButton, MessageEmbed, MessagePayload, TextChannel, User } from "discord.js";
 import { promisify } from "node:util";
 import { splitBar } from "string-progressbar";
+import { textChangeRangeIsUnchanged } from "typescript";
 import { bot } from "../index";
 import { QueueOptions } from "../interfaces/QueueOptions";
 import { config } from "../utils/config";
+import { shortformat } from "../utils/format";
 import { Song } from "./Song";
 
 const wait = promisify(setTimeout);
@@ -73,6 +75,9 @@ export class MusicQueue {
     private readyLock = false;
     private _last_np_msg?: Message;
     private _msg_update_timeout: NodeJS.Timeout;
+    private _last_queue_msg?: Message;
+    private _last_from_to: [number, number] = [0, 0];
+    private _button_listener?: any;
 
     public constructor(options: QueueOptions) {
         Object.assign(this, options);
@@ -150,6 +155,13 @@ export class MusicQueue {
         }
     }
 
+    public async unshift(song: Song) {
+        this.songs.unshift(song);
+        if (this._state === QueueState.Init) {
+            this.playNext();
+        }
+    }
+
     public async playNext() {
         if (this.queueLock) return;
         this.queueLock = true;
@@ -182,6 +194,12 @@ export class MusicQueue {
         if (this._state === QueueState.Finished) return;
         this.player.stop();
         this._state = QueueState.Finished;
+        if (this._last_queue_msg) {
+            this._last_queue_msg.edit({ components: [] });
+        }
+        if (this._button_listener) {
+            this.bot.client.removeListener("interactionCreate", this._button_listener);
+        }
         this.bot.destroyQueue(this.textChannel.guildId);
     }
 
@@ -294,21 +312,105 @@ export class MusicQueue {
         setTimeout(() => this._update_last_np_msg(msg), 2500);
     }
 
-    public generate_queue_msg(): MessageEmbed {
-        let ptr = this._active_idx;
-        const queue_lines = [];
-        for (let i = this._active_idx-1; i >= 0; i--) {
-            queue_lines.push(`**${i + 1}.** ${this.songs[i].title} \`[${new Date(this.songs[i].duration * 1000).toISOString().slice(11, 19)}]\` (Added by <@${this.songs[i].added_by}>)`);
-        }
-        queue_lines.reverse();
-        queue_lines.push(`<:play_the_jank:897769624077205525> **${this._active_idx + 1}.** ${this.songs[this._active_idx].title} \`[${new Date(this.songs[this._active_idx].duration * 1000).toISOString().slice(11, 19)}]\` (Added by <@${this.songs[this._active_idx].added_by}>)`);
-        for (let i = queue_lines.length; i < 11 && i < this.songs.length; i++) {
-            queue_lines.push(`**${i + 1}.** ${this.songs[i].title} \`[${new Date(this.songs[i].duration * 1000).toISOString().slice(11, 19)}]\` (Added by <@${this.songs[i].added_by}>)`);
+    public generate_queue_embed(opt?: {
+        from: number,
+        to: number
+    }): [MessageEmbed, MessageActionRow] {
+        if (!opt) {
+            let from, to;
+            from = this._active_idx - 2;
+            if (from < 0) from = 0;
+            to = from + 9;
+            if (to > this.songs.length - 1) to = this.songs.length - 1;
+            return this.generate_queue_embed({
+                from,
+                to
+            });
         }
 
-        return new MessageEmbed()
-                        .setTitle("Showing [1-10] of " + this.songs.length + " songs in queue")
-                        .setDescription(queue_lines.join("\n"))
+        const queue_lines = [];
+        for (let i = opt.from; i <= opt.to; i++) {
+            let title;
+            if (this.songs[i].title.length > 32) {
+                title = this.songs[i].title.slice(0, 32) + "...";
+            } else {
+                title = this.songs[i].title;
+            }
+            if (i === this._active_idx) {
+                queue_lines.push(`<:play_the_jank:897769624077205525> **${i + 1}.** ${title} \`[${shortformat(this.songs[i].duration * 1000)}]\` (<@${this.songs[i].added_by}>)`);
+            } else {
+                queue_lines.push(`<:transparent:1055955009403113492> **${i + 1}.** ${title} \`[${shortformat(this.songs[i].duration * 1000)}]\` (<@${this.songs[i].added_by}>)`);
+            }
+        }
+
+        this._last_from_to = [opt.from, opt.to];
+
+        return [new MessageEmbed()
+                        .setTitle(`Showing [${opt.from + 1}-${opt.to + 1}] of ` + this.songs.length + " songs in queue")
+                        .setDescription(queue_lines.join("\n")), this.generate_action_row(opt.from, opt.to)];
+    }
+
+    public generate_action_row(from: number, to: number): MessageActionRow {
+        const buttons = [];
+        buttons.push(new MessageButton()
+            .setCustomId("queue_prev:" + this.message.guildId!)
+            .setLabel("Previous")
+            .setStyle("PRIMARY")
+            .setEmoji("⬆️")
+            .setDisabled(from === 0)
+        );
+
+        buttons.push(new MessageButton()
+            .setCustomId("queue_next:" + this.message.guildId!)
+            .setLabel("Next")
+            .setStyle("PRIMARY")
+            .setEmoji("⬇️")
+            .setDisabled(to === this.songs.length - 1)
+        );
+        return new MessageActionRow()
+            .addComponents(buttons);
+    }
+
+    public set_last_queue_message(msg: Message) {
+        if (this._last_queue_msg) {
+            this._last_queue_msg.edit({
+                components: []
+            })
+        } else {
+            this._button_listener = this.bot.client.on('interactionCreate', async (interaction) => {
+                if (!interaction.isButton()) return;
+                if (interaction.customId === 'queue_prev:' + this.message.guildId) {
+                    interaction.deferUpdate();
+                    this.update_last_queue_message('up');
+                } else if (interaction.customId === 'queue_next:' + this.message.guildId!) {
+                    interaction.deferUpdate();
+                    this.update_last_queue_message('down');
+                }
+            });
+        }
+        this._last_queue_msg = msg;
+    }
+
+    public async update_last_queue_message(dir: 'up' | 'down') {
+        let from, to;
+        if (dir === 'up') {
+            from = this._last_from_to[0] - 10;
+            if (from < 0) from = 0;
+            to = from + 9;
+        } else {
+            to = this._last_from_to[1] + 10;
+            if (to > this.songs.length - 1) to = this.songs.length - 1;
+            from = to - 9;
+        }
+        const [embed, row] = this.generate_queue_embed({
+            from,
+            to
+        });
+
+        this._last_queue_msg!.edit({
+            embeds: [embed],
+            components: [row]
+        });
     }
 }
 

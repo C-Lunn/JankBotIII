@@ -7,7 +7,7 @@ export class Playlist {
     public data: YoutubePlaylist;
     public videos: Song[];
 
-    public constructor(playlist: YoutubePlaylist) {
+    public constructor(playlist: YoutubePlaylist, added_by: string = "Unknown") {
         this.data = playlist;
 
         this.videos = this.data.videos
@@ -18,11 +18,11 @@ export class Playlist {
                     title: video.title!,
                     url: `https://youtube.com/watch?v=${video.id}`,
                     duration: video.duration / 1000,
-                }, "Unknown");
+                }, added_by);
             });
     }
 
-    public static async from(url: string = "", search: string = "") {
+    public static async from(url: string = "", search: string = "", added_by: string = "Unknown"): Promise<Playlist> {
         const urlValid = pattern.test(url);
         let playlist;
 
@@ -33,6 +33,6 @@ export class Playlist {
             playlist = await youtube.getPlaylist(result.url!);
         }
 
-        return new this(playlist);
+        return new this(playlist, added_by);
     }
 }
