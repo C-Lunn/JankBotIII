@@ -59,7 +59,7 @@ export default {
         let playlistEmbed = new MessageEmbed()
             .setTitle(`${playlist.data.title}`)
             .setDescription(
-                playlist.videos.map((song: Song, index: number) => `${index + 1}. ${song.title}`).join("\n")
+                `Added ${playlist.videos.length} items to the queue.\n\n ${playlist.videos.length === 99 ? "The playlist may have been truncated to 99 items." : ""}`
             )
             .setURL(playlist.data.url!)
             .setColor("#F8AA2A")

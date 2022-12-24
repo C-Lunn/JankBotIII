@@ -17,7 +17,7 @@ export default {
         if (!canModifyQueue(message.member!)) return i18n.__("common.errorNotChannel");
 
         try {
-            await queue.playNext();
+            queue.player.stop();
             message.react("🆗");
         } catch (error) {
             if (error instanceof NoMoreSongsInQueueError) {

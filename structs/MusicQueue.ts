@@ -77,7 +77,7 @@ export class MusicQueue {
     private _msg_update_timeout: NodeJS.Timeout;
     private _last_queue_msg?: Message;
     private _last_from_to: [number, number] = [0, 0];
-    private _button_listener?: any;
+    private _button_listener?: (interaction: any) => void;
 
     public constructor(options: QueueOptions) {
         Object.assign(this, options);
@@ -123,16 +123,23 @@ export class MusicQueue {
 
         this.player.on("stateChange" as any, async (oldState: AudioPlayerState, newState: AudioPlayerState) => {
             if (oldState.status !== AudioPlayerStatus.Idle && newState.status === AudioPlayerStatus.Idle) {
-                try {
-                    await this.playNext();
-                } catch (e) {
-                    if (e instanceof NoMoreSongsInQueueError) {
-                        //print
-                        this.stop();
-                    } else {
-                        throw e;
+                let success = false;
+                while(!success){
+                    try {
+                        await this.playNext();
+                        success = true;
+                    } catch (e) {
+                        if (e instanceof NoMoreSongsInQueueError) {
+                            //print
+                            this.stop();
+                            return;
+                        } else {
+                            this.textChannel.send({ content: `Encountered an error trying to play ${this.songs[this._active_idx].title}. Skipping...` })
+                            console.log(e);
+                        }
                     }
                 }
+               
             } else if (oldState.status === AudioPlayerStatus.Buffering && newState.status === AudioPlayerStatus.Playing) {
                 // this.sendPlayingMessage(newState);
             }
@@ -163,7 +170,11 @@ export class MusicQueue {
     }
 
     public async playNext() {
-        if (this.queueLock) return;
+        while (this.queueLock) {
+            await new Promise((resolve) => {
+                setTimeout(resolve, 100);
+            });
+        }
         this.queueLock = true;
         try {
             if (this._state === QueueState.Init) {
@@ -183,6 +194,10 @@ export class MusicQueue {
                 const active_song = this.songs[++this._active_idx];
                 this.resource = (await active_song.makeResource()!) as AudioResource;
                 this.player.play(this.resource);
+                if (this._last_queue_msg) {
+                    const [mbed, _] = this.generate_queue_embed({from: this._last_from_to[0], to: this._last_from_to[1]});
+                    this._last_queue_msg.edit({ embeds: [mbed] });
+                }
                 return active_song;
             }
         } finally {
@@ -222,15 +237,20 @@ export class MusicQueue {
         this.resource.volume?.setVolumeLogarithmic(this.volume / 100);
     }
 
-    public skipTo(index: number) {
-        if (this.queueLock) return;
+    public async skipTo(index: number) {
+        while (this.queueLock) 
+        {
+            await new Promise((resolve) => {
+                setTimeout(resolve, 100);
+            });
+        }
         try {
             this.queueLock = true;
             if (index < 0 || index >= this.songs.length) {
                 throw new QueueIndexOutofBoundsError("na", this.songs.length);
             }
             this._active_idx = index - 1;
-            return this.playNext();
+            this.player.stop(); // this will trigger playNext
         } finally {
             this.queueLock = false;
         }
@@ -273,12 +293,12 @@ export class MusicQueue {
         },
         {
             name: "\u200b",
-            value: "<:play_the_jank:897769624077205525> `" +
-                new Date(seek * 1000).toISOString().slice(11, 19) +
+            value: (this.player.state.status === AudioPlayerStatus.Paused ? "<:pause_the_jank:897811963835478028>" : "<:play_the_jank:897769624077205525>") + " `" +
+                shortformat(seek * 1000) +
                 "` [" +
                     splitBar(song.duration == 0 ? seek : song.duration, seek, 10, undefined, "<:jankdacity:837717101866516501>")[0] +
                 "] `" +
-                (song.duration == 0 ? " ◉ LIVE" : new Date(song.duration * 1000).toISOString().slice(11, 19)) + "`"
+                (song.duration == 0 ? " ◉ LIVE" : shortformat(song.duration * 1000)) + "`"
         }
         ])
 
@@ -354,7 +374,6 @@ export class MusicQueue {
         const buttons = [];
         buttons.push(new MessageButton()
             .setCustomId("queue_prev:" + this.message.guildId!)
-            .setLabel("Previous")
             .setStyle("PRIMARY")
             .setEmoji("⬆️")
             .setDisabled(from === 0)
@@ -362,7 +381,6 @@ export class MusicQueue {
 
         buttons.push(new MessageButton()
             .setCustomId("queue_next:" + this.message.guildId!)
-            .setLabel("Next")
             .setStyle("PRIMARY")
             .setEmoji("⬇️")
             .setDisabled(to === this.songs.length - 1)
@@ -377,7 +395,7 @@ export class MusicQueue {
                 components: []
             })
         } else {
-            this._button_listener = this.bot.client.on('interactionCreate', async (interaction) => {
+            this._button_listener = async (interaction) => {
                 if (!interaction.isButton()) return;
                 if (interaction.customId === 'queue_prev:' + this.message.guildId) {
                     interaction.deferUpdate();
@@ -386,7 +404,8 @@ export class MusicQueue {
                     interaction.deferUpdate();
                     this.update_last_queue_message('down');
                 }
-            });
+            };
+            this.message.client.on('interactionCreate', this._button_listener);
         }
         this._last_queue_msg = msg;
     }

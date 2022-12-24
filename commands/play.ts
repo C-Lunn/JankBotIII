@@ -1,4 +1,4 @@
-import { DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
+import { AudioPlayerStatus, DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
 import { Message } from "discord.js";
 import { bot } from "../index";
 import { MusicQueue } from "../structs/MusicQueue";
@@ -35,6 +35,9 @@ export default {
                 } else {
                     return message.reply(i18n.__mf("play.usageReply", { prefix: bot.prefix })).catch(console.error);
                 }
+            } else if (queue?.player.state.status === AudioPlayerStatus.Paused) {
+                queue.player.unpause();
+                return message.reply("Music resumed.");
             }
             else return message.reply(i18n.__mf("play.usageReply", { prefix: bot.prefix })).catch(console.error);
         } else url = args[0];
