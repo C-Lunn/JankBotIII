@@ -4,6 +4,7 @@ import { bot } from "../index";
 import { MusicQueue } from "../structs/MusicQueue";
 import { NotAMusicError, Song } from "../structs/Song";
 import { i18n } from "../utils/i18n";
+import { icon } from "../utils/icons";
 import { playlistPattern } from "../utils/patterns";
 
 export default {
@@ -69,7 +70,7 @@ export default {
             queue.push(song);
 
             return message
-                .reply(`<:jankdacity:837717101866516501> **${song.title}** has been added to the queue at position ${queue.songs.length}!`)
+                .reply(`${icon('playhead')} **${song.title}** has been added to the queue at position ${queue.songs.length}!`)
                 .catch(console.error);
         }
 
@@ -89,7 +90,7 @@ export default {
 
         newQueue.push(song);
 
-        message.reply(`<:jankdacity:837717101866516501> **${song.title}** has been added to the queue at position ${newQueue.songs.length}!`)
+        message.reply(`${icon('playhead')} **${song.title}** has been added to the queue at position ${newQueue.songs.length}!`)
                 .catch(console.error);
 
         bot.queues.set(message.guild!.id, newQueue);
