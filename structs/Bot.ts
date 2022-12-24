@@ -29,6 +29,7 @@ export class Bot {
     public queues = new Collection<Snowflake, MusicQueue>();
     public _dj_mode = new Collection<Snowflake, NodeJS.Timeout>();
     public _voice_is_surpressed = new Collection<Snowflake, boolean>();
+    public leave_timeouts = new Collection<Snowflake, NodeJS.Timeout>();
 
     public constructor(public readonly client: Client) {
         this.client.login(config.TOKEN);
@@ -44,16 +45,6 @@ export class Bot {
         process.on('unhandledRejection', error => {
             console.log('Test error:', error);
         });
-
-        // this.client.on('voiceStateUpdate', async (_, n) => {
-        //     if (n.channelId !== null) {
-        //         console.log(n.channel?.type);
-        //         if (n.channel?.type === "GUILD_STAGE_VOICE") {
-        //             console.log("Unsurpressing")
-        //             await n.guild.me?.voice.setSuppressed(false); // Fine after being moved to a stage channel.
-        //         }
-        //     }
-        //   });
 
         this.importCommands();
         this.onMessageCreate();

@@ -215,6 +215,11 @@ export class MusicQueue {
         if (this._button_listener) {
             this.bot.client.removeListener("interactionCreate", this._button_listener);
         }
+        this.bot.leave_timeouts.set(this.textChannel.guildId, setTimeout(() => {
+            this.connection.destroy();
+            this.bot.leave_timeouts.delete(this.textChannel.guildId);
+        }, 10_000));
+        this.textChannel.send({ content: "Queue finished. Leaving voice channel in 10 minutes." });
         this.bot.destroyQueue(this.textChannel.guildId);
     }
 

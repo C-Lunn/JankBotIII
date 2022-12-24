@@ -73,6 +73,11 @@ export default {
                 .catch(console.error);
         }
 
+        if (bot.leave_timeouts.has(message.guild!.id)) {
+            clearTimeout(bot.leave_timeouts.get(message.guild!.id)!);
+            bot.leave_timeouts.delete(message.guild!.id);
+        }
+
         const newQueue = new MusicQueue({
             message,
             connection: joinVoiceChannel({

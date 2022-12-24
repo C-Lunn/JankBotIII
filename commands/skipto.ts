@@ -24,7 +24,7 @@ export default {
 
         try {
             await queue.skipTo(args[0] - 1);
-            console.log(`Skipping to ${args[0]-1}`);
+            console.log(`Skipping to ${args[0] - 1}`);
             message.reply(`Skipped to ${args[0]}: ${queue.songs[args[0] - 1].title}`);
         } catch (e) {
             if (e instanceof QueueIndexOutofBoundsError) {

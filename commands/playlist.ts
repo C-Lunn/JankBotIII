@@ -50,6 +50,11 @@ export default {
                 })
             });
 
+            if (bot.leave_timeouts.has(message.guild!.id)) {
+                clearTimeout(bot.leave_timeouts.get(message.guild!.id)!);
+                bot.leave_timeouts.delete(message.guild!.id);
+            }
+
             bot.queues.set(message.guild!.id, newQueue);
             newQueue.songs.push(...playlist.videos);
             
