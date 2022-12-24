@@ -3,6 +3,7 @@ import { i18n } from "../utils/i18n";
 import { Message } from "discord.js";
 import { bot } from "../index";
 import { QueueIndexOutofBoundsError } from "../structs/MusicQueue";
+import { icon } from "../utils/icons";
 
 export default {
     name: "skipto",
@@ -28,7 +29,7 @@ export default {
             message.reply(`Skipped to ${args[0]}: ${queue.songs[args[0] - 1].title}`);
         } catch (e) {
             if (e instanceof QueueIndexOutofBoundsError) {
-                message.reply("Not a valid index. <:gun_jankman:841050574996766770>");
+                message.reply(`Not a valid index. ${icon("gun")}`);
             } else {
                 message.reply("Unknown error.");
                 console.log(e);

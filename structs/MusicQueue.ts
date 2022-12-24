@@ -20,6 +20,7 @@ import { bot } from "../index";
 import { QueueOptions } from "../interfaces/QueueOptions";
 import { config } from "../utils/config";
 import { shortformat } from "../utils/format";
+import { icon } from "../utils/icons";
 import { Song } from "./Song";
 
 const wait = promisify(setTimeout);
@@ -293,10 +294,10 @@ export class MusicQueue {
         },
         {
             name: "\u200b",
-            value: (this.player.state.status === AudioPlayerStatus.Paused ? "<:pause_the_jank:897811963835478028>" : "<:play_the_jank:897769624077205525>") + " `" +
+            value: (this.player.state.status === AudioPlayerStatus.Paused ? `${icon("pause")}` : `${icon("resume")}`) + " `" +
                 shortformat(seek * 1000) +
                 "` [" +
-                    splitBar(song.duration == 0 ? seek : song.duration, seek, 10, undefined, "<:jankdacity:837717101866516501>")[0] +
+                    splitBar(song.duration == 0 ? seek : song.duration, seek, 10, undefined, `${icon("playhead")}`)[0] +
                 "] `" +
                 (song.duration == 0 ? " ◉ LIVE" : shortformat(song.duration * 1000)) + "`"
         }
@@ -357,9 +358,9 @@ export class MusicQueue {
                 title = this.songs[i].title;
             }
             if (i === this._active_idx) {
-                queue_lines.push(`<:play_the_jank:897769624077205525> **${i + 1}.** ${title} \`[${shortformat(this.songs[i].duration * 1000)}]\` (<@${this.songs[i].added_by}>)`);
+                queue_lines.push(`${icon("resume")} **${i + 1}.** ${title} \`[${shortformat(this.songs[i].duration * 1000)}]\` (<@${this.songs[i].added_by}>)`);
             } else {
-                queue_lines.push(`<:transparent:1055955009403113492> **${i + 1}.** ${title} \`[${shortformat(this.songs[i].duration * 1000)}]\` (<@${this.songs[i].added_by}>)`);
+                queue_lines.push(`${icon("transparent")} **${i + 1}.** ${title} \`[${shortformat(this.songs[i].duration * 1000)}]\` (<@${this.songs[i].added_by}>)`);
             }
         }
 
