@@ -3,7 +3,6 @@ import { Message, MessageEmbed } from "discord.js";
 import { bot } from "../index";
 import { MusicQueue } from "../structs/MusicQueue";
 import { Playlist } from "../structs/Playlist";
-import { Song } from "../structs/Song";
 import { i18n } from "../utils/i18n";
 
 export default {
@@ -31,7 +30,7 @@ export default {
         let playlist;
 
         try {
-            playlist = await Playlist.from(args[0], args.join(" "));
+            playlist = await Playlist.from(args[0], args.join(" "), message.author.id);
         } catch (error) {
             console.error(error);
 
@@ -50,16 +49,21 @@ export default {
                 })
             });
 
+            if (bot.leave_timeouts.has(message.guild!.id)) {
+                clearTimeout(bot.leave_timeouts.get(message.guild!.id)!);
+                bot.leave_timeouts.delete(message.guild!.id);
+            }
+
             bot.queues.set(message.guild!.id, newQueue);
             newQueue.songs.push(...playlist.videos);
             
-            newQueue.enqueue(playlist.videos[0]);
+            newQueue.playNext();
         }
 
         let playlistEmbed = new MessageEmbed()
             .setTitle(`${playlist.data.title}`)
             .setDescription(
-                playlist.videos.map((song: Song, index: number) => `${index + 1}. ${song.title}`).join("\n")
+                `Added ${playlist.videos.length} items to the queue.\n\n ${playlist.videos.length === 99 ? "The playlist may have been truncated to 99 items." : ""}`
             )
             .setURL(playlist.data.url!)
             .setColor("#F8AA2A")

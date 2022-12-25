@@ -1,7 +1,9 @@
-import { canModifyQueue } from "../utils/queue";
-import { i18n } from "../utils/i18n";
 import { Message } from "discord.js";
 import { bot } from "../index";
+import { QueueIndexOutofBoundsError } from "../structs/MusicQueue";
+import { i18n } from "../utils/i18n";
+import { icon } from "../utils/icons";
+import { canModifyQueue } from "../utils/queue";
 
 export default {
     name: "skipto",
@@ -9,7 +11,7 @@ export default {
     is_tantamod: true,
     aliases: ["st"],
     description: i18n.__("skipto.description"),
-    execute(message: Message, args: Array<any>) {
+    async execute(message: Message, args: Array<any>) {
         if (!args.length || isNaN(args[0]))
             return message
                 .reply(i18n.__mf("skipto.usageReply", { prefix: bot.prefix, name: module.exports.name }))
@@ -21,23 +23,17 @@ export default {
 
         if (!canModifyQueue(message.member!)) return i18n.__("common.errorNotChannel");
 
-        if (args[0] > queue.songs.length)
-            return message
-                .reply(i18n.__mf("skipto.errorNotValid", { length: queue.songs.length }))
-                .catch(console.error);
-
-        if (queue.loop) {
-            for (let i = 0; i < args[0] - 2; i++) {
-                queue.songs.push(queue.songs.shift()!);
+        try {
+            await queue.skipTo(args[0] - 1);
+            console.log(`Skipping to ${args[0] - 1}`);
+            message.reply(`Skipped to ${args[0]}: ${queue.songs[args[0] - 1].title}`);
+        } catch (e) {
+            if (e instanceof QueueIndexOutofBoundsError) {
+                message.reply(`Not a valid index. ${icon("gun")}`);
+            } else {
+                message.reply("Unknown error.");
+                console.log(e);
             }
-        } else {
-            queue.songs = queue.songs.slice(args[0] - 2);
         }
-
-        queue.player.stop();
-
-        queue.textChannel
-            .send(i18n.__mf("skipto.result", { author: message.author, arg: args[0] - 1 }))
-            .catch(console.error);
     }
 };

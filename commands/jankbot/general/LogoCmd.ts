@@ -4,24 +4,24 @@ import { join } from "path";
 import JankbotCmd from "../../../interfaces/JankbotCommand";
 import { Bot } from "../../../structs/Bot";
 
-export default class DurstCmd extends JankbotCmd {
-    private _dursts: string[];
+export default class LogoCmd extends JankbotCmd {
+    private _logos: string[];
     constructor(bot: Bot) {
         super();
-        this.name = "durst";
-        this.description = "Get a random durst.";
+        this.name = "logo";
+        this.description = "Get a random logo.";
         this.aliases = [];
-        this._dursts = readdirSync(join(__dirname, "..", "..", "..", "resource", "durst"));
+        this._logos = readdirSync(join(__dirname, "..", "..", "..", "resource", "muselogos"));
 
         bot.client.on("interactionCreate", async (interaction) => {
             if (!interaction.isButton()) return;
-            if (interaction.customId.startsWith("DURST:")) {
+            if (interaction.customId.startsWith("LOGO:")) {
                 await interaction.deferUpdate();
-                const durst = readFileSync(join(__dirname, "..", "..", "..", "resource", "durst", this._dursts[Math.floor(Math.random() * this._dursts.length)]));
+                const logo = readFileSync(join(__dirname, "..", "..", "..", "resource", "muselogos", this._logos[Math.floor(Math.random() * this._logos.length)]));
                 (interaction.message!.components![0].components![0] as MessageButton).setDisabled(true);
                 const row = new MessageActionRow().addComponents((interaction.message!.components![0].components![0] as MessageButton));
                 await (interaction.message as Message).edit({
-                    files: [ durst ],
+                    files: [ logo ],
                     components: [ row ]
                 });
                 setTimeout(() => {
@@ -35,17 +35,17 @@ export default class DurstCmd extends JankbotCmd {
     }
 
     public override async run(bot: Bot, message: Message, args: string[]) {
-        let durst = readFileSync(join(__dirname, "..", "..", "..", "resource", "durst", this._dursts[Math.floor(Math.random() * this._dursts.length)]));
+        let logo = readFileSync(join(__dirname, "..", "..", "..", "resource", "muselogos", this._logos[Math.floor(Math.random() * this._logos.length)]));
         const row = new MessageActionRow().addComponents(
             new MessageButton()
-                .setCustomId("DURST:NEXT")
+                .setCustomId("LOGO:NEXT")
                 .setStyle("PRIMARY")
-                .setLabel("Break Stuff")
+                .setLabel("New All")
                 .setDisabled(true)
         );
 
         const msg = await message.channel.send({
-            files: [ durst ],
+            files: [ logo ],
             components: [ row ]
         });
 

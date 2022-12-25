@@ -3,7 +3,7 @@
         "strict": true,
         "outDir": "dist",
         "module": "commonjs",
-        "target": "es2022",
+        "target": "ESNext",
         "moduleResolution": "node",
         "resolveJsonModule": true,
         "useUnknownInCatchVariables": true,
@@ -12,7 +12,7 @@
         "skipLibCheck": true,
         "importHelpers": true,
         "typeRoots": ["node_modules/@types"],
-        "types": ["node"],
+        "types": ["node", "jest"],
         "sourceMap": true,
         "strictPropertyInitialization": false
     },

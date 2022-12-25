@@ -1,9 +1,14 @@
-import { Client, Collection, Message, Snowflake } from "discord.js";
+import { Client, Collection, Snowflake } from "discord.js";
+import express from 'express';
 import { readdirSync } from "fs";
 import { join } from "path";
+import MSDiscordForum from "../commands/jankbot/general/MSDiscordForum";
 import SlayCmd from "../commands/jankbot/general/SlayCmd";
+import TimeCmd from "../commands/jankbot/general/TimeCmd";
+import LeaveCmd from "../commands/jankbot/music/LeaveCmd";
 import SayCmd from "../commands/jankbot/tantamod/SayCmd";
 import SetDjCmd from "../commands/jankbot/tantamod/SetDJCmd";
+import StarCmd from "../commands/jankbot/tantamod/StarCmd";
 import CmdFromObj from "../interfaces/CmdFromObj";
 import { Command } from "../interfaces/Command";
 import { checkPermissions } from "../utils/checkPermissions";
@@ -11,9 +16,6 @@ import { config } from "../utils/config";
 import { i18n } from "../utils/i18n";
 import { MissingPermissionsException } from "../utils/MissingPermissionsException";
 import { MusicQueue } from "./MusicQueue";
-import express from 'express';
-import TimeCmd from "../commands/jankbot/general/TimeCmd";
-import DurstCmd from "../commands/jankbot/general/DurstCmd";
 
 const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -23,6 +25,8 @@ export class Bot {
     public cooldowns = new Collection<string, Collection<Snowflake, number>>();
     public queues = new Collection<Snowflake, MusicQueue>();
     public _dj_mode = new Collection<Snowflake, NodeJS.Timeout>();
+    public _voice_is_surpressed = new Collection<Snowflake, boolean>();
+    public leave_timeouts = new Collection<Snowflake, NodeJS.Timeout>();
 
     public constructor(public readonly client: Client) {
         this.client.login(config.TOKEN);
@@ -89,7 +93,11 @@ export class Bot {
             new SlayCmd(this),
             new SayCmd(this),
             new TimeCmd(this),
-            new DurstCmd(this)
+            // new DurstCmd(this),
+            // new LogoCmd(this),
+            new StarCmd(this),
+            new LeaveCmd(this),
+            new MSDiscordForum(this),
         ]) {
             this.commands.set(c.name, c);
         }
@@ -152,5 +160,18 @@ export class Bot {
                 }
             }
         });
+    }
+    
+    public getSurpressed(guild: string) {
+        return this._voice_is_surpressed.get(guild) ?? true;
+    }
+
+    public setSurpressed(guild: string, state: boolean) {
+        this._voice_is_surpressed.set(guild, state);
+    }
+
+    public async destroyQueue(guildId: Snowflake) {
+        this.queues.delete(guildId);
+        // leave here?
     }
 }

@@ -1,6 +1,6 @@
 import { Message, MessageEmbed } from "discord.js";
-import { i18n } from "../utils/i18n";
 import { bot } from "../index";
+import { i18n } from "../utils/i18n";
 
 export default {
     name: "help",

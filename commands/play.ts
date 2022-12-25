@@ -1,9 +1,10 @@
-import { DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
+import { AudioPlayerStatus, DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
 import { Message } from "discord.js";
 import { bot } from "../index";
 import { MusicQueue } from "../structs/MusicQueue";
-import { Song } from "../structs/Song";
+import { NotAMusicError, Song } from "../structs/Song";
 import { i18n } from "../utils/i18n";
+import { icon } from "../utils/icons";
 import { playlistPattern } from "../utils/patterns";
 
 export default {
@@ -25,9 +26,22 @@ export default {
                 .reply(i18n.__mf("play.errorNotInSameChannel", { user: bot.client.user!.username }))
                 .catch(console.error);
 
-        if (!args.length) return message.reply(i18n.__mf("play.usageReply", { prefix: bot.prefix })).catch(console.error);
+        let url;
 
-        const url = args[0];
+        if (!args.length) {
+            if (message.attachments.size) {
+                const lcurl = message.attachments.first()!.attachment.toString().toLowerCase();
+                if (lcurl.endsWith(".mp3") || lcurl.endsWith(".ogg") || lcurl.endsWith(".wav") || lcurl.endsWith(".flac")) {
+                    url = message.attachments.first()!.attachment.toString();
+                } else {
+                    return message.reply(i18n.__mf("play.usageReply", { prefix: bot.prefix })).catch(console.error);
+                }
+            } else if (queue?.player.state.status === AudioPlayerStatus.Paused) {
+                queue.player.unpause();
+                return message.reply("Music resumed.");
+            }
+            else return message.reply(i18n.__mf("play.usageReply", { prefix: bot.prefix })).catch(console.error);
+        } else url = args[0];
 
         const loadingReply = await message.reply("⏳ Loading...");
 
@@ -40,8 +54,12 @@ export default {
         let song;
 
         try {
-            song = await Song.from(url, args.join(" "));
+            song = await Song.from(url, args.join(" "), message.author.id);
         } catch (error) {
+            if (error instanceof NotAMusicError) {
+                message.reply("This doesn't look like a music file.");
+                return;
+            }
             console.error(error);
             return message.reply(i18n.__("common.errorCommand")).catch(console.error);
         } finally {
@@ -49,11 +67,16 @@ export default {
         }
 
         if (queue) {
-            queue.enqueue(song);
+            queue.push(song);
 
             return message
-                .reply(i18n.__mf("play.queueAdded", { title: song.title, author: message.author }))
+                .reply(`${icon('playhead')} **${song.title}** has been added to the queue at position ${queue.songs.length}!`)
                 .catch(console.error);
+        }
+
+        if (bot.leave_timeouts.has(message.guild!.id)) {
+            clearTimeout(bot.leave_timeouts.get(message.guild!.id)!);
+            bot.leave_timeouts.delete(message.guild!.id);
         }
 
         const newQueue = new MusicQueue({
@@ -65,10 +88,13 @@ export default {
             })
         });
 
-        if (channel.type === "GUILD_STAGE_VOICE") channel.guild.me!.voice.setSuppressed(false);
+        newQueue.push(song);
+
+        message.reply(`${icon('playhead')} **${song.title}** has been added to the queue at position ${newQueue.songs.length}!`)
+                .catch(console.error);
 
         bot.queues.set(message.guild!.id, newQueue);
 
-        newQueue.enqueue(song);
+        
     }
 };

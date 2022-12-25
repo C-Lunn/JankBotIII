@@ -1,11 +1,11 @@
 import axios from "axios";
-import mq_key from "./MQ.key";
+import { Message } from "discord.js";
 import { find } from "geo-tz";
 import { join } from "path";
 import sharp from "sharp";
-import { Message, MessagePayload } from "discord.js";
 import JankbotCmd from "../../../interfaces/JankbotCommand";
 import { Bot } from "../../../structs/Bot";
+import mq_key from "./MQ.key";
 
 async function getGeoCodefromPlace(place_in: string) {
     const resp = await axios.get(
