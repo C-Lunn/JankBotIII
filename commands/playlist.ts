@@ -3,7 +3,6 @@ import { Message, MessageEmbed } from "discord.js";
 import { bot } from "../index";
 import { MusicQueue } from "../structs/MusicQueue";
 import { Playlist } from "../structs/Playlist";
-import { Song } from "../structs/Song";
 import { i18n } from "../utils/i18n";
 
 export default {

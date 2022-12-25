@@ -1,7 +1,6 @@
-import { Message, MessageEmbed } from "discord.js";
-import { splitBar } from "string-progressbar";
-import { i18n } from "../utils/i18n";
+import { Message } from "discord.js";
 import { bot } from "../index";
+import { i18n } from "../utils/i18n";
 
 export default {
     name: "np",

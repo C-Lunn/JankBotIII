@@ -1,6 +1,5 @@
-import { Message, MessageActionRow, MessageButton, MessageEmbed, MessageReaction, User } from "discord.js";
+import { Message } from "discord.js";
 import { bot } from "../index";
-import { Song } from "../structs/Song";
 import { i18n } from "../utils/i18n";
 
 export default {

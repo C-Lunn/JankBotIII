@@ -1,54 +1,40 @@
 import { Message } from "discord.js";
 import { bot } from "../index";
-import { Song } from "../structs/Song";
+import { AttemptToReplacePlayingSongError, QueueIndexOutofBoundsError } from "../structs/MusicQueue";
 import { i18n } from "../utils/i18n";
+import { icon } from "../utils/icons";
 import { canModifyQueue } from "../utils/queue";
-
-const pattern = /^[0-9]{1,2}(\s*,\s*[0-9]{1,2})*$/;
 
 export default {
     name: "remove",
     aliases: ["rm"],
     category: "music",
     description: i18n.__("remove.description"),
-    execute(message: Message, args: any[]) {
-    //     const queue = bot.queues.get(message.guild!.id);
+    async execute(message: Message, args: any[]) {
+        const queue = bot.queues.get(message.guild!.id);
 
-    //     if (!queue) return message.reply(i18n.__("remove.errorNotQueue")).catch(console.error);
+        if (!queue) return message.reply(i18n.__("remove.errorNotQueue")).catch(console.error);
 
-    //     if (!canModifyQueue(message.member!)) return i18n.__("common.errorNotChannel");
+        if (!canModifyQueue(message.member!)) return i18n.__("common.errorNotChannel");
 
-    //     if (!args.length) return message.reply(i18n.__mf("remove.usageReply", { prefix: bot.prefix }));
+        if (!args.length || args.length !== 1) return message.reply(i18n.__mf("remove.usageReply", { prefix: bot.prefix }));
 
-    //     const removeArgs = args.join("");
+        let song = parseInt(args[0]);
 
-    //     const songs = removeArgs.split(",").map((arg) => parseInt(arg));
+        if (isNaN(song)) return message.reply(i18n.__mf("remove.usageReply", { prefix: bot.prefix }));
 
-    //     let removed: Song[] = [];
+        try {
+            const title_to_remove = await queue.remove(song - 1);
+            message.reply(`Removed ${title_to_remove} from the queue.`);
+        } catch (e) {
+            if (e instanceof QueueIndexOutofBoundsError) {
+                message.reply(`Not a valid index. ${icon("gun")}`);
+            } else if (e instanceof AttemptToReplacePlayingSongError) {
+                message.reply("Cannot remove the currently playing song.");
+            } else {
+                console.log(e);
+            }
+        }
 
-    //     if (pattern.test(removeArgs)) {
-    //         queue.songs = queue.songs.filter((item, index) => {
-    //             if (songs.find((songIndex) => songIndex - 1 === index)) removed.push(item);
-    //             else return true;
-    //         });
-
-    //         queue.textChannel.send(
-    //             i18n.__mf("remove.result", {
-    //                 title: removed.map((song) => song.title).join("\n"),
-    //                 author: message.author.id
-    //             })
-    //         );
-    //     } else if (!isNaN(args[0]) && args[0] >= 1 && args[0] <= queue.songs.length) {
-    //         return queue.textChannel.send(
-    //             i18n.__mf("remove.result", {
-    //                 title: queue.songs.splice(args[0] - 1, 1)[0].title,
-    //                 author: message.author.id
-    //             })
-    //         );
-    //     } else {
-    //         return message.reply(i18n.__mf("remove.usageReply", { prefix: bot.prefix }));
-    //     }
-    // }
-        message.reply("NOT IMPLEMENTED YET");
     }
 };

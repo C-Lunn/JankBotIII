@@ -1,9 +1,9 @@
-import { canModifyQueue } from "../utils/queue";
-import { i18n } from "../utils/i18n";
 import { Message } from "discord.js";
 import { bot } from "../index";
 import { QueueIndexOutofBoundsError } from "../structs/MusicQueue";
+import { i18n } from "../utils/i18n";
 import { icon } from "../utils/icons";
+import { canModifyQueue } from "../utils/queue";
 
 export default {
     name: "skipto",

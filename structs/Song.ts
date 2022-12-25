@@ -1,15 +1,11 @@
 import { AudioResource, createAudioResource, StreamType } from "@discordjs/voice";
-import { get } from "https";
-import internal, { Readable } from "stream";
+import createEstimator, { FetchDataReader } from 'mp3-duration-estimate';
+import internal from "stream";
 import youtube from "youtube-sr";
 import { getInfo } from "ytdl-core";
 import ytdl from "ytdl-core-discord";
 import { i18n } from "../utils/i18n";
-import { videoPattern, discordCdnRegex } from "../utils/patterns";
-import { ffprobe } from "fluent-ffmpeg";
-import { createWriteStream, fstat, writeFileSync } from "fs";
-import createEstimator, { FetchDataReader } from 'mp3-duration-estimate'
-import { threadId } from "worker_threads";
+import { discordCdnRegex, videoPattern } from "../utils/patterns";
 
 export interface SongData {
     url: string;

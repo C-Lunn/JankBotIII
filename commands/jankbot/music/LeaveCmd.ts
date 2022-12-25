@@ -1,5 +1,5 @@
+import { getVoiceConnection } from "@discordjs/voice";
 import { Message } from "discord.js";
-import JankbotCmd from "../../../interfaces/JankbotCommand";
 import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
 import { Bot } from "../../../structs/Bot";
 
@@ -13,11 +13,15 @@ export default class LeaveCmd extends JankbotMusicCmd {
 
     public override async run(bot: Bot, message: Message, args: string[]) {
         const queue = bot.queues.get(message.guild!.id);
-        if (!queue) {
-            message.channel.send("There is no queue.");
-            return;
+        if (queue) {
+            queue.stop(true);
+        } else {
+            if (bot.leave_timeouts.has(message.guild!.id)) {
+                clearTimeout(bot.leave_timeouts.get(message.guild!.id)!);
+                bot.leave_timeouts.delete(message.guild!.id);
+                getVoiceConnection(message.guild!.id)?.destroy();
+            }
         }
         await message.channel.send("Leaving channel...");
-        queue.stop();
     }
 }

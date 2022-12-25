@@ -1,7 +1,5 @@
 import {
-    AudioPlayer,
-    AudioPlayerPlayingState,
-    AudioPlayerState,
+    AudioPlayer, AudioPlayerState,
     AudioPlayerStatus,
     AudioResource,
     createAudioPlayer,
@@ -12,10 +10,9 @@ import {
     VoiceConnectionState,
     VoiceConnectionStatus
 } from "@discordjs/voice";
-import { DiscordAPIError, Message, MessageActionRow, MessageButton, MessageEmbed, MessagePayload, TextChannel, User } from "discord.js";
+import { Message, MessageActionRow, MessageButton, MessageEmbed, TextChannel } from "discord.js";
 import { promisify } from "node:util";
 import { splitBar } from "string-progressbar";
-import { textChangeRangeIsUnchanged } from "typescript";
 import { bot } from "../index";
 import { QueueOptions } from "../interfaces/QueueOptions";
 import { config } from "../utils/config";
@@ -206,7 +203,7 @@ export class MusicQueue {
         }
     }
 
-    public stop() {
+    public stop(now = false) {
         if (this._state === QueueState.Finished) return;
         this.player.stop();
         this._state = QueueState.Finished;
@@ -219,8 +216,8 @@ export class MusicQueue {
         this.bot.leave_timeouts.set(this.textChannel.guildId, setTimeout(() => {
             this.connection.destroy();
             this.bot.leave_timeouts.delete(this.textChannel.guildId);
-        }, 10_000));
-        this.textChannel.send({ content: "Queue finished. Leaving voice channel in 10 minutes." });
+        }, now ? 0 : 600_000));
+        if (!now) this.textChannel.send({ content: "Queue finished. Leaving voice channel in 10 minutes." });
         this.bot.destroyQueue(this.textChannel.guildId);
     }
 
@@ -273,6 +270,10 @@ export class MusicQueue {
         const song = this.songs[from];
         this.songs.splice(from, 1);
         this.songs.splice(to, 0, song);
+
+        if (this._last_queue_msg) {
+            this.update_last_queue_message();
+        }
     }
 
     public activeSong() {
@@ -416,16 +417,19 @@ export class MusicQueue {
         this._last_queue_msg = msg;
     }
 
-    public async update_last_queue_message(dir: 'up' | 'down') {
+    public async update_last_queue_message(dir?: 'up' | 'down') {
         let from, to;
         if (dir === 'up') {
             from = this._last_from_to[0] - 10;
             if (from < 0) from = 0;
             to = from + 9;
-        } else {
+        } else if (dir === 'down'){
             to = this._last_from_to[1] + 10;
             if (to > this.songs.length - 1) to = this.songs.length - 1;
             from = to - 9;
+        } else {
+            from = this._last_from_to[0];
+            to = this._last_from_to[1];
         }
         const [embed, row] = this.generate_queue_embed({
             from,
@@ -436,6 +440,21 @@ export class MusicQueue {
             embeds: [embed],
             components: [row]
         });
+    }
+
+    public async remove(idx: number) {
+        if (idx === this._active_idx) {
+            throw new AttemptToReplacePlayingSongError();
+        }
+        if (idx < 0 || idx >= this.songs.length) {
+            throw new QueueIndexOutofBoundsError('na', this.songs.length);
+        }
+        const s = this.songs.splice(idx, 1);
+        if (this._last_queue_msg) {
+            this.update_last_queue_message();
+        }
+
+        return s[0].title;
     }
 }
 

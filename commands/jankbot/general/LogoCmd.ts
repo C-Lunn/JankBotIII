@@ -1,8 +1,8 @@
-import { Message, MessageActionRow, MessageActionRowComponent, MessageButton } from "discord.js";
-import JankbotCmd from "../../../interfaces/JankbotCommand";
-import { Bot } from "../../../structs/Bot";
+import { Message, MessageActionRow, MessageButton } from "discord.js";
 import { readdirSync, readFileSync } from "fs";
 import { join } from "path";
+import JankbotCmd from "../../../interfaces/JankbotCommand";
+import { Bot } from "../../../structs/Bot";
 
 export default class LogoCmd extends JankbotCmd {
     private _logos: string[];
