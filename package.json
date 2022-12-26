@@ -13,6 +13,7 @@
   },
   "scripts": {
     "dev": "nodemon index.ts",
+    "debug": "nodemon -r dotenv/config index.ts -- --inspect",
     "start": "ts-node index.ts",
     "build": "tsc --build",
     "prod": "npm run build && node ./dist/index.js",
