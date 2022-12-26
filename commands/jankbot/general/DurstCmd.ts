@@ -11,17 +11,17 @@ export default class DurstCmd extends JankbotCmd {
         this.name = "durst";
         this.description = "Get a random durst.";
         this.aliases = [];
-        this._dursts = readdirSync(join(__dirname, "..", "..", "..", "resource", "durst"));
+        this._dursts = JSON.parse(readFileSync(join(__dirname, "..", "..", "..", "resource", "dursts.json"))!.toString());
 
         bot.client.on("interactionCreate", async (interaction) => {
             if (!interaction.isButton()) return;
             if (interaction.customId.startsWith("DURST:")) {
                 await interaction.deferUpdate();
-                const durst = readFileSync(join(__dirname, "..", "..", "..", "resource", "durst", this._dursts[Math.floor(Math.random() * this._dursts.length)]));
+                const durst = this._dursts[Math.floor(Math.random() * this._dursts.length)];
                 (interaction.message!.components![0].components![0] as MessageButton).setDisabled(true);
                 const row = new MessageActionRow().addComponents((interaction.message!.components![0].components![0] as MessageButton));
                 await (interaction.message as Message).edit({
-                    files: [ durst ],
+                    content: durst,
                     components: [ row ]
                 });
                 setTimeout(() => {
@@ -35,7 +35,7 @@ export default class DurstCmd extends JankbotCmd {
     }
 
     public override async run(bot: Bot, message: Message, args: string[]) {
-        let durst = readFileSync(join(__dirname, "..", "..", "..", "resource", "durst", this._dursts[Math.floor(Math.random() * this._dursts.length)]));
+        const durst = this._dursts[Math.floor(Math.random() * this._dursts.length)];
         const row = new MessageActionRow().addComponents(
             new MessageButton()
                 .setCustomId("DURST:NEXT")
@@ -45,7 +45,7 @@ export default class DurstCmd extends JankbotCmd {
         );
 
         const msg = await message.channel.send({
-            files: [ durst ],
+            content: durst,
             components: [ row ]
         });
 

@@ -2,6 +2,7 @@ import { getVoiceConnection } from "@discordjs/voice";
 import { Message } from "discord.js";
 import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
 import { Bot } from "../../../structs/Bot";
+import { icon } from "../../../utils/icons";
 
 export default class LeaveCmd extends JankbotMusicCmd {
     constructor(bot: Bot) {
@@ -20,6 +21,9 @@ export default class LeaveCmd extends JankbotMusicCmd {
                 clearTimeout(bot.leave_timeouts.get(message.guild!.id)!);
                 bot.leave_timeouts.delete(message.guild!.id);
                 getVoiceConnection(message.guild!.id)?.destroy();
+            } else {
+                await message.channel.send("I'm not in a voice channel. " + icon('gun'));
+                return;
             }
         }
         await message.channel.send("Leaving channel...");

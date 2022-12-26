@@ -11,17 +11,17 @@ export default class LogoCmd extends JankbotCmd {
         this.name = "logo";
         this.description = "Get a random logo.";
         this.aliases = [];
-        this._logos = readdirSync(join(__dirname, "..", "..", "..", "resource", "muselogos"));
+        this._logos = JSON.parse(readFileSync(join(__dirname, "..", "..", "..", "resource", "muselogos.json"))!.toString());
 
         bot.client.on("interactionCreate", async (interaction) => {
             if (!interaction.isButton()) return;
             if (interaction.customId.startsWith("LOGO:")) {
                 await interaction.deferUpdate();
-                const logo = readFileSync(join(__dirname, "..", "..", "..", "resource", "muselogos", this._logos[Math.floor(Math.random() * this._logos.length)]));
+                let logo = this._logos[Math.floor(Math.random() * this._logos.length)];
                 (interaction.message!.components![0].components![0] as MessageButton).setDisabled(true);
                 const row = new MessageActionRow().addComponents((interaction.message!.components![0].components![0] as MessageButton));
                 await (interaction.message as Message).edit({
-                    files: [ logo ],
+                    content: logo,
                     components: [ row ]
                 });
                 setTimeout(() => {
@@ -35,7 +35,7 @@ export default class LogoCmd extends JankbotCmd {
     }
 
     public override async run(bot: Bot, message: Message, args: string[]) {
-        let logo = readFileSync(join(__dirname, "..", "..", "..", "resource", "muselogos", this._logos[Math.floor(Math.random() * this._logos.length)]));
+        let logo = this._logos[Math.floor(Math.random() * this._logos.length)];
         const row = new MessageActionRow().addComponents(
             new MessageButton()
                 .setCustomId("LOGO:NEXT")
@@ -45,7 +45,7 @@ export default class LogoCmd extends JankbotCmd {
         );
 
         const msg = await message.channel.send({
-            files: [ logo ],
+            content: logo,
             components: [ row ]
         });
 

@@ -2,10 +2,14 @@ import { Client, Collection, Snowflake } from "discord.js";
 import express from 'express';
 import { readdirSync } from "fs";
 import { join } from "path";
+import DurstCmd from "../commands/jankbot/general/DurstCmd";
+import JankmanCmd from "../commands/jankbot/general/JankmanCmd";
+import LogoCmd from "../commands/jankbot/general/LogoCmd";
 import MSDiscordForum from "../commands/jankbot/general/MSDiscordForum";
 import SlayCmd from "../commands/jankbot/general/SlayCmd";
 import TimeCmd from "../commands/jankbot/general/TimeCmd";
 import LeaveCmd from "../commands/jankbot/music/LeaveCmd";
+import GenerateLogosCmd from "../commands/jankbot/tantamod/GenerateLogosCmd";
 import SayCmd from "../commands/jankbot/tantamod/SayCmd";
 import SetDjCmd from "../commands/jankbot/tantamod/SetDJCmd";
 import StarCmd from "../commands/jankbot/tantamod/StarCmd";
@@ -93,11 +97,12 @@ export class Bot {
             new SlayCmd(this),
             new SayCmd(this),
             new TimeCmd(this),
-            // new DurstCmd(this),
-            // new LogoCmd(this),
+            new DurstCmd(this),
+            new LogoCmd(this),
             new StarCmd(this),
             new LeaveCmd(this),
             new MSDiscordForum(this),
+            new JankmanCmd(this),
         ]) {
             this.commands.set(c.name, c);
         }
