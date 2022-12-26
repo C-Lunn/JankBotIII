@@ -31,6 +31,7 @@ export class Bot {
     public _dj_mode = new Collection<Snowflake, NodeJS.Timeout>();
     public _voice_is_surpressed = new Collection<Snowflake, boolean>();
     public leave_timeouts = new Collection<Snowflake, NodeJS.Timeout>();
+    public readonly mod_role_id = config.MOD_ROLE_ID;
 
     public constructor(public readonly client: Client) {
         this.client.login(config.TOKEN);

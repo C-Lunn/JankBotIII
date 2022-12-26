@@ -6,4 +6,5 @@ export interface Config {
     STAY_TIME: number;
     DEFAULT_VOLUME: number;
     LOCALE: string;
+    MOD_ROLE_ID: string;
 }
