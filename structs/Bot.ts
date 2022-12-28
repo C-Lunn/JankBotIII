@@ -20,6 +20,7 @@ import { config } from "../utils/config";
 import { i18n } from "../utils/i18n";
 import { MissingPermissionsException } from "../utils/MissingPermissionsException";
 import { MusicQueue } from "./MusicQueue";
+import { WebSockManager } from "./WebSocketManager";
 
 const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -32,6 +33,7 @@ export class Bot {
     public _voice_is_surpressed = new Collection<Snowflake, boolean>();
     public leave_timeouts = new Collection<Snowflake, NodeJS.Timeout>();
     public readonly mod_role_id = config.MOD_ROLE_ID;
+    private _sock_manager: WebSockManager;
 
     public constructor(public readonly client: Client) {
         this.client.login(config.TOKEN);
@@ -50,19 +52,22 @@ export class Bot {
 
         this.importCommands();
         this.onMessageCreate();
-        const app = express();
-        app.get('/np', (req, res) => {
-            const queue = this.queues.get('638309926225313832');
-            if(queue) {
-                res.send(queue.songs[0].title);
-            } else {
-                res.send('No queue');
-            }
-        });
+        // const app = express();
+        // app.get('/np', (req, res) => {
+        //     const queue = this.queues.get('638309926225313832');
+        //     if(queue) {
+        //         res.send(queue.songs[0].title);
+        //     } else {
+        //         res.send('No queue');
+        //     }
+        // });
 
-        app.listen(3000, () => {
-            console.log('Listening on port 3000');
-        });
+        // app.listen(3000, () => {
+        //     console.log('Listening on port 3000');
+        // });
+
+        this._sock_manager = new WebSockManager(this);
+
     }
 
     public getDJMode(guildId: Snowflake) {
