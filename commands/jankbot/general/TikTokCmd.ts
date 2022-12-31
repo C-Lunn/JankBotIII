@@ -4,6 +4,9 @@ import { Bot } from "../../../structs/Bot";
 import * as os from "os";
 import * as fs from "fs";
 import * as play from '../../play';
+import AsyncLock from "async-lock";
+
+export let lock = new AsyncLock({ timeout: 200000 });
 
 export default class TikTokCmd extends JankbotCmd {
     private _ttsEndpointBase = "https://api16-normal-useast5.us.tiktokv.com/media/api/text/speech/invoke/";
@@ -108,8 +111,10 @@ export default class TikTokCmd extends JankbotCmd {
         const file_target = `${temp_dir}/jankbot_tiktok.mp3`
         fs.writeFile(file_target, decoded, () => null);
 
-        play.default.execute(message, [`file://${file_target}`]);
+        await play.default.execute(message, [`file://${file_target}`]);
 
+        // wait 5 seconds before taking on a new request
+        await new Promise(resolve => setTimeout(resolve, 5000));
     }
 
     constructor(bot: Bot) {
@@ -120,8 +125,21 @@ export default class TikTokCmd extends JankbotCmd {
     }
 
     public override async run(bot: Bot, message: Message, args: string[]) {
-        this._ttsVoices.includes(args[0]) ?
-        this._playTts(message, args[0], args.slice(1).join(" ")):
-        this._playTts(message, "en_us_001", args.join(" "));
+        lock.acquire('tts', async () => {
+            let speaker;
+            let text;
+            if (this._ttsVoices.includes(args[0])) {
+                speaker = args[0];
+                text = args.slice(1).join(" ")
+            } else {
+                speaker = "en_us_001";
+                text = args.join(" ")
+            }
+
+            text = text.replaceAll("\n", " ");
+
+            await this._playTts(message, speaker, text);
+        })
+
     }
 }
