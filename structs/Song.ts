@@ -52,7 +52,6 @@ export class Song {
             }, added_by);
         } else if (isDiscordCdnUrl) {
             const lcurl = url.toLowerCase();
-            console.log(lcurl);
             if (lcurl.endsWith(".mp3") || lcurl.endsWith(".ogg") || lcurl.endsWith(".wav") || lcurl.endsWith(".flac")) {
                 let dur = 0;
                 if (lcurl.endsWith(".mp3")) {
