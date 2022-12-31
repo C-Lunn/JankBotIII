@@ -7,6 +7,7 @@ import ytdl from "ytdl-core-discord";
 import { i18n } from "../utils/i18n";
 import { discordCdnRegex, videoPattern } from "../utils/patterns";
 import * as fs from 'fs';
+import { parseFile } from "music-metadata";
 
 export interface SongData {
     url: string;
@@ -70,10 +71,12 @@ export class Song {
                 throw new NotAMusicError();
             }
         } else if (isTiktokUrl) {
+            let meta = await parseFile(url.replace("file://", ""));
+
             return new this({
                 url: url,
                 title: url.split("/").pop()!.split(".").slice(0, -1).join(".") || "Unknown",
-                duration: 0
+                duration: meta.format.duration ?? 0,
             }, added_by);
         }
          else {
