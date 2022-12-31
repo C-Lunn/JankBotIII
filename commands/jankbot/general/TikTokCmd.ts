@@ -3,7 +3,6 @@ import JankbotCmd from "../../../interfaces/JankbotCommand";
 import { Bot } from "../../../structs/Bot";
 import * as os from "os";
 import * as fs from "fs";
-import { randomBytes } from "crypto";
 import * as play from '../../play';
 
 export default class TikTokCmd extends JankbotCmd {
