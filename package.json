@@ -27,7 +27,7 @@
     "array-move": "^3.0.1",
     "async-lock": "^1.4.0",
     "axios": "^1.2.1",
-    "discord.js": "^13",
+    "discord.js": "^14",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "ffmpeg": "^0.0.4",
