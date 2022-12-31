@@ -6,7 +6,7 @@ import * as fs from "fs";
 import * as play from '../../play';
 import AsyncLock from "async-lock";
 
-export let lock = new AsyncLock({timeout: 200000});
+export let lock = new AsyncLock({ timeout: 200000 });
 
 export default class TikTokCmd extends JankbotCmd {
     private _ttsEndpointBase = "https://api16-normal-useast5.us.tiktokv.com/media/api/text/speech/invoke/";
@@ -126,9 +126,19 @@ export default class TikTokCmd extends JankbotCmd {
 
     public override async run(bot: Bot, message: Message, args: string[]) {
         lock.acquire('tts', async () => {
-            this._ttsVoices.includes(args[0]) ?
-            await this._playTts(message, args[0], args.slice(1).join(" ")):
-            await this._playTts(message, "en_us_001", args.join(" "));
+            let speaker;
+            let text;
+            if (this._ttsVoices.includes(args[0])) {
+                speaker = args[0];
+                text = args.slice(1).join(" ")
+            } else {
+                speaker = "en_us_001";
+                text = args.join(" ")
+            }
+
+            text = text.replaceAll("\n", " ");
+
+            await this._playTts(message, speaker, text);
         })
 
     }
