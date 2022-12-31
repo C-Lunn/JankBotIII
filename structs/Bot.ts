@@ -7,6 +7,7 @@ import JankmanCmd from "../commands/jankbot/general/JankmanCmd";
 import LogoCmd from "../commands/jankbot/general/LogoCmd";
 import MSDiscordForum from "../commands/jankbot/general/MSDiscordForum";
 import SlayCmd from "../commands/jankbot/general/SlayCmd";
+import TikTokCmd from "../commands/jankbot/general/TikTokCmd";
 import TimeCmd from "../commands/jankbot/general/TimeCmd";
 import LeaveCmd from "../commands/jankbot/music/LeaveCmd";
 import GenerateLogosCmd from "../commands/jankbot/tantamod/GenerateLogosCmd";
@@ -106,6 +107,7 @@ export class Bot {
             new MSDiscordForum(this),
             new JankmanCmd(this),
             new GramophoneThreadCmd(this),
+            new TikTokCmd(this),
         ]) {
             this.commands.set(c.name, c);
         }

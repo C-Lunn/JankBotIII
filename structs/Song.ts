@@ -6,6 +6,7 @@ import { getInfo } from "ytdl-core";
 import ytdl from "ytdl-core-discord";
 import { i18n } from "../utils/i18n";
 import { discordCdnRegex, videoPattern } from "../utils/patterns";
+import * as fs from 'fs';
 
 export interface SongData {
     url: string;
@@ -36,6 +37,7 @@ export class Song {
     public static async from(url: string = "", search: string = "", added_by: string = ""): Promise<Song> {
         const isYoutubeUrl = videoPattern.test(url);
         const isDiscordCdnUrl = discordCdnRegex.test(url);
+        const isTiktokUrl = (url.startsWith("file://") && url.endsWith("jankbot_tiktok.mp3"));
         // const isScUrl = scRegex.test(url);
 
         let songInfo;
@@ -50,6 +52,7 @@ export class Song {
             }, added_by);
         } else if (isDiscordCdnUrl) {
             const lcurl = url.toLowerCase();
+            console.log(lcurl);
             if (lcurl.endsWith(".mp3") || lcurl.endsWith(".ogg") || lcurl.endsWith(".wav") || lcurl.endsWith(".flac")) {
                 let dur = 0;
                 if (lcurl.endsWith(".mp3")) {
@@ -67,7 +70,14 @@ export class Song {
             } else {
                 throw new NotAMusicError();
             }
-        } else {
+        } else if (isTiktokUrl) {
+            return new this({
+                url: url,
+                title: url.split("/").pop()!.split(".").slice(0, -1).join(".") || "Unknown",
+                duration: 0
+            }, added_by);
+        }
+         else {
             const result = await youtube.searchOne(search);
 
             songInfo = await getInfo(`https://youtube.com/watch?v=${result.id}`);
@@ -136,6 +146,9 @@ export class Song {
             if (rs) {
                 stream = rs as unknown as internal.Readable;  
             }
+        } else if (this.url.startsWith("file://")) {
+            const url = this.url.replace("file://", "");
+            stream = fs.createReadStream(url);
         }
 
 
