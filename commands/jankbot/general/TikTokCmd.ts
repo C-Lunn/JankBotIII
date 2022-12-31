@@ -73,9 +73,11 @@ export default class TikTokCmd extends JankbotCmd {
     ) {
         if (!this._ttsVoices.includes(speaker)) {
             message.channel.send(`:warning: **Command must begin with the name of a speaker.** Full List: https://github.com/oscie57/tiktok-voice/wiki/Voice-Codes}`);
+            return;
         }
         if (text.length > 200) {
-            throw new Error("that message is too darn long");
+            message.channel.send(`:warning: **Message must contain 200 characters or fewer.**`);
+            return;
         }
 
         const req = await fetch("https://tiktok-tts.weilnet.workers.dev/api/generation", {
