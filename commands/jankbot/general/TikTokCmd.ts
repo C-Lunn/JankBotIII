@@ -120,6 +120,8 @@ export default class TikTokCmd extends JankbotCmd {
     }
 
     public override async run(bot: Bot, message: Message, args: string[]) {
-        this._playTts(message, args[0], args.slice(1).join(" "));
+        this._ttsVoices.includes(args[0]) ?
+        this._playTts(message, args[0], args.slice(1).join(" ")):
+        this._playTts(message, "en_us_001", args.join(" "));
     }
 }
