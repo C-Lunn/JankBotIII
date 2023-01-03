@@ -3,14 +3,27 @@ import { Message } from "discord.js";
 import { find } from "geo-tz";
 import { join } from "path";
 import sharp from "sharp";
+import { Config } from "../../../interfaces/Config";
 import JankbotCmd from "../../../interfaces/JankbotCommand";
 import { Bot } from "../../../structs/Bot";
-import mq_key from "./MQ.key";
 
 async function getGeoCodefromPlace(place_in: string) {
+    let config: Config | undefined;
+    
+    try {
+        config = require("../config.json");
+    } catch (error) {
+        config = undefined;
+        console.error(error);
+    }
+
+    if (!config?.MQ_KEY) {
+        throw new Error("MQ_KEY is not set");
+    }
+
     const resp = await axios.get(
         `https://www.mapquestapi.com/geocoding/v1/address?key=${encodeURIComponent(
-            mq_key
+            config.MQ_KEY
         )}&location=${encodeURIComponent(place_in)}`
     );
 

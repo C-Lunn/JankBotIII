@@ -1,5 +1,5 @@
-import { AudioPlayerStatus, DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
-import { Message } from "discord.js";
+import { AudioPlayerStatus, DiscordGatewayAdapterCreator, joinVoiceChannel, VoiceConnection } from "@discordjs/voice";
+import { Message, VoiceBasedChannel } from "discord.js";
 import { bot } from "../index";
 import { MusicQueue } from "../structs/MusicQueue";
 import { NotAMusicError, Song } from "../structs/Song";
@@ -81,20 +81,28 @@ export default {
 
         const newQueue = new MusicQueue({
             message,
-            connection: joinVoiceChannel({
-                channelId: channel.id,
-                guildId: channel.guild.id,
-                adapterCreator: channel.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator
-            })
+            connection: await initVoiceConnection(channel),
         });
 
         newQueue.push(song);
 
         message.reply(`${icon('playhead')} **${song.title}** has been added to the queue at position ${newQueue.songs.length}!`)
-                .catch(console.error);
+            .catch(console.error);
 
         bot.queues.set(message.guild!.id, newQueue);
 
-        
+
     }
 };
+
+async function initVoiceConnection(channel: VoiceBasedChannel): Promise<VoiceConnection> {
+    const conn = joinVoiceChannel({
+        channelId: channel.id,
+        guildId: channel.guild.id,
+        adapterCreator: channel.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator
+    })
+
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    return conn;
+}
