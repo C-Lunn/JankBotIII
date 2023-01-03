@@ -5,10 +5,11 @@ import * as os from "os";
 import * as fs from "fs";
 import * as play from '../../play';
 import AsyncLock from "async-lock";
+import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
 
 export let lock = new AsyncLock({ timeout: 200000 });
 
-export default class TikTokCmd extends JankbotCmd {
+export default class TikTokCmd extends JankbotMusicCmd {
     private _ttsEndpointBase = "https://api16-normal-useast5.us.tiktokv.com/media/api/text/speech/invoke/";
 
     private _ttsVoices = [
@@ -108,7 +109,8 @@ export default class TikTokCmd extends JankbotCmd {
         const decoded = Buffer.from(data, 'base64');
 
         const temp_dir = os.tmpdir();
-        const file_target = `${temp_dir}/jankbot_tiktok.mp3`
+        const name = `jankbot_tiktok_${speaker}_${text.slice(0, 10).replace(/[^a-zA-Z0-9]/g, '_')}.mp3`;
+        const file_target = `${temp_dir}/${name}.mp3`
         fs.writeFile(file_target, decoded, () => null);
 
         await play.default.execute(message, [`file://${file_target}`]);
@@ -122,6 +124,7 @@ export default class TikTokCmd extends JankbotCmd {
         this.name = "tiktok";
         this.description = "use the silly tiktok tts voices";
         this.aliases = ['tts'];
+        this.bot = bot;
     }
 
     public override async run(bot: Bot, message: Message, args: string[]) {

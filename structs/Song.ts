@@ -38,7 +38,7 @@ export class Song {
     public static async from(url: string = "", search: string = "", added_by: string = ""): Promise<Song> {
         const isYoutubeUrl = videoPattern.test(url);
         const isDiscordCdnUrl = discordCdnRegex.test(url);
-        const isTiktokUrl = (url.startsWith("file://") && url.endsWith("jankbot_tiktok.mp3"));
+        const isTiktokUrl = (url.startsWith("file://"));
         // const isScUrl = scRegex.test(url);
 
         let songInfo;
