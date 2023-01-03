@@ -15,6 +15,7 @@ try {
         DEFAULT_VOLUME: parseInt(process.env.DEFAULT_VOLUME!) || 100,
         LOCALE: process.env.LOCALE || "en",
         MOD_ROLE_ID: process.env.MOD_ROLE_ID ?? "",
+        MQ_KEY: process.env.MQ_KEY,
     };
 }
 

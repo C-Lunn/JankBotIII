@@ -7,4 +7,5 @@ export interface Config {
     DEFAULT_VOLUME: number;
     LOCALE: string;
     MOD_ROLE_ID: string;
+    MQ_KEY?: string;
 }
