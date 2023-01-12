@@ -22,6 +22,7 @@ import { config } from "../utils/config";
 import { i18n } from "../utils/i18n";
 import { MissingPermissionsException } from "../utils/MissingPermissionsException";
 import { MusicQueue } from "./MusicQueue";
+import CatCmd from "../commands/jankbot/general/CatCmd";
 
 const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -108,6 +109,7 @@ export class Bot {
             new JankmanCmd(this),
             new GramophoneThreadCmd(this),
             new TikTokCmd(this),
+            new CatCmd(this),
         ]) {
             this.commands.set(c.name, c);
         }
