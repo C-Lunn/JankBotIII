@@ -17,13 +17,17 @@ async function getGeoCodefromPlace(place_in: string) {
         console.error(error);
     }
 
+    let mqkey;
+
     if (!config?.MQ_KEY) {
-        throw new Error("MQ_KEY is not set");
+        mqkey = 'f6hwzfGYFCBVGlagKMC7EI61OtxD6xGl';
+    } else {
+        mqkey = config.MQ_KEY;
     }
 
     const resp = await axios.get(
         `https://www.mapquestapi.com/geocoding/v1/address?key=${encodeURIComponent(
-            config.MQ_KEY
+            mqkey
         )}&location=${encodeURIComponent(place_in)}`
     );
 
