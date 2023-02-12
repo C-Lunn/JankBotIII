@@ -43,9 +43,11 @@
     "soundcloud-downloader": "^0.2.3",
     "string-progressbar": "^1.0.4",
     "typescript": "^4.9.4",
+    "ws": "^8.9.0",
     "youtube-sr": "~4.3.0",
     "ytdl-core": "^4.11.2",
-    "ytdl-core-discord": "^1.3.1"
+    "ytdl-core-discord": "^1.3.1",
+    "zod": "^3.20.6"
   },
   "devDependencies": {
     "@types/async-lock": "^1.3.0",
@@ -62,10 +64,12 @@
   },
   "optionalDependencies": {
     "@discordjs/opus": "^0.9.0",
+    "bufferutil": "^4.0.7",
     "libsodium-wrappers": "^0.7.10",
     "opusscript": "^0.0.8",
     "sodium-native": "^3.4.1",
-    "tweetnacl": "^1.0.3"
+    "tweetnacl": "^1.0.3",
+    "utf-8-validate": "^5.0.10"
   },
   "config": {
     "commitizen": {

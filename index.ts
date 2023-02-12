@@ -1,5 +1,6 @@
 import { Client, Intents } from "discord.js";
 import { Bot } from "./structs/Bot";
+import { WebService } from "./webservice/WebService";
 
 export const bot = new Bot(
     new Client({
@@ -14,3 +15,5 @@ export const bot = new Bot(
         ]
     })
 );
+
+export const srv = new WebService(); 
