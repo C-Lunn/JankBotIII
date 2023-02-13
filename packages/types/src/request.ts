@@ -9,6 +9,7 @@ export enum RequestKind {
     Stop = 202,
     Pause = 203,
     Seek = 204,
+    SkipToPosition = 205,
 }
 
 export const request_schema = z.object({

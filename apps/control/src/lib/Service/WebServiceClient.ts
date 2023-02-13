@@ -41,7 +41,6 @@ export class WebServiceClient {
     }
 
     handle_response(r: Response) {
-        console.log(r.ref);
         this.reqs.resolve_requests(r);
     }
 

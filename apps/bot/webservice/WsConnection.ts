@@ -1,6 +1,6 @@
 import { RawData, WebSocket } from "ws";
 import { play } from "./Play";
-import { check_queue, get_queue } from "./Queue";
+import { check_queue, get_queue, skip_to } from "./Queue";
 import { RequestKind, ResponseKind, Response, Request, request_schema } from "janktypes";
 
 export class WsConnection {
@@ -28,6 +28,7 @@ export class WsConnection {
         if (r.kind == RequestKind.Play) play(this, r);
         if (r.kind == RequestKind.CheckQueue) check_queue(this, r);
         if (r.kind == RequestKind.GetQueueContents) get_queue(this, r);
+        if (r.kind == RequestKind.SkipToPosition) skip_to(this, r);
     }
 
     send(r: Response) {

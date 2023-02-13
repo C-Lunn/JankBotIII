@@ -41,6 +41,10 @@
 		}, 1000);
 	};
 
+	const skip_to = (index: number) => {
+		ws.new_request(RequestKind.SkipToPosition, index);
+	}
+
 	let songs = parse_songs(data.songs);
 
 	$: selected = -1;
@@ -67,6 +71,7 @@
 			on:keydown={(e) => {
 				e.key == 'Enter' ? (selected = i) : null;
 			}}
+			on:dblclick={(e) => skip_to(i)}
 			tabindex="-1"
 			class="{i % 2 ? 'bg-slate-50' : 'bg-slate-100'}
 			select-none hover:bg-slate-200 cursor-default"
@@ -87,6 +92,6 @@
 		@apply font-semibold;
 	}
 	.selected {
-		@apply bg-indigo-600 text-white;
+		@apply bg-indigo-600 text-white hover:bg-indigo-600;
 	}
 </style>
