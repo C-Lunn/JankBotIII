@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export enum ResponseKind {
     Ok = 0,
+    Empty = 1,
     InvalidRequest = 999
 }
 

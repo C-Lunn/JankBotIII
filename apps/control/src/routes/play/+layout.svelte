@@ -9,7 +9,7 @@
 <div class="flex h-full">
 	<ListBar />
 	<main class="w-full h-full">
-		<div class="max-w-2xl mx-auto mt-12">
+		<div class="">
 			<slot />
 		</div>
 	</main>

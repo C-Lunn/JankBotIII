@@ -6,7 +6,7 @@ import { Response, ResponseKind, Request } from "janktypes";
 import { WsConnection } from "./WsConnection";
 
 export async function check_queue(conn: WsConnection, r: Request) {
-    const queue = bot.queues.get("1030609563671613490");
+    const queue = bot.queues.get(guild_id);
     let res: Response;
     if (!queue) res = {
         kind: ResponseKind.Ok,
@@ -22,9 +22,31 @@ export async function check_queue(conn: WsConnection, r: Request) {
     conn.send(res);
 }
 
-export const add_queue_data = z.string();
+export async function get_queue(conn: WsConnection, r: Request) {
+    const queue = bot.queues.get(guild_id);
+    if (!queue) {
+        conn.send({
+            kind: ResponseKind.Empty,
+            ref: r.ref
+        });
+        return;
+    }
 
-export async function add_queue(conn: WsConnection, r: Request) {
-    const data = add_queue_data.parse(r.data);
+    const songs = queue.songs;
+    const active_song = queue.activeSong();
+    const new_songs = songs.map(o => {
+        let active = false;
+        if (o == active_song) active = true; 
 
+        return {
+            ...o,
+            active,
+        }
+    })
+
+    conn.send({
+        kind: ResponseKind.Ok,
+        ref: r.ref,
+        data: new_songs,
+    })
 }
