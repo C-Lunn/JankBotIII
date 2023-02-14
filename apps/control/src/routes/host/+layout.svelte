@@ -4,11 +4,9 @@
 </script>
 
 <TopBar />
-<div class="flex h-full">
+<div class="flex h-screen pt-16">
 	<HostBar />
-	<main class="w-full h-full">
-		<div class="">
-			<slot />
-		</div>
+	<main class="w-full h-full overflow-y-scroll">
+		<slot />
 	</main>
 </div>

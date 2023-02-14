@@ -6,11 +6,9 @@
 </script>
 
 <TopBar />
-<div class="flex h-full">
+<div class="flex h-screen pt-16">
 	<ListBar />
-	<main class="w-full h-full">
-		<div class="">
+	<main class="w-full max-h-screen overflow-y-scroll">
 			<slot />
-		</div>
 	</main>
 </div>

@@ -2,7 +2,7 @@
 	import PrimaryButton from "$lib/Buttons/PrimaryButton.svelte";
 
 </script>
-<div class="w-full h-screen flex flex-col justify-center place-items-center">
+<div class="w-full h-full flex flex-col justify-center place-items-center">
 	<h1 class="text-2xl font-light mb-2">Import a Thread</h1>
     <p class="text-sm text-slate-700">Right-click a thread, click "Copy Link" and paste it below:</p>
 	<form class="flex flex-col place-items-center gap-3 my-6">

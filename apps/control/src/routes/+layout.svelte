@@ -10,7 +10,7 @@
 
 {#await ws.up() then _}
 	<TopTopBar />
-	<article class="bg-slate-50 text-slate-900 h-screen w-screen">
+	<article class="bg-slate-50 text-slate-900 h-screen max-h-screen w-screen">
 		<slot />
 	</article>
 {/await}
