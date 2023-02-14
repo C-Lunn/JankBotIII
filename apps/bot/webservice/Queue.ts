@@ -8,16 +8,17 @@ import { WsConnection } from "./WsConnection";
 const no_queue = (conn: WsConnection, r: Request) => {
     conn.send({
         kind: ResponseKind.NoQueue,
-        ref: r.ref
+        ref: r.ref,
     });
 }
 
 export async function check_queue(conn: WsConnection, r: Request) {
     const queue = bot.queues.get(guild_id);
-    if (!queue) { no_queue(conn, r); return; }
-    else conn.send({
+    let is_queue = false;
+    if (queue) is_queue = true;
+    conn.send({
         kind: ResponseKind.Ok,
-        data: true,
+        data: is_queue,
         ref: r.ref,
     });
 }

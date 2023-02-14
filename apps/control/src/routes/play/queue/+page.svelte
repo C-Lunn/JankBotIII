@@ -4,7 +4,7 @@
 	import { Icon } from '@steeze-ui/svelte-icon';
 	import type { PageData } from './$types';
 	import Duration from 'dayjs/plugin/duration';
-	import * as dayjs from 'dayjs';
+	import dayjs from 'dayjs';
 	import { RequestKind, ResponseKind } from 'janktypes';
 	import { ws } from '$lib/Service';
 	import { _song_res_schema } from './+page';
@@ -26,15 +26,15 @@
 		if (!polling) return;
 		setTimeout(async () => {
 			const data = await ws.new_request(RequestKind.GetQueueContents);
-	
+
 			if (data.kind == ResponseKind.Empty) {
 				return { songs: [] };
 			}
 
 			console.log(data);
-	
+
 			const res = await _song_res_schema.parseAsync(data.data);
-	
+
 			songs = parse_songs(res);
 
 			poll();
@@ -43,7 +43,7 @@
 
 	const skip_to = (index: number) => {
 		ws.new_request(RequestKind.SkipToPosition, index);
-	}
+	};
 
 	let songs = parse_songs(data.songs);
 
@@ -51,13 +51,12 @@
 
 	let polling = true;
 	poll();
-
 </script>
 
 <div class="max-w-2xl mx-auto mt-12">
 	<SectionHeader
 		title="Play Queue"
-		subtitle="{songs.length} items"
+		subtitle="{songs.length} {songs.length == 1 ? "item" : "items"}"
 		action={() => null}
 		icon={Plus}
 	/>
@@ -92,6 +91,9 @@
 		@apply font-semibold;
 	}
 	.selected {
-		@apply bg-indigo-600 text-white hover:bg-indigo-600;
+		@apply bg-indigo-600 text-white;
+	}
+	.selected:hover {
+		@apply bg-indigo-600;
 	}
 </style>
