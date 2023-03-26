@@ -56,7 +56,9 @@ export class Song {
             if (lcurl.endsWith(".mp3") || lcurl.endsWith(".ogg") || lcurl.endsWith(".wav") || lcurl.endsWith(".flac")) {
                 let dur = 0;
                 if (lcurl.endsWith(".mp3")) {
-                    dur = await createEstimator(new FetchDataReader(fetch))(lcurl);
+                    // dur = await createEstimator(new FetchDataReader(fetch))(lcurl);
+                    // console.log("mp3 duration: " + dur + "s");
+                    dur = NaN;
                 } else if (lcurl.toLowerCase().endsWith(".wav")) {
                     dur = await this.getWAVLength(lcurl);
                 } else if (lcurl.endsWith(".flac")) {
