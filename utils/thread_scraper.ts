@@ -16,7 +16,7 @@ export async function scrape_thread(bot: Bot, id: string) {
     const channel = bot.client.channels.cache.get(id);
 
     //@ts-ignore
-    if (!channel?.messages) throw new Error;
+    if (!channel?.messages) return;
 
     //@ts-ignore
     const messages = await channel.messages.fetch({ limit: 100 });
