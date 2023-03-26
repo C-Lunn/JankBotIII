@@ -27,6 +27,8 @@ import { QuitSibelius } from "./QuitSibelius";
 import XkcdCmd from "../commands/jankbot/general/XckdCmd";
 import { WhatWhenGramophone } from "./WhatWhenGramophone";
 import FistchordCmd from "../commands/jankbot/general/FistchordCmd";
+import ThreadCmd from "../commands/jankbot/general/ThreadTester";
+import { scrape_thread } from "../utils/thread_scraper";
 
 const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -69,6 +71,11 @@ export class Bot {
                 res.send('No queue');
             }
         });
+
+        app.get('/thread/:id', async (req, res) => {
+            const msgs = await scrape_thread(this, req.params.id);
+            res.send(msgs);
+        })
 
         this._qs = new QuitSibelius(this);
         this._wg = new WhatWhenGramophone(this);
@@ -120,6 +127,7 @@ export class Bot {
             new GramophoneThreadCmd(this),
             new TikTokCmd(this),
             new CatCmd(this),
+            new ThreadCmd(this),
             new XkcdCmd(this),
             new FistchordCmd(this),
         ]) {
