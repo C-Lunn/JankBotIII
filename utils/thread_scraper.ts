@@ -28,8 +28,14 @@ export async function scrape_thread(bot: Bot, id: string) {
         new Map(),
     ];
 
+    let top_post = true;
     //@ts-ignore
     messages.reverse().forEach(async (o, i) => {
+        // skip the top post
+        if (top_post) {
+            top_post = false;
+            return;
+        }
         const msg: Message = o;
         const matches = msg.content.match(url_regex);
         if (!matches) return;
