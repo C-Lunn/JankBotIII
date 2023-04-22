@@ -28,7 +28,7 @@ import XkcdCmd from "../commands/jankbot/general/XckdCmd";
 import { WhatWhenGramophone } from "./WhatWhenGramophone";
 import FistchordCmd from "../commands/jankbot/general/FistchordCmd";
 import ThreadCmd from "../commands/jankbot/general/ThreadTester";
-import { scrape_thread } from "../utils/thread_scraper";
+import { get_avatar, scrape_thread } from "../utils/thread_scraper";
 
 const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -75,6 +75,10 @@ export class Bot {
         app.get('/thread/:id', async (req, res) => {
             const msgs = await scrape_thread(this, req.params.id);
             res.send(msgs);
+        });
+
+        app.get('/avatar/:uid', async (req, res) => {
+            get_avatar(res, this, req.params.uid);
         })
 
         this._qs = new QuitSibelius(this);
