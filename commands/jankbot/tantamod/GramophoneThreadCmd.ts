@@ -50,6 +50,6 @@ export default class GramophoneThreadCmd extends JankbotCmd {
 
         message.author.send(await parsedMsgs.map((m) => JSON.stringify(m, null, 2)).join(", "));
         message.react("👍");
-        message.reply(`DM:ed you ${threadContent.messageCount} results.`);
+        message.reply(`DMed you ${threadContent.messageCount} results.`);
     }
 }
