@@ -90,7 +90,7 @@ export class Bot {
         this._qs = new QuitSibelius(this);
         this._wg = new WhatWhenGramophone(this);
 
-        app.listen(3000, () => {
+        app.listen(config.PORT ?? 3000, () => {
             console.log('Listening on port 3000');
         });
     }

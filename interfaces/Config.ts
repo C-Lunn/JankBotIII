@@ -8,4 +8,5 @@ export interface Config {
     LOCALE: string;
     MOD_ROLE_ID: string;
     MQ_KEY?: string;
+    PORT?: string;
 }
