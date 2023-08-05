@@ -7,6 +7,11 @@ const url_regex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]
 type Song = {
     url: string,
     user: [string, string | null],
+    // yippie for api stability!!!
+    user_extra?: {
+        role_color: string | null | undefined,
+        nick: string | null | undefined,
+    };
     details: {
         title: string | null | undefined,
         author: MessageEmbedAuthor | null | undefined;
@@ -22,7 +27,7 @@ export async function get_thread_info(bot: Bot, id: string) {
         return {
             //@ts-ignore
             title: channel!.name,
-        }
+        };
     } catch {
         return;
     }
@@ -49,22 +54,26 @@ export async function scrape_thread(bot: Bot, id: string) {
         new Map(),
     ];
 
+    let arr: Message[] = [];
+    messages.map((o: Message) => arr.push(o));
+
     let top_post = true;
-    //@ts-ignore
-    messages.reverse().forEach(async (o, i) => {
+
+    for (const o of arr) {
         // skip the top post
         if (top_post) {
             top_post = false;
-            return;
+            continue;
         }
+
         const msg: Message = o;
-        const matches = msg.content.match(url_regex);
-        if (!matches) return;
+        const matches = msg.content?.match(url_regex);
+        if (!matches) continue;
 
         // evil loop 
         let idx = 0;
         while (true) {
-            if (idx == data.length) return;
+            if (idx == data.length) continue;
             if (data[idx].get(msg.author.id)) {
                 idx++;
                 continue;
@@ -74,19 +83,40 @@ export async function scrape_thread(bot: Bot, id: string) {
             let title, author;
             if (embed) ({ title, author } = embed);
 
+            let id = msg.author.id;
+
+            let guild, member;
+            if (msg.guildId) {
+                guild = bot.client.guilds.cache.get(msg.guildId);
+
+                if (!guild) {
+                    guild = await bot.client.guilds.fetch(msg.guildId);
+                }
+
+                member = guild?.members.cache.get(id);
+
+                if (!member) {
+                    member = await guild.members.fetch(id);
+                }
+            }
+
             data[idx].set(msg.author.id, {
                 url: matches[0],
                 details: {
                     title, author
+                },
+                user_extra: {
+                    role_color: member?.displayHexColor,
+                    nick: member?.nickname,
                 },
                 user: [msg.author.username, msg.author.avatar],
                 content: msg.content,
                 timedate: new Date(msg.createdTimestamp),
             });
 
-            return;
+            break;
         }
-    });
+    };
 
     return data.map(o => Object.fromEntries(o));
 }
