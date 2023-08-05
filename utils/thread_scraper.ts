@@ -11,6 +11,8 @@ type Song = {
         title: string | null | undefined,
         author: MessageEmbedAuthor | null | undefined;
     };
+    content: string,
+    timedate: Date,
 };
 
 export async function get_thread_info(bot: Bot, id: string) {
@@ -77,7 +79,9 @@ export async function scrape_thread(bot: Bot, id: string) {
                 details: {
                     title, author
                 },
-                user: [msg.author.username, msg.author.avatar]
+                user: [msg.author.username, msg.author.avatar],
+                content: msg.content,
+                timedate: new Date(msg.createdTimestamp),
             });
 
             return;
