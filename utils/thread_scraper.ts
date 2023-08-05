@@ -55,7 +55,7 @@ export async function scrape_thread(bot: Bot, id: string) {
     ];
 
     let arr: Message[] = [];
-    messages.map((o: Message) => arr.push(o));
+    messages.reverse().map((o: Message) => arr.push(o));
 
     let top_post = true;
 
