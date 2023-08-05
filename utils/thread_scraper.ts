@@ -9,18 +9,36 @@ type Song = {
     user: [string, string | null],
     details: {
         title: string | null | undefined,
-        author: MessageEmbedAuthor | null | undefined
-    }
+        author: MessageEmbedAuthor | null | undefined;
+    };
 };
 
+export async function get_thread_info(bot: Bot, id: string) {
+    try {
+        const channel = bot.client.channels.cache.get(id);
+
+        return {
+            //@ts-ignore
+            title: channel!.name,
+        }
+    } catch {
+        return;
+    }
+}
+
 export async function scrape_thread(bot: Bot, id: string) {
-    const channel = bot.client.channels.cache.get(id);
+    let messages;
+    try {
+        const channel = bot.client.channels.cache.get(id);
 
-    //@ts-ignore
-    if (!channel?.messages) return;
+        //@ts-ignore
+        if (!channel?.messages) return;
 
-    //@ts-ignore
-    const messages = await channel.messages.fetch({ limit: 100 });
+        //@ts-ignore
+        messages = await channel.messages.fetch({ limit: 100 });
+    } catch {
+        return;
+    }
 
     const data: Map<String, Song>[] = [
         new Map(),
@@ -65,7 +83,6 @@ export async function scrape_thread(bot: Bot, id: string) {
             return;
         }
     });
-
 
     return data.map(o => Object.fromEntries(o));
 }
