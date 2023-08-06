@@ -18,6 +18,7 @@ type Song = {
     };
     content: string,
     timedate: Date,
+    type: "file" | "external";
 };
 
 export async function get_thread_info(bot: Bot, id: string) {
@@ -81,7 +82,7 @@ export async function scrape_thread(bot: Bot, id: string) {
 
         if (!matches && attachments.size == 0) continue;
         
-        let url, title, author;
+        let url, title, author, type: "file" | "external" | undefined;
 
         if (attachments) {
             const attachment = attachments.find(o => allowed_content_types.includes(o.contentType!))
@@ -89,17 +90,19 @@ export async function scrape_thread(bot: Bot, id: string) {
                 url = attachment.url;
                 title = attachment.name
             }
+            type = "file";
         }
 
         if (matches && !url) {
-            url = matches[0]
+            url = matches[0];
+            const embed = msg.embeds[0];
+            if (embed) ({ title, author } = embed);
+            type = "external";
         }
 
         // this is just here to please typescript
         if (!url) continue;
-
-        const embed = msg.embeds[0];
-        if (embed) ({ title, author } = embed);
+        if (!type) type = "external";
 
         let id = msg.author.id;
 
@@ -139,6 +142,7 @@ export async function scrape_thread(bot: Bot, id: string) {
                 user: [msg.author.username, msg.author.avatar],
                 content: msg.content,
                 timedate: new Date(msg.createdTimestamp),
+                type,
             });
 
             break;
