@@ -67,9 +67,9 @@ export async function scrape_thread(bot: Bot, id: string) {
         if (!channel.permissionsFor(everyone).has("VIEW_CHANNEL")) {
             return;
         }
-        
+
         if (!channel?.messages) return;
-        
+
         messages = await channel.messages.fetch({ limit: 100 });
     } catch {
         return;
@@ -88,14 +88,13 @@ export async function scrape_thread(bot: Bot, id: string) {
 
     let top_post = true;
 
-    for (const o of arr) {
+    for (const msg of arr) {
         // skip the top post
         if (top_post) {
             top_post = false;
             continue;
         }
 
-        const msg: Message = o;
         const matches = msg.content?.match(url_regex);
         const attachments = msg.attachments;
 
@@ -104,7 +103,9 @@ export async function scrape_thread(bot: Bot, id: string) {
         let url, title, author, type: "file" | "external" | undefined;
 
         if (attachments) {
-            const attachment = attachments.find(o => allowed_content_types.includes(o.contentType!));
+            const attachment =
+                attachments.find(o => o.contentType?.startsWith("audio/") ?? false);
+
             if (attachment) {
                 url = attachment.url;
                 title = attachment.name;
