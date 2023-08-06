@@ -38,6 +38,7 @@ const allowed_content_types = [
     "audio/mpeg",
     "audio/ogg",
     "audio/opus",
+    "audio/wave",
     "audio/wav",
     "audio/webm",
     "audio/flac",
