@@ -1,4 +1,4 @@
-import { Message, MessageEmbedAuthor, User } from "discord.js";
+import { GuildChannel, Message, MessageEmbedAuthor, ThreadChannel, User } from "discord.js";
 import { Bot } from "../structs/Bot";
 import { Request, Response } from "express";
 
@@ -44,14 +44,31 @@ const allowed_content_types = [
 ];
 
 export async function scrape_thread(bot: Bot, id: string) {
-    let messages;
+    let messages, guild, channel;
     try {
-        const channel = bot.client.channels.cache.get(id);
+        channel = bot.client.channels.cache.get(id);
 
-        //@ts-ignore
+        if (!channel) {
+            channel = await bot.client.channels.fetch(id);
+        };
+
+        if (!channel?.isThread) return;
+
+        channel = channel as ThreadChannel;
+
+        guild = bot.client.guilds.cache.get(channel.guildId);
+        if (!guild) {
+            guild = await bot.client.guilds.fetch(channel.guildId);
+        }
+
+        const everyone = guild.roles.everyone;
+
+        if (!channel.permissionsFor(everyone).has("VIEW_CHANNEL")) {
+            return;
+        }
+        
         if (!channel?.messages) return;
-
-        //@ts-ignore
+        
         messages = await channel.messages.fetch({ limit: 100 });
     } catch {
         return;
@@ -63,6 +80,7 @@ export async function scrape_thread(bot: Bot, id: string) {
         new Map(),
         new Map(),
     ];
+
 
     let arr: Message[] = [];
     messages.reverse().map((o: Message) => arr.push(o));
@@ -81,14 +99,14 @@ export async function scrape_thread(bot: Bot, id: string) {
         const attachments = msg.attachments;
 
         if (!matches && attachments.size == 0) continue;
-        
+
         let url, title, author, type: "file" | "external" | undefined;
 
         if (attachments) {
-            const attachment = attachments.find(o => allowed_content_types.includes(o.contentType!))
+            const attachment = attachments.find(o => allowed_content_types.includes(o.contentType!));
             if (attachment) {
                 url = attachment.url;
-                title = attachment.name
+                title = attachment.name;
             }
             type = "file";
         }
@@ -106,15 +124,9 @@ export async function scrape_thread(bot: Bot, id: string) {
 
         let id = msg.author.id;
 
-        let guild, member;
+        let member;
         if (msg.guildId) {
-            guild = bot.client.guilds.cache.get(msg.guildId);
-
-            if (!guild) {
-                guild = await bot.client.guilds.fetch(msg.guildId);
-            }
-
-            member = guild?.members.cache.get(id);
+            member = guild.members.cache.get(id);
 
             if (!member) {
                 member = await guild.members.fetch(id);
@@ -128,7 +140,7 @@ export async function scrape_thread(bot: Bot, id: string) {
             if (data[idx].get(msg.author.id)) {
                 idx++;
                 continue;
-            }    
+            }
 
             data[idx].set(msg.author.id, {
                 url,
