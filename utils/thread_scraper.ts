@@ -33,6 +33,15 @@ export async function get_thread_info(bot: Bot, id: string) {
     }
 }
 
+const allowed_content_types = [
+    "audio/mpeg",
+    "audio/ogg",
+    "audio/opus",
+    "audio/wav",
+    "audio/webm",
+    "audio/flac",
+];
+
 export async function scrape_thread(bot: Bot, id: string) {
     let messages;
     try {
@@ -68,7 +77,46 @@ export async function scrape_thread(bot: Bot, id: string) {
 
         const msg: Message = o;
         const matches = msg.content?.match(url_regex);
-        if (!matches) continue;
+        const attachments = msg.attachments;
+
+        if (!matches && attachments.size == 0) continue;
+        
+        let url, title, author;
+
+        if (attachments) {
+            const attachment = attachments.find(o => allowed_content_types.includes(o.contentType!))
+            if (attachment) {
+                url = attachment.url;
+                title = attachment.name
+            }
+        }
+
+        if (matches && !url) {
+            url = matches[0]
+        }
+
+        // this is just here to please typescript
+        if (!url) continue;
+
+        const embed = msg.embeds[0];
+        if (embed) ({ title, author } = embed);
+
+        let id = msg.author.id;
+
+        let guild, member;
+        if (msg.guildId) {
+            guild = bot.client.guilds.cache.get(msg.guildId);
+
+            if (!guild) {
+                guild = await bot.client.guilds.fetch(msg.guildId);
+            }
+
+            member = guild?.members.cache.get(id);
+
+            if (!member) {
+                member = await guild.members.fetch(id);
+            }
+        }
 
         // evil loop 
         let idx = 0;
@@ -77,31 +125,10 @@ export async function scrape_thread(bot: Bot, id: string) {
             if (data[idx].get(msg.author.id)) {
                 idx++;
                 continue;
-            }
-
-            const embed = msg.embeds[0];
-            let title, author;
-            if (embed) ({ title, author } = embed);
-
-            let id = msg.author.id;
-
-            let guild, member;
-            if (msg.guildId) {
-                guild = bot.client.guilds.cache.get(msg.guildId);
-
-                if (!guild) {
-                    guild = await bot.client.guilds.fetch(msg.guildId);
-                }
-
-                member = guild?.members.cache.get(id);
-
-                if (!member) {
-                    member = await guild.members.fetch(id);
-                }
-            }
+            }    
 
             data[idx].set(msg.author.id, {
-                url: matches[0],
+                url,
                 details: {
                     title, author
                 },
