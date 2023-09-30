@@ -36,9 +36,16 @@ export class Song {
     }
 
     public static async from(url: string = "", search: string = "", added_by: string = ""): Promise<Song> {
+        const url_parsed = new URL(url);
         const isYoutubeUrl = videoPattern.test(url);
         const isDiscordCdnUrl = discordCdnRegex.test(url);
         const isTiktokUrl = (url.startsWith("file://"));
+        const isAudio = (
+            url_parsed.pathname.endsWith(".mp3") ||
+            url_parsed.pathname.endsWith(".ogg") ||
+            url_parsed.pathname.endsWith(".wav") ||
+            url_parsed.pathname.endsWith(".flac")
+        );
         // const isScUrl = scRegex.test(url);
 
         let songInfo;
@@ -72,16 +79,19 @@ export class Song {
             } else {
                 throw new NotAMusicError();
             }
-        } else if (isTiktokUrl) {
-            let meta = await parseFile(url.replace("file://", ""));
+        } else if (isTiktokUrl || isAudio) {
+            let meta
+            if (url_parsed.protocol == "file:") {
+                meta = await parseFile(url.replace("file://", ""));
+            }
 
             return new this({
                 url: url,
                 title: url.split("/").pop()!.split(".").slice(0, -1).join(".") || "Unknown",
-                duration: meta.format.duration ?? 0,
+                duration: meta?.format.duration ?? 999999999,
             }, added_by);
         }
-         else {
+        else {
             const result = await youtube.searchOne(search);
 
             songInfo = await getInfo(`https://youtube.com/watch?v=${result.id}`);
@@ -145,14 +155,14 @@ export class Song {
 
         if (this.url.includes("youtube") || this.url.includes("youtu.be")) {
             stream = await ytdl(this.url, { quality: "highestaudio", highWaterMark: 1 << 25 });
-        } else if (this.url.includes("discord")) {
-            const rs = (await fetch(this.url)).body;
-            if (rs) {
-                stream = rs as unknown as internal.Readable;  
-            }
         } else if (this.url.startsWith("file://")) {
             const url = this.url.replace("file://", "");
             stream = fs.createReadStream(url);
+        } else {
+            const rs = (await fetch(this.url)).body;
+            if (rs) {
+                stream = rs as unknown as internal.Readable;
+            }
         }
 
 
