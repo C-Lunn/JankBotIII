@@ -44,7 +44,8 @@ export class Song {
             url_parsed.pathname.endsWith(".mp3") ||
             url_parsed.pathname.endsWith(".ogg") ||
             url_parsed.pathname.endsWith(".wav") ||
-            url_parsed.pathname.endsWith(".flac")
+            url_parsed.pathname.endsWith(".flac") ||
+            url_parsed.pathname.endsWith(".opus")
         );
         // const isScUrl = scRegex.test(url);
 
