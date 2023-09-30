@@ -298,7 +298,7 @@ export class MusicQueue {
             name: "Added By",
             value: `<@${song.added_by}>`,
         },
-        {
+        song.duration != 0 ? {
             name: "\u200b",
             value: (this.player.state.status === AudioPlayerStatus.Paused ? `${icon("pause")}` : `${icon("resume")}`) + " `" +
                 shortformat(seek * 1000) +
@@ -306,6 +306,9 @@ export class MusicQueue {
                     splitBar(song.duration == 0 ? seek : song.duration, seek, 10, undefined, `${icon("playhead")}`)[0] +
                 "] `" +
                 (song.duration == 0 ? " ◉ LIVE" : shortformat(song.duration * 1000)) + "`"
+        } : {
+            name: "\u200b",
+            value: "◉ LIVE"
         }
         ])
 

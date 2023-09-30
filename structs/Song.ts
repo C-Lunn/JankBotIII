@@ -88,7 +88,7 @@ export class Song {
             return new this({
                 url: url,
                 title: url.split("/").pop()!.split(".").slice(0, -1).join(".") || "Unknown",
-                duration: meta?.format.duration ?? 999999999,
+                duration: meta?.format.duration ?? 0,
             }, added_by);
         }
         else {
