@@ -81,7 +81,11 @@ export class MusicQueue {
         Object.assign(this, options);
 
         this.textChannel = options.message.channel as TextChannel;
-        this.player = createAudioPlayer({ behaviors: { noSubscriber: NoSubscriberBehavior.Play } });
+        this.player = createAudioPlayer({ behaviors: { 
+            noSubscriber: NoSubscriberBehavior.Play,
+            // fixes wacky behaviour on opus streams
+            maxMissedFrames: Infinity 
+        } });
         this.connection.subscribe(this.player);
 
         this.connection.on("stateChange" as any, async (_: VoiceConnectionState, newState: VoiceConnectionState) => {

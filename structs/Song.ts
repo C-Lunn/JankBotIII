@@ -152,9 +152,7 @@ export class Song {
     public async makeResource(): Promise<AudioResource<Song> | void> {
         let stream;
 
-        let type = (
-            this.url.includes("youtube.com") || this.url.endsWith(".opus")
-        ) ? StreamType.Opus : StreamType.Arbitrary;
+        let type = this.url.includes("youtube.com") ? StreamType.Opus : StreamType.Arbitrary;
 
         if (this.url.includes("youtube") || this.url.includes("youtu.be")) {
             stream = await ytdl(this.url, { quality: "highestaudio", highWaterMark: 1 << 25 });
@@ -167,7 +165,6 @@ export class Song {
                 stream = rs as unknown as internal.Readable;
             }
         }
-
 
         if (!stream) return;
 
