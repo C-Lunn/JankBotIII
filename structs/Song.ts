@@ -36,16 +36,21 @@ export class Song {
     }
 
     public static async from(url: string = "", search: string = "", added_by: string = ""): Promise<Song> {
-        const url_parsed = new URL(url);
+        let url_parsed;
+        try {
+            url_parsed = new URL(url);
+        } catch {
+            url_parsed = null;
+        }
         const isYoutubeUrl = videoPattern.test(url);
         const isDiscordCdnUrl = discordCdnRegex.test(url);
         const isTiktokUrl = (url.startsWith("file://"));
         const isAudio = (
-            url_parsed.pathname.endsWith(".mp3") ||
-            url_parsed.pathname.endsWith(".ogg") ||
-            url_parsed.pathname.endsWith(".wav") ||
-            url_parsed.pathname.endsWith(".flac") ||
-            url_parsed.pathname.endsWith(".opus")
+            url_parsed?.pathname.endsWith(".mp3") ||
+            url_parsed?.pathname.endsWith(".ogg") ||
+            url_parsed?.pathname.endsWith(".wav") ||
+            url_parsed?.pathname.endsWith(".flac") ||
+            url_parsed?.pathname.endsWith(".opus")
         );
         // const isScUrl = scRegex.test(url);
 
@@ -82,7 +87,7 @@ export class Song {
             }
         } else if (isTiktokUrl || isAudio) {
             let meta
-            if (url_parsed.protocol == "file:") {
+            if (url_parsed?.protocol == "file:") {
                 meta = await parseFile(url.replace("file://", ""));
             }
 
