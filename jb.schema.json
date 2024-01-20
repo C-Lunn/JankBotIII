@@ -1,0 +1,56 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "$id": "https://gramophone.space/jb.schema.json",
+    "description": "jankbot config schema",
+    "type": "object",
+    "properties": {
+        "TOKEN": {
+            "type": "string"
+        },
+        "MAX_PLAYLIST_SIZE": {
+            "type": "number"
+        },
+        "PREFIX": {
+            "type": "string",
+            "minLength": 1
+        },
+        "PRUNING": {
+            "type": "boolean"
+        },
+        "LOCALE": {
+            "type": "string",
+            "minLength": 1
+        },
+        "DEFAULT_VOLUME": {
+            "type": "number"
+        },
+        "STAY_TIME": {
+            "type": "number"
+        },
+        "PORT": {
+            "type": "number",
+            "maximum": 65535
+        },
+        "MOD_ROLE_ID": {
+            "type": "string",
+            "minLength": 1
+        },
+        "WEBROOT": {
+            "type": "string",
+            "format": "uri",
+            "minLength": 1
+        }
+    },
+    "required": [
+        "TOKEN",
+        "MAX_PLAYLIST_SIZE",
+        "PREFIX",
+        "PRUNING",
+        "LOCALE",
+        "DEFAULT_VOLUME",
+        "STAY_TIME",
+        "PORT",
+        "MOD_ROLE_ID",
+        "WEBROOT"
+    ]
+}
