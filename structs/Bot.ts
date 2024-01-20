@@ -29,6 +29,7 @@ import { WhatWhenGramophone } from "./WhatWhenGramophone";
 import FistchordCmd from "../commands/jankbot/general/FistchordCmd";
 import ThreadCmd from "../commands/jankbot/general/ThreadTester";
 import { get_avatar, get_thread_info, scrape_thread } from "../utils/thread_scraper";
+import ServerMuteCmd from "../commands/jankbot/tantamod/ServerMute";
 
 const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -140,6 +141,7 @@ export class Bot {
             new ThreadCmd(this),
             new XkcdCmd(this),
             new FistchordCmd(this),
+            new ServerMuteCmd(this),
         ]) {
             this.commands.set(c.name, c);
         }
