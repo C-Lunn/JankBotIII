@@ -20,6 +20,9 @@ export default class TikTokCmd extends JankbotMusicCmd {
         'en_us_stitch',               // Stitch
         'en_us_stormtrooper',         // Stormtrooper
         'en_us_rocket',               // Rocket
+        'en_female_madam_leota',      // Madame Leota
+        'en_male_ghosthost',          // Ghost Host
+        'en_male_pirate',             // Pirate
 
         // ENGLISH VOICES
         'en_au_001',                  // English AU - Female
@@ -62,11 +65,16 @@ export default class TikTokCmd extends JankbotMusicCmd {
         'en_male_m03_lobby',  // Tenor
         'en_female_f08_warmy_breeze',  // Warmy Breeze
         'en_male_m03_sunshine_soon',  // Sunshine Soon
+        'en_female_ht_f08_glorious',  // Glorious
+        'en_male_sing_funny_it_goes_up',  // It Goes Up
+        'en_male_m2_xhxs_m03_silly',  // Chipmunk
+        'en_female_ht_f08_wonderful_world',  // Dramatic
 
         // OTHER
         'en_male_narration',  // narrator
         'en_male_funny',  // wacky
         'en_female_emotional',  // peaceful
+        'en_male_cody',  // serious
     ]
 
 
