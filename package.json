@@ -39,7 +39,7 @@
     "lyrics-finder": "^21.7.0",
     "mp3-duration-estimate": "^1.0.1",
     "music-metadata": "^7.13.4",
-    "sharp": "^0.31.3",
+    "sharp": "^0.33.2",
     "soundcloud-downloader": "^0.2.4",
     "string-progressbar": "^1.0.4",
     "tslib": "^2.6.2",
