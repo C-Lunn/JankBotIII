@@ -43,7 +43,7 @@ export class Song {
             url_parsed = null;
         }
         const isYoutubeUrl = videoPattern.test(url);
-        const isDiscordCdnUrl = discordCdnRegex.test(url);
+        const isDiscordCdnUrl = url_parsed?.host == "cdn.discordapp.com";
         const isTiktokUrl = (url.startsWith("file://"));
         const isAudio = (
             url_parsed?.pathname.endsWith(".mp3") ||
@@ -66,15 +66,15 @@ export class Song {
             }, added_by);
         } else if (isDiscordCdnUrl) {
             const lcurl = url.toLowerCase();
-            if (lcurl.endsWith(".mp3") || lcurl.endsWith(".ogg") || lcurl.endsWith(".wav") || lcurl.endsWith(".flac")) {
+            if (isAudio) {
                 let dur = 0;
-                if (lcurl.endsWith(".mp3")) {
+                if (url_parsed?.pathname.endsWith(".mp3")) {
                     // dur = await createEstimator(new FetchDataReader(fetch))(lcurl);
                     // console.log("mp3 duration: " + dur + "s");
                     dur = NaN;
-                } else if (lcurl.toLowerCase().endsWith(".wav")) {
+                } else if (url_parsed?.pathname.endsWith(".wav")) {
                     dur = await this.getWAVLength(lcurl);
-                } else if (lcurl.endsWith(".flac")) {
+                } else if (url_parsed?.pathname.endsWith(".flac")) {
                     dur = await this.getFLACLength(lcurl);
                 }
                 return new this({
