@@ -200,33 +200,6 @@ export class Bot {
                 if (!this.cooldowns.has(command.name)) {
                     this.cooldowns.set(command.name, new Collection());
                 }
-            } else {
-                for (const trig_word of [
-                    'jankbot',
-                    'jankman',
-                    'janky jeff'
-                ]) {
-                    if (message.content.toLowerCase().includes(trig_word)) {
-                        const msg_after_trigger = message.content.slice(message.content.toLowerCase().indexOf(trig_word) + trig_word.length);
-                        for (const cmd_name of this._all_command_names) {
-                            const cmd_name_regex = new RegExp(`\\b${cmd_name}\\b`);
-                            const matches = cmd_name_regex.exec(msg_after_trigger.toLowerCase());
-                            if (matches) {
-                                // @ts-ignore
-                                command = 
-                                    // @ts-ignore    
-                                    this.commands.get(cmd_name) ?? this.commands.find((cmd) => cmd.aliases?.includes(cmd_name!));
-                                const msg_after_cmd = msg_after_trigger.slice(matches.index + cmd_name.length);
-                                args = msg_after_cmd.trim().split(/ +/);
-                                if (!this.cooldowns.has(command!.name)) {
-                                    this.cooldowns.set(command!.name, new Collection());
-                                }
-                                console.log(`Triggered command ${command!.name} with args ${args} from message ${message.content} in guild ${message.guild.name} (${message.guild.id})`);
-                                break;
-                            }
-                        }
-                    }
-                }
             }
 
             if (!command || command === null) return;
