@@ -1,4 +1,4 @@
-import { Message, MessageActionRow, MessageButton } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Message } from "discord.js";
 import { Bot } from "./Bot";
 
 export class QuitSibelius {
@@ -17,16 +17,16 @@ export class QuitSibelius {
     }
 
     public async run(msg: Message) {
-        const row = new MessageActionRow().addComponents(
-            new MessageButton()
+        const row = new ActionRowBuilder().addComponents(
+            new ButtonBuilder()
                 .setCustomId("QUIT_SIB")
-                .setStyle("PRIMARY")
+                .setStyle(ButtonStyle.Primary)
                 .setLabel("Quit Sibelius")
         );
 
-        const message = await msg.channel.send({
-            components: [ row ]
+        await msg.channel.send({
+            //@ts-ignore
+            components: [row]
         });
-
     }
 }

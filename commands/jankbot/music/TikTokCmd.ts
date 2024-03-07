@@ -1,11 +1,10 @@
-import { Collection, Message, MessageAttachment } from "discord.js";
-import JankbotCmd from "../../../interfaces/JankbotCommand";
-import { Bot } from "../../../structs/Bot";
-import * as os from "os";
-import * as fs from "fs";
-import * as play from '../../play';
 import AsyncLock from "async-lock";
+import { Message } from "discord.js";
+import * as fs from "fs";
+import * as os from "os";
 import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
+import { Bot } from "../../../structs/Bot";
+import * as play from '../../play';
 
 export let lock = new AsyncLock({ timeout: 200000 });
 

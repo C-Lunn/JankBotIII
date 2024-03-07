@@ -1,4 +1,4 @@
-import { Message, MessageActionRow, MessageButton, TextChannel } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Message, TextChannel } from "discord.js";
 import { Bot } from "./Bot";
 
 export class WhatWhenGramophone {
@@ -23,16 +23,17 @@ export class WhatWhenGramophone {
     }
 
     public async run(msg: Message) {
-        const row = new MessageActionRow().addComponents(
-            new MessageButton()
+        const row = new ActionRowBuilder().addComponents(
+            new ButtonBuilder()
                 .setCustomId("MORE_GRAM")
-                .setStyle("PRIMARY")
+                .setStyle(ButtonStyle.Primary)
                 .setLabel("Gramophone Info")
         );
 
-        const message = await msg.channel.send({
+        await msg.channel.send({
             content: "Hey! If you want to know more about gramophone, check the pinned message in <#739173595955200121> or click the button below.",
-            components: [ row ]
+            //@ts-ignore
+            components: [row]
         });
     }
 }

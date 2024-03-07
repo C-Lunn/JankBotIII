@@ -1,5 +1,5 @@
 import { DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
-import { Message, MessageEmbed } from "discord.js";
+import { EmbedBuilder, Message, PermissionsString } from "discord.js";
 import { bot } from "../index";
 import { MusicQueue } from "../structs/MusicQueue";
 import { Playlist } from "../structs/Playlist";
@@ -11,7 +11,7 @@ export default {
     aliases: ["pl"],
     category: "music",
     description: i18n.__("playlist.description"),
-    permissions: ["CONNECT", "SPEAK", "ADD_REACTIONS", "MANAGE_MESSAGES"],
+    permissions: <PermissionsString[]>["Connect", "Speak", "AddReactions", "ManageMessages"],
     async execute(message: Message, args: any[]) {
         const { channel } = message.member!.voice;
 
@@ -56,22 +56,29 @@ export default {
 
             bot.queues.set(message.guild!.id, newQueue);
             newQueue.songs.push(...playlist.videos);
-            
+
             newQueue.playNext();
         }
 
-        let playlistEmbed = new MessageEmbed()
+        let desc = `Added ${playlist.videos.length} items to the queue.`;
+        if (playlist.videos.length === 99) {
+            desc = desc + "\n\n The playlist may have been truncated to 99 items";
+        }
+
+        let playlistEmbed = new EmbedBuilder()
             .setTitle(`${playlist.data.title}`)
             .setDescription(
-                `Added ${playlist.videos.length} items to the queue.\n\n ${playlist.videos.length === 99 ? "The playlist may have been truncated to 99 items." : ""}`
+                desc
             )
             .setURL(playlist.data.url!)
             .setColor("#F8AA2A")
             .setTimestamp();
 
-        if (playlistEmbed.description!.length >= 2048)
-            playlistEmbed.description =
-                playlistEmbed.description!.substr(0, 2007) + i18n.__("playlist.playlistCharLimit");
+        if (desc.length >= 2048) {
+            playlistEmbed.setDescription(
+                desc.slice(0, 2007) + i18n.__("playlist.playlistCharLimit")
+            );
+        }
 
         message
             .reply({
