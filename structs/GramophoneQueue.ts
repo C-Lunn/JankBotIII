@@ -2,6 +2,7 @@ import { VoiceConnectionState, VoiceConnectionStatus, VoiceConnectionDisconnectR
 import { JCIMessage } from "../interfaces/JCIMessage";
 import { QueueOptions } from "../interfaces/QueueOptions";
 import { NoMoreSongsInQueueError, Queue, wait } from "./Queue";
+import { ChannelType } from "discord.js";
 
 
 export class GramophoneQueue extends Queue {
@@ -26,8 +27,8 @@ export class GramophoneQueue extends Queue {
             ) {
                 if (this.connection.joinConfig.channelId) {
                     const channel = this.textChannel.guild.channels.cache.get(this.connection.joinConfig.channelId);
-                    if (channel?.type === "GUILD_STAGE_VOICE") {
-                        this.textChannel.guild.me!.voice.setSuppressed(false);
+                    if (channel?.type === ChannelType.GuildStageVoice) {
+                        this.textChannel.guild.members.me?.voice.setSuppressed(false);
                     }
                 }
                 this.readyLock = true;

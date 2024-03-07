@@ -10,7 +10,7 @@ import {
     VoiceConnectionState,
     VoiceConnectionStatus
 } from "@discordjs/voice";
-import { Message, MessageActionRow, MessageButton, MessageEmbed, TextChannel } from "discord.js";
+import { EmbedBuilder, Message, TextChannel } from "discord.js";
 import { promisify } from "node:util";
 import { splitBar } from "string-progressbar";
 import { bot } from "../index";
@@ -166,12 +166,12 @@ export class Queue {
         this.resource.volume?.setVolumeLogarithmic(this.volume / 100);
     }
 
-    public async generate_np_msg(): Promise<MessageEmbed> {
+    public async generate_np_msg(): Promise<EmbedBuilder> {
         const song = this.activeSong();
         const seek = this.resource.playbackDuration / 1000;
         const left = song.duration - seek;
 
-        let nowPlaying = new MessageEmbed()
+        let nowPlaying = new EmbedBuilder()
             .setTitle(`${song.title}`)
             .setDescription(`${song.url} \n Queue Position: ${this.activeIndex + 1} / ${this.songs.length}`)
             .setColor("#F8AA2A");
@@ -201,7 +201,7 @@ export class Queue {
 
     private async _update_last_np_msg(msg: Message) {
         if (this._last_np_msg) {
-            const embed: MessageEmbed = await this.generate_np_msg();
+            const embed: EmbedBuilder = await this.generate_np_msg();
             msg.edit({
                 embeds: [embed]
             });
