@@ -1,4 +1,4 @@
-import { GuildChannel, Message, MessageEmbedAuthor, ThreadChannel, User } from "discord.js";
+import { EmbedAuthorData, GuildChannel, Message, ThreadChannel, User } from "discord.js";
 import { Bot } from "../structs/Bot";
 import { Request, Response } from "express";
 
@@ -14,7 +14,7 @@ type Song = {
     };
     details: {
         title: string | null | undefined,
-        author: MessageEmbedAuthor | null | undefined;
+        author: EmbedAuthorData | null | undefined;
     };
     content: string,
     timedate: Date,
@@ -64,7 +64,7 @@ export async function scrape_thread(bot: Bot, id: string) {
 
         const everyone = guild.roles.everyone;
 
-        if (!channel.permissionsFor(everyone).has("VIEW_CHANNEL")) {
+        if (!channel.permissionsFor(everyone).has("ViewChannel")) {
             return;
         }
 

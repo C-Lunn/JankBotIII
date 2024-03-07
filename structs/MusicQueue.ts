@@ -10,7 +10,7 @@ import {
     VoiceConnectionState,
     VoiceConnectionStatus
 } from "@discordjs/voice";
-import { Message, MessageActionRow, MessageButton, MessageEmbed, TextChannel } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, Message, TextChannel } from "discord.js";
 import { promisify } from "node:util";
 import { splitBar } from "string-progressbar";
 import { bot } from "../index";
@@ -104,8 +104,8 @@ export class MusicQueue {
             ) {
                 if (this.connection.joinConfig.channelId) {
                     const channel = this.textChannel.guild.channels.cache.get(this.connection.joinConfig.channelId);
-                    if (channel?.type === "GUILD_STAGE_VOICE") {
-                        this.textChannel.guild.me!.voice.setSuppressed(false);
+                    if (channel?.type === ChannelType.GuildStageVoice) {
+                        this.textChannel.guild.members.me!.voice.setSuppressed(false);
                     }
                 }
                 this.readyLock = true;
@@ -288,12 +288,12 @@ export class MusicQueue {
         return this._active_idx;
     }
 
-    public async generate_np_msg(): Promise<MessageEmbed> {
+    public async generate_np_msg(): Promise<EmbedBuilder> {
         const song = this.activeSong();
         const seek = this.resource.playbackDuration / 1000;
         const left = song.duration - seek;
 
-        let nowPlaying = new MessageEmbed()
+        let nowPlaying = new EmbedBuilder()
             .setTitle(`${song.title}`)
             .setDescription(`${song.url} \n Queue Position: ${this.activeIndex + 1} / ${this.songs.length}`)
             .setColor("#F8AA2A");
@@ -326,7 +326,7 @@ export class MusicQueue {
 
     private async _update_last_np_msg(msg: Message) {
         if (this._last_np_msg) {
-            const embed: MessageEmbed = await this.generate_np_msg();
+            const embed: EmbedBuilder = await this.generate_np_msg();
             msg.edit({
                 embeds: [embed]
             });
@@ -349,7 +349,7 @@ export class MusicQueue {
     public generate_queue_embed(opt?: {
         from: number,
         to: number
-    }): [MessageEmbed, MessageActionRow] {
+    }): [EmbedBuilder, ActionRowBuilder] {
         if (!opt) {
             let from, to;
             from = this._active_idx - 2;
@@ -379,27 +379,28 @@ export class MusicQueue {
 
         this._last_from_to = [opt.from, opt.to];
 
-        return [new MessageEmbed()
+        return [new EmbedBuilder()
                         .setTitle(`Showing [${opt.from + 1}-${opt.to + 1}] of ` + this.songs.length + " songs in queue")
                         .setDescription(queue_lines.join("\n")), this.generate_action_row(opt.from, opt.to)];
     }
 
-    public generate_action_row(from: number, to: number): MessageActionRow {
+    public generate_action_row(from: number, to: number): ActionRowBuilder {
         const buttons = [];
-        buttons.push(new MessageButton()
+        buttons.push(new ButtonBuilder()
             .setCustomId("queue_prev:" + this.message.guildId!)
-            .setStyle("PRIMARY")
+            .setStyle(ButtonStyle.Primary)
             .setEmoji("⬆️")
             .setDisabled(from === 0)
         );
 
-        buttons.push(new MessageButton()
+        buttons.push(new ButtonBuilder()
             .setCustomId("queue_next:" + this.message.guildId!)
-            .setStyle("PRIMARY")
+            .setStyle(ButtonStyle.Primary)
             .setEmoji("⬇️")
             .setDisabled(to === this.songs.length - 1)
         );
-        return new MessageActionRow()
+        
+        return new ActionRowBuilder()
             .addComponents(buttons);
     }
 
@@ -445,6 +446,7 @@ export class MusicQueue {
 
         this._last_queue_msg!.edit({
             embeds: [embed],
+            //@ts-ignore
             components: [row]
         });
     }

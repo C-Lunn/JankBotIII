@@ -1,4 +1,4 @@
-import { Client, Collection, Snowflake } from "discord.js";
+import { ActivityType, Client, Collection, Snowflake } from "discord.js";
 import express from 'express';
 import { readdirSync } from "fs";
 import { join } from "path";
@@ -50,7 +50,10 @@ export class Bot {
 
         this.client.on("ready", () => {
             console.log(`${this.client.user!.username} ready!`);
-            client.user!.setActivity(`${this.prefix}help and ${this.prefix}play`, { type: "LISTENING" });
+            client.user!.setActivity(
+                `${this.prefix}help and ${this.prefix}play`,
+                { type: ActivityType.Listening }
+            );
         });
 
         this.client.on("warn", (info) => console.log(info));
@@ -65,7 +68,7 @@ export class Bot {
         const app = express();
         app.get('/np', (req, res) => {
             const queue = this.queues.get('638309926225313832');
-            if(queue) {
+            if (queue) {
                 res.send(queue.songs[0].title);
             } else {
                 res.send('No queue');
@@ -101,7 +104,7 @@ export class Bot {
 
     public setDJMode(state: 'on' | 'off', guildId: Snowflake, timeout?: NodeJS.Timeout) {
         if (state === 'on') {
-            if(timeout) {
+            if (timeout) {
                 this._dj_mode.set(guildId, timeout);
             } else {
                 throw new Error('Timeout not provided');
@@ -158,7 +161,7 @@ export class Bot {
         this.client.on("messageCreate", async (message: any) => {
             if (message.author.bot || !message.guild) return;
 
-            if (message.content.toLowerCase() === "quit sibelius" || message.content === "<:quit1:737227012435083274><:quit2:737226986191061013>" || message.content === "<:quit1:737227012435083274> <:quit2:737226986191061013>" ) {
+            if (message.content.toLowerCase() === "quit sibelius" || message.content === "<:quit1:737227012435083274><:quit2:737226986191061013>" || message.content === "<:quit1:737227012435083274> <:quit2:737226986191061013>") {
                 this._qs.run(message);
                 return;
             }
@@ -189,14 +192,14 @@ export class Bot {
 
                 args = message.content.slice(matchedPrefix.length).trim().split(/ +/);
                 const commandName = args.shift()?.toLowerCase();
-    
+
                 // @ts-ignore
                 command =
                     // @ts-ignore
                     this.commands.get(commandName!) ?? this.commands.find((cmd) => cmd.aliases?.includes(commandName));
-    
+
                 if (!command) return;
-    
+
                 if (!this.cooldowns.has(command.name)) {
                     this.cooldowns.set(command.name, new Collection());
                 }
@@ -239,7 +242,7 @@ export class Bot {
             }
         });
     }
-    
+
     public getSurpressed(guild: string) {
         return this._voice_is_surpressed.get(guild) ?? true;
     }

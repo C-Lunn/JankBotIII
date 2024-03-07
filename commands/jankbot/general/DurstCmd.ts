@@ -1,4 +1,4 @@
-import { Message, MessageActionRow, MessageButton } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonStyle, Message } from "discord.js";
 import { readdirSync, readFileSync } from "fs";
 import { join } from "path";
 import JankbotCmd from "../../../interfaces/JankbotCommand";
@@ -18,41 +18,46 @@ export default class DurstCmd extends JankbotCmd {
             if (interaction.customId.startsWith("DURST:")) {
                 await interaction.deferUpdate();
                 const durst = this._dursts[Math.floor(Math.random() * this._dursts.length)];
-                (interaction.message!.components![0].components![0] as MessageButton).setDisabled(true);
-                const row = new MessageActionRow().addComponents((interaction.message!.components![0].components![0] as MessageButton));
+                ButtonBuilder.from(interaction.message!.components![0].components![0] as ButtonComponent).setDisabled(true);
+                const row = new ActionRowBuilder()
+                    .addComponents(ButtonBuilder.from(interaction.message!.components![0].components![0] as ButtonComponent));
                 await (interaction.message as Message).edit({
                     content: durst,
-                    components: [ row ]
+                    //@ts-ignore
+                    components: [row]
                 });
                 setTimeout(() => {
-                    row.components[0].setDisabled(false);
+                    (row.components[0] as ButtonBuilder).setDisabled(false);
                     (interaction.message as Message).edit({
-                        components: [ row ]
+                        //@ts-ignore
+                        components: [row]
                     });
                 }, 1000);
             }
         });
     }
 
-    public override async run(bot: Bot, message: Message, args: string[]) {
+    public override async run(_bot: Bot, message: Message, _args: string[]) {
         const durst = this._dursts[Math.floor(Math.random() * this._dursts.length)];
-        const row = new MessageActionRow().addComponents(
-            new MessageButton()
+        const row = new ActionRowBuilder().addComponents(
+            new ButtonBuilder()
                 .setCustomId("DURST:NEXT")
-                .setStyle("PRIMARY")
+                .setStyle(ButtonStyle.Primary)
                 .setLabel("Break Stuff")
                 .setDisabled(true)
         );
 
         const msg = await message.channel.send({
             content: durst,
-            components: [ row ]
+            //@ts-ignore
+            components: [row]
         });
 
         setTimeout(() => {
-            row.components[0].setDisabled(false);
+            (row.components[0] as ButtonBuilder).setDisabled(false);
             msg.edit({
-                components: [ row ]
+                //@ts-ignore
+                components: [row]
             });
         }, 1000);
 

@@ -1,5 +1,5 @@
 import { AudioPlayerStatus, DiscordGatewayAdapterCreator, joinVoiceChannel, VoiceConnection } from "@discordjs/voice";
-import { Message, VoiceBasedChannel } from "discord.js";
+import { Message, PermissionsString, VoiceBasedChannel } from "discord.js";
 import { bot } from "../index";
 import { MusicQueue } from "../structs/MusicQueue";
 import { NotAMusicError, Song } from "../structs/Song";
@@ -13,7 +13,7 @@ export default {
     aliases: ["p"],
     category: "music",
     description: i18n.__("play.description"),
-    permissions: ["CONNECT", "SPEAK", "ADD_REACTIONS", "MANAGE_MESSAGES"],
+    permissions: <PermissionsString[]>["Connect", "Speak", "AddReactions", "ManageMessages"],
     async execute(message: Message, args: string[]) {
         const { channel } = message.member!.voice;
 
@@ -30,9 +30,9 @@ export default {
 
         if (!args.length) {
             if (message.attachments.size) {
-                const lcurl = message.attachments.first()!.attachment.toString().toLowerCase();
+                const lcurl = message.attachments.first()!.url.toLowerCase();
                 if (lcurl.endsWith(".mp3") || lcurl.endsWith(".ogg") || lcurl.endsWith(".wav") || lcurl.endsWith(".flac")) {
-                    url = message.attachments.first()!.attachment.toString();
+                    url = message.attachments.first()!.url.toString();
                 } else {
                     return message.reply(i18n.__mf("play.usageReply", { prefix: bot.prefix })).catch(console.error);
                 }
