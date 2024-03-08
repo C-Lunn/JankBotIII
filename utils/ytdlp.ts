@@ -11,7 +11,9 @@ export class YtDlp {
         ]);
 
         cmd.stderr.on("data", (error) => {
-            console.error(`yt-dlp err: ${error}`);
+            // in stdout mode yt-dlp likes to use stderr for things that
+            // AREN'T ERRORS. hence the lack of ceremony here.
+            console.log(`yt-dlp: ${error}`);
         });
 
         cmd.on("close", (code) => {
