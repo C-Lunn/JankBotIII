@@ -1,13 +1,12 @@
 import { AudioResource, createAudioResource, StreamType } from "@discordjs/voice";
-import createEstimator, { FetchDataReader } from 'mp3-duration-estimate';
+import * as fs from 'fs';
+import { parseFile } from "music-metadata";
 import internal from "stream";
 import youtube from "youtube-sr";
 import { getInfo } from "ytdl-core";
-import ytdl from "ytdl-core-discord";
 import { i18n } from "../utils/i18n";
-import { discordCdnRegex, videoPattern } from "../utils/patterns";
-import * as fs from 'fs';
-import { parseFile } from "music-metadata";
+import { videoPattern } from "../utils/patterns";
+import { YtDlp } from "../utils/ytdlp";
 
 export interface SongData {
     url: string;
@@ -20,7 +19,6 @@ export class NotAMusicError extends Error {
         super("Not a music file.");
     }
 }
-
 
 export class Song {
     public readonly url: string;
@@ -36,7 +34,7 @@ export class Song {
     }
 
     public static async from(url: string = "", search: string = "", added_by: string = ""): Promise<Song> {
-        let url_parsed;
+        let url_parsed: URL | null;
         try {
             url_parsed = new URL(url);
         } catch {
@@ -44,7 +42,7 @@ export class Song {
         }
         const isYoutubeUrl = videoPattern.test(url);
         const isDiscordCdnUrl = url_parsed?.host == "cdn.discordapp.com";
-        const isTiktokUrl = (url.startsWith("file://"));
+        const isFileUrl = (url_parsed?.protocol == "file:" ?? url.startsWith("file://"));
         const isAudio = (
             url_parsed?.pathname.endsWith(".mp3") ||
             url_parsed?.pathname.endsWith(".ogg") ||
@@ -52,7 +50,6 @@ export class Song {
             url_parsed?.pathname.endsWith(".flac") ||
             url_parsed?.pathname.endsWith(".opus")
         );
-        // const isScUrl = scRegex.test(url);
 
         let songInfo;
 
@@ -85,7 +82,7 @@ export class Song {
             } else {
                 throw new NotAMusicError();
             }
-        } else if (isTiktokUrl || isAudio) {
+        } else if (isFileUrl || isAudio) {
             let meta
             if (url_parsed?.protocol == "file:") {
                 meta = await parseFile(url.replace("file://", ""));
@@ -157,10 +154,10 @@ export class Song {
     public async makeResource(): Promise<AudioResource<Song> | void> {
         let stream;
 
-        let type = this.url.includes("youtube.com") ? StreamType.Opus : StreamType.Arbitrary;
+        let type = this.url.includes("youtube.com") ? StreamType.WebmOpus : StreamType.Arbitrary;
 
         if (this.url.includes("youtube") || this.url.includes("youtu.be")) {
-            stream = await ytdl(this.url, { quality: "highestaudio", highWaterMark: 1 << 25 });
+            stream = YtDlp.stream_url(this.url);
         } else if (this.url.startsWith("file://")) {
             const url = this.url.replace("file://", "");
             stream = fs.createReadStream(url);
