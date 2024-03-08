@@ -22,4 +22,36 @@ export class YtDlp {
 
         return cmd.stdout;
     }
+
+    static async fetch_thing_details(url: string): Promise<Record<string, unknown>> {
+        console.log(`asking yt-dlp for details about ${url}`)
+
+        const p = new Promise((resolve, reject) => {
+            // todo: this returns a ludicrous amount of data. find a way to reduce it
+            const cmd = spawn("yt-dlp", [
+                url,
+                "--skip-download",
+                "--dump-single-json",
+                "-q",
+                "--no-warnings",
+            ]);
+
+            cmd.stdout.on("data", (data: Buffer) => {
+                const text = data.toString("utf8");
+                const json = JSON.parse(text);
+                resolve(json);
+            });
+
+            cmd.stderr.on("data", (data: Buffer) => {
+                const text = data.toString("utf8");
+                reject(`ytdlp err: ${text}`);
+            });
+
+            cmd.on("close", (code) => {
+                console.log(`yt-dlp exited with code ${code}`)
+            });
+        });
+
+        return p as Promise<Record<string, unknown>>;
+    }
 }

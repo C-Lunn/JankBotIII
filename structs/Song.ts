@@ -4,7 +4,6 @@ import pfs from "fs/promises";
 import internal from "stream";
 import * as web_streams from "stream/web";
 import youtube from "youtube-sr";
-import ytdlCore from "ytdl-core";
 import { i18n } from "../utils/i18n";
 import { YtDlp } from "../utils/ytdlp";
 
@@ -21,16 +20,12 @@ export class NotAMusicError extends Error {
     }
 }
 
-const youtube_hosts = [
+const allowed_hosts = [
     "youtube.com",
     "www.youtube.com",
     "yt.be",
     "www.yt.be",
     "music.youtube.com",
-]
-
-const allowed_hosts = [
-    ...youtube_hosts,
     "soundcloud.com",
     "www.soundcloud.com",
 ]
@@ -84,25 +79,25 @@ export class Song {
     }
 
     private static async fetch_songinfo(url: URL): Promise<SongData | undefined> {
-        if (youtube_hosts.includes(url.hostname)) {
-            const info = await ytdlCore.getInfo(url.toString());
+        if (allowed_hosts.includes(url.hostname)) {
+            const info = await YtDlp.fetch_thing_details(url.toString());
             return {
                 url,
                 kind: SongType.YtDlp,
-                title: info.videoDetails.title,
-                duration: parseInt(info.videoDetails.lengthSeconds),
+                title: info["title"] as string,
+                duration: parseInt(info["duration"] as string),
             };
         }
 
         // TODO: soundcloud, etc (try fetching details from yt-dlp)
 
-        let file_handle: pfs.FileHandle | null = null,
-            stream: PossibleStreamTypes,
-            songtype: SongType;
-
         if (!this.its_audio(url)) {
             return
         }
+
+        let file_handle: pfs.FileHandle | null = null,
+            stream: PossibleStreamTypes,
+            songtype: SongType;
 
         if (url.protocol == "file:") {
             file_handle = await pfs.open(url.pathname);
@@ -137,12 +132,12 @@ export class Song {
     }
 
     public static its_audio(url: URL) {
-        return url.pathname.endsWith(".mp3") 
-        || url.pathname.endsWith(".wav") 
-        || url.pathname.endsWith(".wave")
-        || url.pathname.endsWith(".flac")
-        || url.pathname.endsWith(".opus")
-        || url.pathname.endsWith(".ogg")
+        return url.pathname.endsWith(".mp3")
+            || url.pathname.endsWith(".wav")
+            || url.pathname.endsWith(".wave")
+            || url.pathname.endsWith(".flac")
+            || url.pathname.endsWith(".opus")
+            || url.pathname.endsWith(".ogg")
     }
 
     public static async getWAVLength(from: PossibleStreamTypes) {
@@ -207,7 +202,10 @@ export class Song {
 
         if (!stream) return;
 
-        return createAudioResource(stream, { metadata: this, inputType: type, inlineVolume: true });
+        return createAudioResource(
+            stream,
+            { metadata: this, inputType: type, inlineVolume: true }
+        );
     }
 
     public startMessage() {
