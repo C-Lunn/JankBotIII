@@ -21,12 +21,18 @@ export class NotAMusicError extends Error {
     }
 }
 
-const allowed_hosts = [
+const youtube_hosts = [
     "youtube.com",
+    "www.youtube.com",
     "yt.be",
+    "www.yt.be",
     "music.youtube.com",
+]
+
+const allowed_hosts = [
+    ...youtube_hosts,
     "soundcloud.com",
-    ""
+    "www.soundcloud.com",
 ]
 
 export enum SongType {
@@ -78,7 +84,7 @@ export class Song {
     }
 
     private static async fetch_songinfo(url: URL): Promise<SongData | undefined> {
-        if (url.hostname == ("youtube.com" || "yt.be")) {
+        if (youtube_hosts.includes(url.hostname)) {
             const info = await ytdlCore.getInfo(url.toString());
             return {
                 url,
@@ -93,6 +99,10 @@ export class Song {
         let file_handle: pfs.FileHandle | null = null,
             stream: PossibleStreamTypes,
             songtype: SongType;
+
+        if (!this.its_audio(url)) {
+            return
+        }
 
         if (url.protocol == "file:") {
             file_handle = await pfs.open(url.pathname);
@@ -124,7 +134,15 @@ export class Song {
             title: url.pathname.split("/").at(-1) || "Unknown",
             duration: duration
         };
+    }
 
+    public static its_audio(url: URL) {
+        return url.pathname.endsWith(".mp3") 
+        || url.pathname.endsWith(".wav") 
+        || url.pathname.endsWith(".wave")
+        || url.pathname.endsWith(".flac")
+        || url.pathname.endsWith(".opus")
+        || url.pathname.endsWith(".ogg")
     }
 
     public static async getWAVLength(from: PossibleStreamTypes) {
