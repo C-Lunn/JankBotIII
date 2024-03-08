@@ -1,17 +1,18 @@
 import { AudioResource, createAudioResource, StreamType } from "@discordjs/voice";
 import * as fs from 'fs';
-import { parseFile } from "music-metadata";
+import pfs from "fs/promises";
 import internal from "stream";
+import * as web_streams from "stream/web";
 import youtube from "youtube-sr";
-import { getInfo } from "ytdl-core";
+import ytdlCore from "ytdl-core";
 import { i18n } from "../utils/i18n";
-import { videoPattern } from "../utils/patterns";
 import { YtDlp } from "../utils/ytdlp";
 
 export interface SongData {
-    url: string;
+    url: URL;
     title: string;
     duration: number;
+    kind: SongType;
 }
 
 export class NotAMusicError extends Error {
@@ -20,15 +21,33 @@ export class NotAMusicError extends Error {
     }
 }
 
+const allowed_hosts = [
+    "youtube.com",
+    "yt.be",
+    "music.youtube.com",
+    "soundcloud.com",
+    ""
+]
+
+export enum SongType {
+    YtDlp,
+    ExternalAudio,
+    File,
+}
+
+type PossibleStreamTypes = ReadableStream<Uint8Array> | web_streams.ReadableStream<any>;
+
 export class Song {
-    public readonly url: string;
+    public readonly url: URL;
     public readonly title: string;
     public duration: number;
     public added_by: string;
+    public kind: SongType;
 
-    public constructor({ url, title, duration }: SongData, added_by: string) {
+    public constructor({ url, title, kind, duration }: SongData, added_by: string) {
         this.url = url;
         this.title = title;
+        this.kind = kind;
         this.duration = duration;
         this.added_by = added_by;
     }
@@ -38,77 +57,78 @@ export class Song {
         try {
             url_parsed = new URL(url);
         } catch {
-            url_parsed = null;
+            url_parsed = null
         }
-        const isYoutubeUrl = videoPattern.test(url);
-        const isDiscordCdnUrl = url_parsed?.host == "cdn.discordapp.com";
-        const isFileUrl = (url_parsed?.protocol == "file:" ?? url.startsWith("file://"));
-        const isAudio = (
-            url_parsed?.pathname.endsWith(".mp3") ||
-            url_parsed?.pathname.endsWith(".ogg") ||
-            url_parsed?.pathname.endsWith(".wav") ||
-            url_parsed?.pathname.endsWith(".flac") ||
-            url_parsed?.pathname.endsWith(".opus")
-        );
 
-        let songInfo;
-
-        if (isYoutubeUrl) {
-            songInfo = await getInfo(url);
-
-            return new this({
-                url: songInfo.videoDetails.video_url,
-                title: songInfo.videoDetails.title,
-                duration: parseInt(songInfo.videoDetails.lengthSeconds)
-            }, added_by);
-        } else if (isDiscordCdnUrl) {
-            const lcurl = url.toLowerCase();
-            if (isAudio) {
-                let dur = 0;
-                if (url_parsed?.pathname.endsWith(".mp3")) {
-                    // dur = await createEstimator(new FetchDataReader(fetch))(lcurl);
-                    // console.log("mp3 duration: " + dur + "s");
-                    dur = NaN;
-                } else if (url_parsed?.pathname.endsWith(".wav")) {
-                    dur = await this.getWAVLength(lcurl);
-                } else if (url_parsed?.pathname.endsWith(".flac")) {
-                    dur = await this.getFLACLength(lcurl);
-                }
-                return new this({
-                    url: url,
-                    title: url.split("/").pop()!.split(".").slice(0, -1).join(".") || "Unknown",
-                    duration: dur
-                }, added_by);
-            } else {
-                throw new NotAMusicError();
-            }
-        } else if (isFileUrl || isAudio) {
-            let meta
-            if (url_parsed?.protocol == "file:") {
-                meta = await parseFile(url.replace("file://", ""));
-            }
-
-            return new this({
-                url: url,
-                title: url.split("/").pop()!.split(".").slice(0, -1).join(".") || "Unknown",
-                duration: meta?.format.duration ?? 0,
-            }, added_by);
-        }
-        else {
+        if (!url_parsed) {
             const result = await youtube.searchOne(search);
+            url_parsed = new URL(`https://youtube.com/watch?v=${result.id}`);
+        }
 
-            songInfo = await getInfo(`https://youtube.com/watch?v=${result.id}`);
+        let songInfo = await Song.fetch_songinfo(url_parsed);
 
-            return new this({
-                url: songInfo.videoDetails.video_url,
-                title: songInfo.videoDetails.title,
-                duration: parseInt(songInfo.videoDetails.lengthSeconds)
-            }, added_by);
+        if (songInfo) {
+            return new this(songInfo, added_by);
+        } else {
+            return new this(
+                { duration: NaN, title: "Unknown", url: url_parsed, kind: SongType.YtDlp },
+                added_by
+            );
         }
     }
 
-    public static async getWAVLength(url: string) {
-        const rsp = (await fetch(url)).body!.getReader();
+    private static async fetch_songinfo(url: URL): Promise<SongData | undefined> {
+        if (url.hostname == ("youtube.com" || "yt.be")) {
+            const info = await ytdlCore.getInfo(url.toString());
+            return {
+                url,
+                kind: SongType.YtDlp,
+                title: info.videoDetails.title,
+                duration: parseInt(info.videoDetails.lengthSeconds),
+            };
+        }
+
+        // TODO: soundcloud, etc (try fetching details from yt-dlp)
+
+        let file_handle: pfs.FileHandle | null = null,
+            stream: PossibleStreamTypes,
+            songtype: SongType;
+
+        if (url.protocol == "file:") {
+            file_handle = await pfs.open(url.pathname);
+            songtype = SongType.File;
+            stream = file_handle.readableWebStream();
+        } else {
+            songtype = SongType.ExternalAudio;
+            stream = (await fetch(url)).body!;
+        }
+
+        let duration = 0;
+        if (url.pathname.endsWith(".mp3")) {
+            // dur = await createEstimator(new FetchDataReader(fetch))(lcurl);
+            // console.log("mp3 duration: " + dur + "s");
+            duration = NaN;
+        } else if (url.pathname.endsWith(".wav")) {
+            duration = await this.getWAVLength(stream);
+        } else if (url.pathname.endsWith(".flac")) {
+            duration = await this.getFLACLength(stream);
+        }
+
+        if (file_handle) {
+            file_handle.close();
+        }
+
+        return {
+            url: url,
+            kind: songtype,
+            title: url.pathname.split("/").at(-1) || "Unknown",
+            duration: duration
+        };
+
+    }
+
+    public static async getWAVLength(from: PossibleStreamTypes) {
+        const rsp = from.getReader();
         const chunks = [];
         let length = 0;
         while (length < 44) {
@@ -129,8 +149,8 @@ export class Song {
         return payload_size / byte_rate;
     }
 
-    public static async getFLACLength(url: string) {
-        const rsp = (await fetch(url)).body!.getReader();
+    public static async getFLACLength(from: PossibleStreamTypes) {
+        const rsp = from.getReader();
         const chunks = [];
         let length = 0;
         while (length < 26) {
@@ -152,21 +172,20 @@ export class Song {
     }
 
     public async makeResource(): Promise<AudioResource<Song> | void> {
-        let stream;
+        let type = this.kind == SongType.YtDlp ? StreamType.WebmOpus : StreamType.Arbitrary;
 
-        let type = this.url.includes("youtube.com") ? StreamType.WebmOpus : StreamType.Arbitrary;
-
-        if (this.url.includes("youtube") || this.url.includes("youtu.be")) {
-            stream = YtDlp.stream_url(this.url);
-        } else if (this.url.startsWith("file://")) {
-            const url = this.url.replace("file://", "");
-            stream = fs.createReadStream(url);
-        } else {
-            const rs = (await fetch(this.url)).body;
-            if (rs) {
-                stream = rs as unknown as internal.Readable;
+        let stream = await (async () => {
+            switch (this.kind) {
+                case SongType.YtDlp: return YtDlp.stream_url(this.url.toString());
+                case SongType.File: return fs.createReadStream(this.url.pathname);
+                case SongType.ExternalAudio: {
+                    const rs = (await fetch(this.url)).body;
+                    if (rs) {
+                        return rs as unknown as internal.Readable;
+                    }
+                }
             }
-        }
+        })();
 
         if (!stream) return;
 
