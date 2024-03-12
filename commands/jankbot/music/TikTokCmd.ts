@@ -9,8 +9,6 @@ import * as play from '../../play';
 export let lock = new AsyncLock({ timeout: 200000 });
 
 export default class TikTokCmd extends JankbotMusicCmd {
-    private _ttsEndpointBase = "https://api16-normal-useast5.us.tiktokv.com/media/api/text/speech/invoke/";
-
     private _ttsVoices = [
         // DISNEY VOICES
         'en_us_ghostface',            // Ghost Face
@@ -149,7 +147,7 @@ export default class TikTokCmd extends JankbotMusicCmd {
             text = text.replaceAll("\n", " ");
 
             await this._playTts(message, speaker, text);
-        })
+        });
 
     }
 }
