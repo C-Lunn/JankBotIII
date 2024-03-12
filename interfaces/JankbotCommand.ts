@@ -1,4 +1,4 @@
-import { GuildMember, Message } from "discord.js";
+import { Message } from "discord.js";
 import { Bot } from "../structs/Bot";
 import { Command } from "./Command";
 
@@ -22,18 +22,20 @@ export default class JankbotCmd implements Command {
         }
     }
 
-    public async run (bot: Bot, message: Message, args: string[]) {
+    public async run(bot: Bot, message: Message, args: string[]) {
         console.log("Command not implemented.");
     }
 
-    public static factory(name: string, 
-                description: string,
-                bot: Bot,
-                run: (bot: Bot, message: Message, args: string[]) => Promise<void>,
-                is_tantamod: boolean = false,
-                aliases?: string[],
-                permissions?: string[],
-                cooldown?: number) {
+    // OOP PATTERN SPOTTED
+    public static factory(name: string,
+        description: string,
+        bot: Bot,
+        run: (bot: Bot, message: Message, args: string[]) => Promise<void>,
+        is_tantamod: boolean = false,
+        aliases?: string[],
+        permissions?: string[],
+        cooldown?: number
+    ) {
         const inst = new JankbotCmd();
         inst.name = name;
         inst.description = description;
