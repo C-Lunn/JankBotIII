@@ -23,8 +23,8 @@ export class NotAMusicError extends Error {
 const allowed_hosts = [
     "youtube.com",
     "www.youtube.com",
-    "yt.be",
-    "www.yt.be",
+    "youtu.be",
+    "www.youtu.be",
     "music.youtube.com",
     "soundcloud.com",
     "www.soundcloud.com",
@@ -36,7 +36,9 @@ export enum SongType {
     File,
 }
 
-type PossibleStreamTypes = ReadableStream<Uint8Array> | web_streams.ReadableStream<any>;
+type PossibleStreamTypes
+    = ReadableStream<Uint8Array>
+    | web_streams.ReadableStream<any>;
 
 export class Song {
     public readonly url: URL;
@@ -53,7 +55,11 @@ export class Song {
         this.added_by = added_by;
     }
 
-    public static async from(url: string = "", search: string = "", added_by: string = ""): Promise<Song> {
+    public static async from(
+        url: string = "",
+        search: string = "",
+        added_by: string = ""
+    ): Promise<Song> {
         let url_parsed: URL | null;
         try {
             url_parsed = new URL(url);
@@ -66,16 +72,19 @@ export class Song {
             url_parsed = new URL(`https://youtube.com/watch?v=${result.id}`);
         }
 
-        let songInfo = await Song.fetch_songinfo(url_parsed);
+        let song_info = await Song.fetch_songinfo(url_parsed);
 
-        if (songInfo) {
-            return new this(songInfo, added_by);
-        } else {
-            return new this(
-                { duration: NaN, title: "Unknown", url: url_parsed, kind: SongType.YtDlp },
+        return song_info
+            ? new this(song_info, added_by)
+            : new this(
+                {
+                    duration: NaN,
+                    title: "Unknown",
+                    url: url_parsed,
+                    kind: SongType.YtDlp,
+                },
                 added_by
             );
-        }
     }
 
     private static async fetch_songinfo(url: URL): Promise<SongData | undefined> {
@@ -88,8 +97,6 @@ export class Song {
                 duration: parseInt(info["duration"] as string),
             };
         }
-
-        // TODO: soundcloud, etc (try fetching details from yt-dlp)
 
         if (!this.its_audio(url)) {
             return
@@ -206,9 +213,5 @@ export class Song {
             stream,
             { metadata: this, inputType: type, inlineVolume: true }
         );
-    }
-
-    public startMessage() {
-        return i18n.__mf("play.startedPlaying", { title: this.title, url: this.url });
     }
 }
