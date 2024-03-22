@@ -27,7 +27,7 @@ dependencies:
     specifier: ^4.19.1
     version: 4.19.1
   geo-tz:
-    specifier: ^8.0.1
+    specifier: ^8.0.2
     version: 8.0.2
   i18n:
     specifier: ^0.15.1
