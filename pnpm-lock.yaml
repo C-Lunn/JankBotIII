@@ -45,7 +45,7 @@ dependencies:
     specifier: ^1.0.4
     version: 1.0.4
   typescript:
-    specifier: ^5.4.2
+    specifier: ^5.4.3
     version: 5.4.3
   youtube-sr:
     specifier: ~4.3.4
