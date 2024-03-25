@@ -68,8 +68,8 @@ optionalDependencies:
     specifier: ^0.1.1
     version: 0.1.1
   sodium-native:
-    specifier: ^4.1.0
-    version: 4.1.0
+    specifier: ^4.1.1
+    version: 4.1.1
   tweetnacl:
     specifier: ^1.0.3
     version: 1.0.3
@@ -4262,8 +4262,8 @@ packages:
     resolution: {integrity: sha512-YiuPbxpCj4hD9Qs06hGAz/OZhQ0eDuALN0lRWJez0eD/RevzKqGdUx1IOMUnXgpr+sXZLq3g8ERwbAH0bCb8vg==}
     dev: false
 
-  /sodium-native@4.1.0:
-    resolution: {integrity: sha512-GcAVR0fQKAiHN/7tbMYb6P98kFYdHz6Gf4ZCeVDcs4egbkwrGNebmpwsE7gRdKtrbHHlO2PKQNzDsfIteh7abw==}
+  /sodium-native@4.1.1:
+    resolution: {integrity: sha512-LXkAfRd4FHtkQS4X6g+nRcVaN7mWVNepV06phIsC6+IZFvGh1voW5TNQiQp2twVaMf05gZqQjuS+uWLM6gHhNQ==}
     requiresBuild: true
     dependencies:
       node-gyp-build: 4.8.0
