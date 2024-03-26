@@ -27,7 +27,7 @@
     "axios": "^1.6.8",
     "discord.js": "^14.14.1",
     "dotenv": "^16.3.1",
-    "express": "^4.19.1",
+    "express": "^4.19.2",
     "geo-tz": "^8.0.2",
     "i18n": "^0.15.1",
     "mp3-duration-estimate": "^1.0.1",
