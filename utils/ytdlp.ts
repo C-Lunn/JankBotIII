@@ -31,7 +31,8 @@ export class YtDlp {
             const cmd = spawn("yt-dlp", [
                 url,
                 "--skip-download",
-                "--dump-single-json",
+                // only return title and duration
+                "-O", `%(.{title,duration})j`,
                 "-q",
                 "--no-warnings",
             ]);
