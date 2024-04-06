@@ -22,18 +22,18 @@ export default class JankbotCmd implements Command {
         }
     }
 
-    public async run (bot: Bot, message: Message, args: string[]) {
+    public async run(bot: Bot, message: Message, args: string[]) {
         console.log("Command not implemented.");
     }
 
-    public static factory(name: string, 
-                description: string,
-                bot: Bot,
-                run: (bot: Bot, message: Message, args: string[]) => Promise<void>,
-                is_tantamod: boolean = false,
-                aliases?: string[],
-                permissions?: string[],
-                cooldown?: number) {
+    public static factory(name: string,
+        description: string,
+        bot: Bot,
+        run: (bot: Bot, message: Message, args: string[]) => Promise<void>,
+        is_tantamod: boolean = false,
+        aliases?: string[],
+        permissions?: string[],
+        cooldown?: number) {
         const inst = new JankbotCmd();
         inst.name = name;
         inst.description = description;

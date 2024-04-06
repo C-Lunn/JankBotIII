@@ -1,34 +1,35 @@
 import { ActivityType, Client, Collection, Snowflake } from "discord.js";
 import express from 'express';
 import { readdirSync } from "fs";
-import { join } from "path";
+import path, { join } from "path";
+import CatCmd from "../commands/jankbot/general/CatCmd";
 import DurstCmd from "../commands/jankbot/general/DurstCmd";
+import FistchordCmd from "../commands/jankbot/general/FistchordCmd";
 import JankmanCmd from "../commands/jankbot/general/JankmanCmd";
 import LogoCmd from "../commands/jankbot/general/LogoCmd";
 import MSDiscordForum from "../commands/jankbot/general/MSDiscordForum";
 import SlayCmd from "../commands/jankbot/general/SlayCmd";
-import TikTokCmd from "../commands/jankbot/music/TikTokCmd";
+import ThreadCmd from "../commands/jankbot/general/ThreadTester";
 import TimeCmd from "../commands/jankbot/general/TimeCmd";
+import TootCmd from "../commands/jankbot/general/TootCmd";
+import XkcdCmd from "../commands/jankbot/general/XckdCmd";
 import LeaveCmd from "../commands/jankbot/music/LeaveCmd";
-import GenerateLogosCmd from "../commands/jankbot/tantamod/GenerateLogosCmd";
+import TikTokCmd from "../commands/jankbot/music/TikTokCmd";
 import GramophoneThreadCmd from "../commands/jankbot/tantamod/GramophoneThreadCmd";
 import SayCmd from "../commands/jankbot/tantamod/SayCmd";
 import SetDjCmd from "../commands/jankbot/tantamod/SetDJCmd";
 import StarCmd from "../commands/jankbot/tantamod/StarCmd";
 import CmdFromObj from "../interfaces/CmdFromObj";
 import { Command } from "../interfaces/Command";
+import { MissingPermissionsException } from "../utils/MissingPermissionsException";
 import { checkPermissions } from "../utils/checkPermissions";
 import { config } from "../utils/config";
 import { i18n } from "../utils/i18n";
-import { MissingPermissionsException } from "../utils/MissingPermissionsException";
-import { MusicQueue } from "./MusicQueue";
-import CatCmd from "../commands/jankbot/general/CatCmd";
-import { QuitSibelius } from "./QuitSibelius";
-import XkcdCmd from "../commands/jankbot/general/XckdCmd";
-import { WhatWhenGramophone } from "./WhatWhenGramophone";
-import FistchordCmd from "../commands/jankbot/general/FistchordCmd";
-import ThreadCmd from "../commands/jankbot/general/ThreadTester";
 import { get_avatar, get_thread_info, scrape_thread } from "../utils/thread_scraper";
+import FeddedVerse, { APSecuritie, WebFinger } from "../utils/toots";
+import { MusicQueue } from "./MusicQueue";
+import { QuitSibelius } from "./QuitSibelius";
+import { WhatWhenGramophone } from "./WhatWhenGramophone";
 
 const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -90,11 +91,51 @@ export class Bot {
             get_avatar(res, this, req.params.uid);
         })
 
+        if (config.DON?.enabled) {
+            APSecuritie.init_keys();
+
+            app.use("/actor", express.json({
+                type() { return true; },
+            }));
+
+            if (config.DON!.avatar_path) {
+                app.get(`/actor/icon`, async (req, res) => {
+                    res.sendFile(config.DON!.avatar_path!, {
+                        root: path.resolve(__dirname, "../"),
+                    });
+                });
+            }
+
+            app.get('/.well-known/webfinger', async (req, res) => {
+                const resource = req.query["resource"];
+                if (resource && typeof resource == "string") {
+                    const json = WebFinger.lookup(resource);
+                    if (json) {
+                        res.json(json);
+                    }
+                }
+
+                res.status(404).send();
+            });
+
+            app.get(`/actor/${config.DON.username}`, async (req, res) => {
+                res.contentType("application/activity+json").json(FeddedVerse.get_actor());
+            });
+
+            app.post(`/actor/${config.DON.username}/inbox`, async (req, res) => {
+                FeddedVerse.inbox(req.body, res);
+            });
+
+            app.get(`/actor/${config.DON.username}/outbox`, async (req, res) => {
+                res.contentType("application/activity+json").json(FeddedVerse.outbox());
+            });
+        }
+
         this._qs = new QuitSibelius(this);
         this._wg = new WhatWhenGramophone(this);
 
         app.listen(config.PORT ?? 3000, () => {
-            console.log('Listening on port 3000');
+            console.log(`Listening on port ${config.PORT}`);
         });
     }
 
@@ -127,22 +168,23 @@ export class Bot {
         }
 
         for (const c of [
+            new CatCmd(this),
+            new DurstCmd(this),
+            new FistchordCmd(this),
+            new GramophoneThreadCmd(this),
+            new JankmanCmd(this),
+            new LeaveCmd(this),
+            new LogoCmd(this),
+            new MSDiscordForum(this),
+            new SayCmd(this),
             new SetDjCmd(this),
             new SlayCmd(this),
-            new SayCmd(this),
-            new TimeCmd(this),
-            new DurstCmd(this),
-            new LogoCmd(this),
             new StarCmd(this),
-            new LeaveCmd(this),
-            new MSDiscordForum(this),
-            new JankmanCmd(this),
-            new GramophoneThreadCmd(this),
-            new TikTokCmd(this),
-            new CatCmd(this),
             new ThreadCmd(this),
+            new TikTokCmd(this),
+            new TimeCmd(this),
+            new TootCmd(this),
             new XkcdCmd(this),
-            new FistchordCmd(this),
         ]) {
             this.commands.set(c.name, c);
         }

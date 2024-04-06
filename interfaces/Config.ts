@@ -9,4 +9,15 @@ export interface Config {
     MOD_ROLE_ID: string;
     MQ_KEY?: string;
     PORT?: string;
+    DB_PATH: string;
+    HOSTNAME?: string;
+    DON?: {
+        enabled: boolean;
+        username: string;
+
+        avatar_path?: string;
+        bio?: string;
+        display_name?: string;
+        meta?: Record<string, {value: string, linkify: boolean}>;
+    };
 }

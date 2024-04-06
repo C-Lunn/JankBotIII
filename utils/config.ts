@@ -17,6 +17,8 @@ try {
         MOD_ROLE_ID: process.env.MOD_ROLE_ID ?? "",
         MQ_KEY: process.env.MQ_KEY,
         PORT: process.env.PORT,
+        DB_PATH: process.env.DB_PATH ?? "jb.db",
+        HOSTNAME: process.env.HOSTNAME,
     };
 }
 
