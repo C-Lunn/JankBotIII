@@ -4,7 +4,6 @@ import pfs from "fs/promises";
 import internal from "stream";
 import * as web_streams from "stream/web";
 import youtube from "youtube-sr";
-import { i18n } from "../utils/i18n";
 import { YtDlp } from "../utils/ytdlp";
 
 export interface SongData {
@@ -138,7 +137,7 @@ export class Song {
         };
     }
 
-    public static its_audio(url: URL) {
+    private static its_audio(url: URL) {
         return url.pathname.endsWith(".mp3")
             || url.pathname.endsWith(".wav")
             || url.pathname.endsWith(".wave")
@@ -192,7 +191,9 @@ export class Song {
     }
 
     public async makeResource(): Promise<AudioResource<Song> | void> {
-        let type = this.kind == SongType.YtDlp ? StreamType.WebmOpus : StreamType.Arbitrary;
+        let type = this.kind == SongType.YtDlp
+            ? StreamType.WebmOpus
+            : StreamType.Arbitrary;
 
         let stream = await (async () => {
             switch (this.kind) {

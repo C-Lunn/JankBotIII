@@ -45,12 +45,6 @@ export default {
 
         const loadingReply = await message.reply("⏳ Loading...");
 
-        // Start the playlist if playlist url was provided
-        if (playlistPattern.test(args[0])) {
-            await loadingReply.delete();
-            return bot.commands.get("playlist")!.execute(message, args);
-        }
-
         let song;
 
         try {

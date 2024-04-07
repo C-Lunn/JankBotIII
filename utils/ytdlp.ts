@@ -6,6 +6,7 @@ export class YtDlp {
         const cmd = spawn("yt-dlp", [
             url,
             "--extract-audio",
+            "--no-playlist",
             "--audio-format", "opus", // output opus
             "-o", "-" // output to stdout
         ]);
@@ -34,6 +35,7 @@ export class YtDlp {
                 // only return title and duration
                 "-O", `%(.{title,duration})j`,
                 "-q",
+                "--no-playlist",
                 "--no-warnings",
             ]);
 
