@@ -5,7 +5,6 @@ import { MusicQueue } from "../structs/MusicQueue";
 import { NotAMusicError, Song } from "../structs/Song";
 import { i18n } from "../utils/i18n";
 import { icon } from "../utils/icons";
-import { playlistPattern } from "../utils/patterns";
 
 export default {
     name: "play",
@@ -31,7 +30,12 @@ export default {
         if (!args.length) {
             if (message.attachments.size) {
                 const lcurl = message.attachments.first()!.url.toLowerCase();
-                if (lcurl.endsWith(".mp3") || lcurl.endsWith(".ogg") || lcurl.endsWith(".wav") || lcurl.endsWith(".flac")) {
+                if (
+                    lcurl.endsWith(".mp3") ||
+                    lcurl.endsWith(".ogg") ||
+                    lcurl.endsWith(".wav") ||
+                    lcurl.endsWith(".flac")
+                ) {
                     url = message.attachments.first()!.url.toString();
                 } else {
                     return message.reply(i18n.__mf("play.usageReply", { prefix: bot.prefix })).catch(console.error);

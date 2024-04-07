@@ -28,7 +28,6 @@ export class YtDlp {
         console.log(`asking yt-dlp for details about ${url}`)
 
         const p = new Promise((resolve, reject) => {
-            // todo: this returns a ludicrous amount of data. find a way to reduce it
             const cmd = spawn("yt-dlp", [
                 url,
                 "--skip-download",
