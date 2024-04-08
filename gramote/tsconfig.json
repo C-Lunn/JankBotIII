@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "module": "NodeNext",
+        "target": "esnext",
+        "jsx": "react-jsx",
+        "jsxImportSource": "preact",
+        "lib": [
+            "DOM",
+            "DOM.Iterable"
+        ]
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}

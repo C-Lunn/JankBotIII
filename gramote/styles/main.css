@@ -1,0 +1,21 @@
+:root {
+    --font-display: 'Hammersmith One', sans-serif;
+    --font-sans: 'Cabin Variable', 'Cabin', sans-serif;
+}
+
+body,
+html {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    font-family: var(--font-sans);
+    font-synthesis: none;
+}
+
+h1 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1.1rem;
+}

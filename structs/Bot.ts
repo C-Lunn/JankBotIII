@@ -29,6 +29,8 @@ import { WhatWhenGramophone } from "./WhatWhenGramophone";
 import FistchordCmd from "../commands/jankbot/general/FistchordCmd";
 import ThreadCmd from "../commands/jankbot/general/ThreadTester";
 import { get_avatar, get_thread_info, scrape_thread } from "../utils/thread_scraper";
+import { GramophoneServer } from "../utils/socket";
+import GramophoneCmd from "../commands/jankbot/tantamod/GramophoneCmd";
 
 const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -44,6 +46,7 @@ export class Bot {
     private _qs: QuitSibelius;
     private _wg: WhatWhenGramophone;
     private _all_command_names: string[] = [];
+    public gramo?: GramophoneServer;
 
     public constructor(public readonly client: Client) {
         this.client.login(config.TOKEN);
@@ -66,6 +69,10 @@ export class Bot {
         this.importCommands();
         this.onMessageCreate();
         const app = express();
+
+        this._qs = new QuitSibelius(this);
+        this._wg = new WhatWhenGramophone(this);
+
         app.get('/np', (req, res) => {
             const queue = this.queues.get('638309926225313832');
             if (queue) {
@@ -85,16 +92,27 @@ export class Bot {
             res.send(msgs);
         });
 
-
         app.get('/avatar/:uid', async (req, res) => {
             get_avatar(res, this, req.params.uid);
         })
 
-        this._qs = new QuitSibelius(this);
-        this._wg = new WhatWhenGramophone(this);
-
-        app.listen(config.PORT ?? 3000, () => {
+        const server = app.listen(config.PORT ?? 3000, () => {
             console.log('Listening on port 3000');
+        });
+
+        server.on("upgrade", (req, socket, head) => {
+            function fourohfour() {
+                socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+            }
+
+            if (this.gramo && req.url == "/gramophone") {
+                this.gramo.wss.handleUpgrade(req, socket, head, (ws) => {
+                    this.gramo?.wss.emit('connection', ws, req);
+                });
+                return;
+            }
+
+            fourohfour()
         });
     }
 
@@ -143,6 +161,7 @@ export class Bot {
             new ThreadCmd(this),
             new XkcdCmd(this),
             new FistchordCmd(this),
+            new GramophoneCmd(this),
         ]) {
             this.commands.set(c.name, c);
         }

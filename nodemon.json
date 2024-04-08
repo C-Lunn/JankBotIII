@@ -1,4 +1,5 @@
 {
+    "ignore": ["./gramote"],
     "execMap": {
         "ts": "ts-node"
     }

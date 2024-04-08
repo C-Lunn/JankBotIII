@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 
 const url_regex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[.\!\/\\w]*))?)/;
 
-type Song = {
+export type Song = {
     url: string,
     user: [string, string | null],
     // yippie for api stability!!!
@@ -44,7 +44,8 @@ const allowed_content_types = [
     "audio/flac",
 ];
 
-export async function scrape_thread(bot: Bot, id: string) {
+export async function scrape_thread(bot: Bot, id: string)
+    : Promise<Record<string, Song>[] | undefined> {
     let messages, guild, channel;
     try {
         channel = bot.client.channels.cache.get(id);
@@ -75,7 +76,7 @@ export async function scrape_thread(bot: Bot, id: string) {
         return;
     }
 
-    const data: Map<String, Song>[] = [
+    const data: Map<string, Song>[] = [
         new Map(),
         new Map(),
         new Map(),

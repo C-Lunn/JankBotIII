@@ -17,5 +17,5 @@
         "strictPropertyInitialization": false
     },
     "include": ["./", "./config.json", "./locales/*.json", "./sounds/*.mp3"],
-    "exclude": ["/.github", "./dist", "./node_modules"]
+    "exclude": ["/.github", "./dist", "./node_modules", "./gramote"]
 }
