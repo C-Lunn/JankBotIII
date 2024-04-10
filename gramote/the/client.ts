@@ -1,20 +1,16 @@
 import { WsCommand, type WsMessage } from "../../utils/socket";
-import { $songs, $thread } from "./stores";
-
-type Message = {
-    command: WsCommand,
-    data: any,
-}
+import { $songs, $thread } from "./state";
 
 export default class Client {
     constructor() {
         console.info("connecting :3");
-        this.ws = new WebSocket("ws://127.0.0.1:3001/gramophone");
+        this.ws = new WebSocket("ws://localhost:3001/gramophone");
         this.ws.onopen = () => this.on_open()
         this.ws.onmessage = (e) => this.handle_incoming(e)
     }
 
     on_open() {
+        console.info("connected!");
     }
 
     handle_incoming(e: MessageEvent) {
