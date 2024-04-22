@@ -82,8 +82,8 @@ devDependencies:
     specifier: ^4.17.18
     version: 4.17.18
   '@types/i18n':
-    specifier: ^0.13.6
-    version: 0.13.6
+    specifier: ^0.13.11
+    version: 0.13.11
   '@types/jest':
     specifier: ^29.5.12
     version: 29.5.12
@@ -1270,8 +1270,8 @@ packages:
     resolution: {integrity: sha512-lPG6KlZs88gef6aD85z3HNkztpj7w2R7HmR3gygjfXCQmsLloWNARFkMuzKiiY8FGdh1XDpgBdrSf4aKDiA7Kg==}
     dev: true
 
-  /@types/i18n@0.13.6:
-    resolution: {integrity: sha512-LLbimAA0oQilgP4PJBFH7sRdBUjWLo6R1rf46SUgVzsUZeXH3PT1piXj4LNX5ECDi0bLg9RmQMmY1K2qawqJqA==}
+  /@types/i18n@0.13.11:
+    resolution: {integrity: sha512-MD2oTSRdoMaSqTShTaiJPD+CsCKEgPj4SH6ZuJ54CWs+J7X0ZRHldIPseJU48dLxYCSfPHgx/JNlppeSwH+tTQ==}
     dev: true
 
   /@types/istanbul-lib-coverage@2.0.4:
