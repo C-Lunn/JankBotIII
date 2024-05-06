@@ -25,7 +25,7 @@
     "@types/axios": "^0.14.0",
     "async-lock": "^1.4.0",
     "axios": "^1.6.8",
-    "discord.js": "^14.14.1",
+    "discord.js": "^14.15.2",
     "dotenv": "^16.3.1",
     "express": "^4.19.2",
     "geo-tz": "^8.0.2",
