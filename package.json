@@ -21,7 +21,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@discordjs/voice": "^0.16.1",
+    "@discordjs/voice": "^0.17.0",
     "@types/axios": "^0.14.0",
     "async-lock": "^1.4.0",
     "axios": "^1.6.8",
