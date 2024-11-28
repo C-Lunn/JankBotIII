@@ -1,6 +1,6 @@
 import youtube, { Playlist as YoutubePlaylist } from "youtube-sr";
 import { config } from "../utils/config";
-import { Song } from "./Song";
+import { Song, SongType } from "./Song";
 const pattern = /^.*(youtu.be\/|list=)([^#\&\?]*).*/i;
 
 export class Playlist {
@@ -16,7 +16,8 @@ export class Playlist {
             .map((video) => {
                 return new Song({
                     title: video.title!,
-                    url: `https://youtube.com/watch?v=${video.id}`,
+                    url: new URL(`https://youtube.com/watch?v=${video.id}`),
+                    kind: SongType.YtDlp,
                     duration: video.duration / 1000,
                 }, added_by);
             });
