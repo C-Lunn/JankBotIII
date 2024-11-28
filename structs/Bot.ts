@@ -1,20 +1,6 @@
 import { ActivityType, Client, Collection, Snowflake } from "discord.js";
-import express from 'express';
 import { readdirSync } from "fs";
 import { join } from "path";
-import DurstCmd from "../commands/jankbot/general/DurstCmd";
-import JankmanCmd from "../commands/jankbot/general/JankmanCmd";
-import LogoCmd from "../commands/jankbot/general/LogoCmd";
-import MSDiscordForum from "../commands/jankbot/general/MSDiscordForum";
-import SlayCmd from "../commands/jankbot/general/SlayCmd";
-import TikTokCmd from "../commands/jankbot/music/TikTokCmd";
-import TimeCmd from "../commands/jankbot/general/TimeCmd";
-import LeaveCmd from "../commands/jankbot/music/LeaveCmd";
-import GenerateLogosCmd from "../commands/jankbot/tantamod/GenerateLogosCmd";
-import GramophoneThreadCmd from "../commands/jankbot/tantamod/GramophoneThreadCmd";
-import SayCmd from "../commands/jankbot/tantamod/SayCmd";
-import SetDjCmd from "../commands/jankbot/tantamod/SetDJCmd";
-import StarCmd from "../commands/jankbot/tantamod/StarCmd";
 import CmdFromObj from "../interfaces/CmdFromObj";
 import { Command } from "../interfaces/Command";
 import { checkPermissions } from "../utils/checkPermissions";
@@ -22,14 +8,10 @@ import { config } from "../utils/config";
 import { i18n } from "../utils/i18n";
 import { MissingPermissionsException } from "../utils/MissingPermissionsException";
 import { MusicQueue } from "./MusicQueue";
-import CatCmd from "../commands/jankbot/general/CatCmd";
 import { QuitSibelius } from "./QuitSibelius";
-import XkcdCmd from "../commands/jankbot/general/XckdCmd";
 import { WhatWhenGramophone } from "./WhatWhenGramophone";
-import FistchordCmd from "../commands/jankbot/general/FistchordCmd";
-import ThreadCmd from "../commands/jankbot/general/ThreadTester";
-import { get_avatar, get_thread_info, scrape_thread } from "../utils/thread_scraper";
-import FadeCmd from "../commands/jankbot/music/FadeCmd";
+import command_registry from "../commands/registry";
+import WebService from "../web";
 
 const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -64,39 +46,12 @@ export class Bot {
             console.log('Test error:', error);
         });
 
-        this.importCommands();
+        new WebService(this).listen();
+
+        this.register_commands();
         this.onMessageCreate();
-        const app = express();
-        app.get('/np', (req, res) => {
-            const queue = this.queues.get('638309926225313832');
-            if (queue) {
-                res.send(queue.songs[0].title);
-            } else {
-                res.send('No queue');
-            }
-        });
-
-        app.get('/thread/:id', async (req, res) => {
-            const msgs = await scrape_thread(this, req.params.id);
-            res.send(msgs);
-        });
-
-        app.get('/thread_info/:id', async (req, res) => {
-            const msgs = await get_thread_info(this, req.params.id);
-            res.send(msgs);
-        });
-
-
-        app.get('/avatar/:uid', async (req, res) => {
-            get_avatar(res, this, req.params.uid);
-        })
-
         this._qs = new QuitSibelius(this);
         this._wg = new WhatWhenGramophone(this);
-
-        app.listen(config.PORT ?? 3000, () => {
-            console.log('Listening on port 3000');
-        });
     }
 
     public getDJMode(guildId: Snowflake) {
@@ -116,8 +71,10 @@ export class Bot {
         }
     }
 
-    private async importCommands() {
-        console.log(__dirname);
+    private async register_commands() {
+        // cleanup task: this is comically slow and a really stupid api. at 
+        // some point someone (me) needs to go though all these and convert 
+        // them into JankbotCmds and add them to registry.ts.
         const commandFiles = readdirSync(join(__dirname, "..", "commands")).filter((file) => file.endsWith(".js") || file.endsWith(".ts"));
 
         for (const file of commandFiles) {
@@ -127,25 +84,8 @@ export class Bot {
             this.commands.set(cmd.name, cmd);
         }
 
-        for (const c of [
-            new SetDjCmd(this),
-            new SlayCmd(this),
-            new SayCmd(this),
-            new TimeCmd(this),
-            new DurstCmd(this),
-            new LogoCmd(this),
-            new StarCmd(this),
-            new LeaveCmd(this),
-            new MSDiscordForum(this),
-            new JankmanCmd(this),
-            new GramophoneThreadCmd(this),
-            new TikTokCmd(this),
-            new CatCmd(this),
-            new ThreadCmd(this),
-            new XkcdCmd(this),
-            new FistchordCmd(this),
-            new FadeCmd(this),
-        ]) {
+        // this, on the other hand, is perfect.
+        for (const c of command_registry(this)) {
             this.commands.set(c.name, c);
         }
 
@@ -163,12 +103,19 @@ export class Bot {
         this.client.on("messageCreate", async (message: any) => {
             if (message.author.bot || !message.guild) return;
 
-            if (message.content.toLowerCase() === "quit sibelius" || message.content === "<:quit1:737227012435083274><:quit2:737226986191061013>" || message.content === "<:quit1:737227012435083274> <:quit2:737226986191061013>") {
+            if (message.content.toLowerCase() === "quit sibelius"
+                || message.content === "<:quit1:737227012435083274><:quit2:737226986191061013>"
+                || message.content === "<:quit1:737227012435083274> <:quit2:737226986191061013>"
+            ) {
                 this._qs.run(message);
                 return;
             }
 
-            if ((message.content.toLowerCase().includes("what") || message.content.toLowerCase().includes("when")) && message.content.toLowerCase().includes("gramophone")) {
+            if ((
+                    message.content.toLowerCase().includes("what")
+                    || message.content.toLowerCase().includes("when")
+                ) && message.content.toLowerCase().includes("gramophone")
+            ) {
                 const what_index = message.content.toLowerCase().indexOf("what");
                 const when_index = message.content.toLowerCase().indexOf("when");
                 const gram_index = message.content.toLowerCase().indexOf("gramophone");
