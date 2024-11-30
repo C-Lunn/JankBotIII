@@ -71,3 +71,5 @@ typings/
 
 # Temp ignore 
 config.json
+
+.DS_Store
