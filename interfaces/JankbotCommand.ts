@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { Message, PermissionsString } from "discord.js";
 import { Bot } from "../structs/Bot";
 import { Command } from "./Command";
 
@@ -6,7 +6,7 @@ export default class JankbotCmd implements Command {
     public name: string;
     public description: string;
     public aliases?: string[];
-    public permissions?: string[];
+    public permissions?: PermissionsString[];
     public cooldown?: number;
     public category?: string;
     protected bot: Bot;

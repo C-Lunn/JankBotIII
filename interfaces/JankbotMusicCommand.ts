@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { Message, PermissionsString } from "discord.js";
 import { Bot } from "../structs/Bot";
 import JankbotCmd from "./JankbotCommand";
 
@@ -25,7 +25,7 @@ export default class JankbotMusicCmd extends JankbotCmd {
                             bot: Bot,
                             run: (bot: Bot, message: Message, args: string[]) => Promise<void>,
                             aliases?: string[],
-                            permissions?: string[],
+                            permissions?: PermissionsString[],
                             cooldown?: number) {
         const inst = new JankbotMusicCmd();
         inst.name = name;

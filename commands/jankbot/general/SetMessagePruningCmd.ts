@@ -1,31 +1,37 @@
 import { Message } from "discord.js";
 import { writeFile } from "fs";
-import { Config } from "../interfaces/Config";
-import { i18n } from "../utils/i18n";
+import { Config } from "../../../interfaces/Config";
+import { i18n } from "../../../utils/i18n";
+import JankbotCmd from "../../../interfaces/JankbotCommand";
+import { Bot } from "../../../structs/Bot";
 
-export default {
-    name: "pruning",
-    description: i18n.__("pruning.description"),
-    is_tantamod: true,
-    async execute(message: Message) {
+export default class SetMessagePruningCmd extends JankbotCmd {
+    constructor(public bot: Bot) {
+        super();
+        this.name = "pruning";
+        this.description = i18n.__("pruning.description");
+        this._is_tantamod = true;
+    }
+    
+    async run(bot: Bot, message: Message) {
         let config: Config | undefined;
-
+        
         try {
             config = require("../config.json");
         } catch (error) {
             config = undefined;
             console.error(error);
         }
-
+        
         if (config) {
             config.PRUNING = !config.PRUNING;
-
+        
             writeFile("./config.json", JSON.stringify(config, null, 2), (err) => {
                 if (err) {
                     console.log(err);
                     return message.channel.send(i18n.__("pruning.errorWritingFile")).catch(console.error);
                 }
-
+        
                 return message.channel
                     .send(
                         i18n.__mf("pruning.result", {
@@ -35,5 +41,6 @@ export default {
                     .catch(console.error);
             });
         }
+
     }
-};
+}
