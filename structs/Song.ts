@@ -88,6 +88,7 @@ export class Song {
 
     private static async fetch_songinfo(url: URL): Promise<SongData | undefined> {
         if (allowed_hosts.includes(url.hostname)) {
+            // TODO: handle yt-dlp not existing
             const info = await YtDlp.fetch_thing_details(url.toString());
             return {
                 url,
@@ -197,6 +198,7 @@ export class Song {
 
         let stream = await (async () => {
             switch (this.kind) {
+                // TODO: handle yt-dlp or ffmpeg not existing
                 case SongType.YtDlp: return YtDlp.stream_url(this.url.toString());
                 case SongType.File: return fs.createReadStream(this.url.pathname);
                 case SongType.ExternalAudio: {

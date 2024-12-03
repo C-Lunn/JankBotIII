@@ -3,12 +3,11 @@ import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
 import { Bot } from "../../../structs/Bot";
 
 export default class FadeCmd extends JankbotMusicCmd {
-    constructor(bot: Bot) {
+    constructor(public bot: Bot) {
         super();
         this.name = "fade";
         this.description = "fade oot";
         this.aliases = ['fadeout'];
-        this.bot = bot;
     }
 
     async run(bot: Bot, msg: Message, args: string[]) {

@@ -22,7 +22,7 @@ export default class JankbotCmd implements Command {
         }
     }
 
-    public async run(bot: Bot, message: Message, args: string[]) {
+    public async run(bot: Bot, message: Message, args: string[]): Promise<any> {
         console.log("Command not implemented.");
     }
 

@@ -3,15 +3,21 @@ import { Bot } from "../structs/Bot";
 import CatCmd from "./jankbot/general/CatCmd";
 import DurstCmd from "./jankbot/general/DurstCmd";
 import FistchordCmd from "./jankbot/general/FistchordCmd";
+import HelpCmd from "./jankbot/general/HelpCmd";
 import JankmanCmd from "./jankbot/general/JankmanCmd";
 import LogoCmd from "./jankbot/general/LogoCmd";
 import MSDiscordForum from "./jankbot/general/MSDiscordForum";
 import SlayCmd from "./jankbot/general/MSDiscordForum";
 import ThreadCmd from "./jankbot/general/ThreadTester";
 import TimeCmd from "./jankbot/general/TimeCmd";
+import UptimeCmd from "./jankbot/general/UptimeCmd";
 import XkcdCmd from "./jankbot/general/XckdCmd";
 import FadeCmd from "./jankbot/music/FadeCmd";
 import LeaveCmd from "./jankbot/music/LeaveCmd";
+import MoveCmd from "./jankbot/music/MoveCmd";
+import PauseCmd from "./jankbot/music/PauseCmd";
+import RemoveSongCmd from "./jankbot/music/RemoveSongCmd";
+import SetVolumeCmd from "./jankbot/music/SetVolume";
 import TikTokCmd from "./jankbot/music/TikTokCmd";
 import GramophoneThreadCmd from "./jankbot/tantamod/GramophoneThreadCmd";
 import SayCmd from "./jankbot/tantamod/SayCmd";
@@ -37,5 +43,11 @@ export default function command_registry(bot: Bot): Command[] {
         new XkcdCmd(bot),
         new FistchordCmd(bot),
         new FadeCmd(bot),
+        new HelpCmd(bot),
+        new SetVolumeCmd(bot),
+        new UptimeCmd(bot),
+        new MoveCmd(bot),
+        new PauseCmd(bot),
+        new RemoveSongCmd(bot),
     ]
 }

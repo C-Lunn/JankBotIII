@@ -45,6 +45,10 @@ export class Bot {
         process.on('unhandledRejection', error => {
             console.log('Test error:', error);
         });
+        
+        if (process.env.NODE_ENV == "development") {
+            console.info("Jankbot is in development mode");
+        }
 
         new WebService(this).listen();
 
