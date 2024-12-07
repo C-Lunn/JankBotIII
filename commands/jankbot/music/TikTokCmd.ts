@@ -4,7 +4,7 @@ import * as fs from "fs";
 import * as os from "os";
 import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
 import { Bot } from "../../../structs/Bot";
-import * as play from '../../play';
+import play from './PlayCmd';
 
 export let lock = new AsyncLock({ timeout: 200000 });
 
@@ -118,7 +118,7 @@ export default class TikTokCmd extends JankbotMusicCmd {
         const file_target = `${temp_dir}/${name}.mp3`
         fs.writeFile(file_target, decoded, () => null);
 
-        await play.default.execute(message, [`file://${file_target}`]);
+        await new play(this.bot).run(this.bot, message, [`file://${file_target}`]);
 
         // wait 5 seconds before taking on a new request
         await new Promise(resolve => setTimeout(resolve, 5000));

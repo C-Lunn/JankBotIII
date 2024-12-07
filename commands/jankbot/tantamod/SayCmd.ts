@@ -8,7 +8,7 @@ export default class SayCmd extends JankbotCmd {
         this.name = "say";
         this.description = "Make the bot say something";
         this.aliases = ["s"];
-        this.permissions = ["MANAGE_MESSAGES"];
+        this.permissions = ["ManageMessages"];
         this._is_tantamod = true;
         this.bot = bot;
     }

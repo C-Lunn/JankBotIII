@@ -33,7 +33,7 @@ export default class JankbotCmd implements Command {
         run: (bot: Bot, message: Message, args: string[]) => Promise<void>,
         is_tantamod: boolean = false,
         aliases?: string[],
-        permissions?: string[],
+        permissions?: PermissionsString[],
         cooldown?: number
     ) {
         const inst = new JankbotCmd();

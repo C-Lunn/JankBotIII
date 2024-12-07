@@ -1,7 +1,4 @@
 import { ActivityType, Client, Collection, Snowflake } from "discord.js";
-import { readdirSync } from "fs";
-import { join } from "path";
-import CmdFromObj from "../interfaces/CmdFromObj";
 import { Command } from "../interfaces/Command";
 import { checkPermissions } from "../utils/checkPermissions";
 import { config } from "../utils/config";
@@ -76,20 +73,8 @@ export class Bot {
     }
 
     private async register_commands() {
-        // cleanup task: this is comically slow and a really stupid api. at 
-        // some point someone (me) needs to go though all these and convert 
-        // them into JankbotCmds and add them to registry.ts.
-        const commandFiles = readdirSync(join(__dirname, "..", "commands")).filter((file) => file.endsWith(".js") || file.endsWith(".ts"));
-
-        for (const file of commandFiles) {
-            const command = await import(join(__dirname, "..", "commands", `${file}`));
-            const cmd = CmdFromObj(command.default, this);
-            console.log(`Registering command ${cmd.name}`);
-            this.commands.set(cmd.name, cmd);
-        }
-
-        // this, on the other hand, is perfect.
         for (const c of command_registry(this)) {
+            console.log(`registering ${c.constructor.name}`);
             this.commands.set(c.name, c);
         }
 
