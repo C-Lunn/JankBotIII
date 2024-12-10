@@ -364,6 +364,7 @@ export class MusicQueue {
     }
 
     const queue_lines = [];
+    const total_time = this.songs.reduce((acc, x) => x.duration + acc, 0);
     for (let i = opt.from; i <= opt.to; i++) {
       let title;
       if (this.songs[i].title.length > 32) {
@@ -377,6 +378,8 @@ export class MusicQueue {
         queue_lines.push(`${icon("transparent")} **${i + 1}.** ${title} \`[${shortformat(this.songs[i].duration * 1000)}]\` (<@${this.songs[i].added_by}>)`);
       }
     }
+    
+    queue_lines.push(`**Total**: ${shortformat(total_time * 1000)}`);
 
     this._last_from_to = [opt.from, opt.to];
 
