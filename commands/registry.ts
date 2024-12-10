@@ -27,6 +27,7 @@ import ResumeCmd from "./jankbot/music/ResumeCmd";
 import SearchCmd from "./jankbot/music/SearchCmd";
 import SetVolumeCmd from "./jankbot/music/SetVolume";
 import ShuffleCmd from "./jankbot/music/ShuffleCmd";
+import SkipCmd from "./jankbot/music/SkipCmd";
 import SkipToCmd from "./jankbot/music/SkipToCmd";
 import StopCmd from "./jankbot/music/StopCmd";
 import TikTokCmd from "./jankbot/music/TikTokCmd";
@@ -71,5 +72,6 @@ export default function command_registry(bot: Bot): Command[] {
         new ShuffleCmd(bot),
         new SkipToCmd(bot),
         new StopCmd(bot),
+        new SkipCmd(bot),
     ]
 }
