@@ -379,7 +379,7 @@ export class MusicQueue {
       }
     }
     
-    queue_lines.push(`**Total**: ${shortformat(total_time * 1000)}`);
+    queue_lines.push(`${icon("transparent")} **Total**: \`[${shortformat(total_time * 1000)}]\``);
 
     this._last_from_to = [opt.from, opt.to];
 
