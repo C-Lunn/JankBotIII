@@ -10,7 +10,7 @@ export default class GenerateLogosCmd extends JankbotCmd {
         this.name = "gendursts";
         this.description = "lowgo";
         this.aliases = [""];
-        this.permissions = ["MANAGE_MESSAGES"];
+        this.permissions = ["ManageMessages"];
         this._is_tantamod = true;
         this.bot = bot;
     }
