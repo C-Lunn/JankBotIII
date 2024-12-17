@@ -493,7 +493,7 @@ export class MusicQueue {
     });
 
     await p;
-    this.stop(true);
+    this.stop();
     this.setVolume(initial_volume);
   }
 }
