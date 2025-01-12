@@ -1,5 +1,4 @@
-import { Message } from "discord.js";
-import JankbotCmd from "../../../interfaces/JankbotCommand";
+import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
 import { Bot } from "../../../structs/Bot";
 
 export default class SlayCmd extends JankbotCmd {
@@ -10,7 +9,7 @@ export default class SlayCmd extends JankbotCmd {
         this.aliases = ["yas"];
     }
 
-    public override async run(bot: Bot, message: Message, args: string[]) {
+    public override async run(bot: Bot, message: JbMessage, args: string[]) {
         message.channel.send("✨🌈");
     }
 }

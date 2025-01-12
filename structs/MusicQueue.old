@@ -23,7 +23,7 @@ import { Song } from "./Song";
 const wait = promisify(setTimeout);
 
 export class MusicQueue {
-    public readonly message: Message;
+    public readonly message: JbMessage;
     public readonly connection: VoiceConnection;
     public readonly player: AudioPlayer;
     public readonly textChannel: TextChannel;
@@ -161,7 +161,7 @@ export class MusicQueue {
     private async sendPlayingMessage(newState: any) {
         const song = (newState.resource as AudioResource<Song>).metadata;
 
-        let playingMessage: Message;
+        let playingmessage: JbMessage;
 
         try {
             playingMessage = await this.textChannel.send((newState.resource as AudioResource<Song>).metadata.startMessage());

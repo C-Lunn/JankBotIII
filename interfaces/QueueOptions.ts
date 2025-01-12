@@ -3,5 +3,5 @@ import { Message } from "discord.js";
 
 export interface QueueOptions {
     connection: VoiceConnection;
-    message: Message;
+    message: JbMessage;
 }

@@ -1,5 +1,5 @@
-import { Message, ThreadChannel } from "discord.js";
-import JankbotCmd from "../../../interfaces/JankbotCommand";
+import {  ThreadChannel } from "discord.js";
+import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
 import { Bot } from "../../../structs/Bot";
 import { parseSubmission } from "../../../utils/gramophone";
 
@@ -15,7 +15,7 @@ export default class GramophoneThreadCmd extends JankbotCmd {
         this.bot = bot;
     }
 
-    public override async run(bot: Bot, message: Message, args: string[]) {
+    public override async run(bot: Bot, message: JbMessage, args: string[]) {
         message.react("😶");
         const [command, threadId] = message.content.split(" ");
 

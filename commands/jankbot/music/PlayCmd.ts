@@ -1,11 +1,12 @@
 import { AudioPlayerStatus, DiscordGatewayAdapterCreator, joinVoiceChannel, VoiceConnection } from "@discordjs/voice";
-import { Message, VoiceBasedChannel } from "discord.js";
+import { VoiceBasedChannel } from "discord.js";
 import { MusicQueue } from "../../../structs/MusicQueue";
 import { NotAMusicError, Song } from "../../../structs/Song";
 import { i18n } from "../../../utils/i18n";
 import { icon } from "../../../utils/icons";
 import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
 import { Bot } from "../../../structs/Bot";
+import { JbMessage } from "../../../interfaces/JankbotCommand";
 
 export default class PlayCmd extends JankbotMusicCmd {
     constructor(public bot: Bot) {
@@ -18,7 +19,7 @@ export default class PlayCmd extends JankbotMusicCmd {
         this.permissions = ["Connect", "Speak", "AddReactions", "ManageMessages"];
     }
     
-    async run(bot: Bot, message: Message, args: string[]) {
+    async run(bot: Bot, message: JbMessage, args: string[]) {
         const { channel } = message.member!.voice;
         
             if (!channel) return message.reply(i18n.__("play.errorNotChannel")).catch(console.error);

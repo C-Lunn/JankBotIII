@@ -1,10 +1,11 @@
 import { DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
-import { EmbedBuilder, Message } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { MusicQueue } from "../../../structs/MusicQueue";
 import { Playlist } from "../../../structs/Playlist";
 import { i18n } from "../../../utils/i18n";
 import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
 import { Bot } from "../../../structs/Bot";
+import { JbMessage } from "../../../interfaces/JankbotCommand";
 
 export default class PlaylistCmd extends JankbotMusicCmd {
     constructor(public bot: Bot) {
@@ -17,7 +18,7 @@ export default class PlaylistCmd extends JankbotMusicCmd {
         this.permissions = ["Connect", "Speak", "AddReactions", "ManageMessages"];
     }
     
-    async run(bot: Bot, message: Message, args: string[]) {
+    async run(bot: Bot, message: JbMessage, args: string[]) {
         const { channel } = message.member!.voice;
         
         const queue = bot.queues.get(message.guild!.id);

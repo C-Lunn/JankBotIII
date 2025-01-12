@@ -1,5 +1,4 @@
-import { Message } from "discord.js";
-import JankbotCmd from "../../../interfaces/JankbotCommand";
+import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
 import { Bot } from "../../../structs/Bot";
 
 export default class XkcdCmd extends JankbotCmd {
@@ -9,7 +8,7 @@ export default class XkcdCmd extends JankbotCmd {
         this.description = "Get a specific XKCD comic by number, the latest with 'l(atest)', and random with no arguments.";
     }
 
-    public override async run(bot: Bot, message: Message, args: string[]): Promise<void> {
+    public override async run(bot: Bot, message: JbMessage, args: string[]): Promise<void> {
         const latest_xkcd = await fetch("https://xkcd.com/info.0.json").then(res => res.json());
         let xkcd: string;
         if (!isNaN(parseInt(args[0]))) {

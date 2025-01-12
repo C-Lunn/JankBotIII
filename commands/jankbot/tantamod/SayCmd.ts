@@ -1,5 +1,5 @@
-import { Message, TextChannel } from "discord.js";
-import JankbotCmd from "../../../interfaces/JankbotCommand";
+import { TextChannel } from "discord.js";
+import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
 import { Bot } from "../../../structs/Bot";
 
 export default class SayCmd extends JankbotCmd {
@@ -13,7 +13,7 @@ export default class SayCmd extends JankbotCmd {
         this.bot = bot;
     }
 
-    public override async run(bot: Bot, message: Message, args: string[]) {
+    public override async run(bot: Bot, message: JbMessage, args: string[]) {
             if(/^<#\d+>/.test(args[0])) {
                 const channel = message.guild!.channels.cache.get(args[0].slice(2, -1));
                 if(channel) {

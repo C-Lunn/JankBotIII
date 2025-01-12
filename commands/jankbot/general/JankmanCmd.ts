@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import JankbotCmd from "../../../interfaces/JankbotCommand";
+import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
 import { Bot } from "../../../structs/Bot";
 
 export default class JankmanCmd extends JankbotCmd {
@@ -10,7 +10,7 @@ export default class JankmanCmd extends JankbotCmd {
         this.aliases = ["<:jankman:736593545376563320>"];
     }
 
-    public override async run(bot: Bot, message: Message, args: string[]) {
+    public override async run(bot: Bot, message: JbMessage, args: string[]) {
         message.channel.send("https://cdn.discordapp.com/attachments/850700283767554068/1056996073182330981/jman.png");
     }
 }

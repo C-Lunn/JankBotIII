@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import JankbotCmd from "../../../interfaces/JankbotCommand";
+import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
 import { Bot } from "../../../structs/Bot";
 
 export default class CatCmd extends JankbotCmd {
@@ -9,8 +9,9 @@ export default class CatCmd extends JankbotCmd {
         this.description = "cat";
         this.aliases = ["cat"];
     }
+    
 
-    public override async run(bot: Bot, message: Message, args: string[]) {
+    public override async run(bot: Bot, message: JbMessage, args: string[]) {
         message.channel.send("https://imgs.xkcd.com/comics/cat_proximity.png");
     }
 }

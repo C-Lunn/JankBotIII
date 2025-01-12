@@ -1,6 +1,6 @@
 import { EmbedBuilder, Message } from "discord.js";
 import { i18n } from "../../../utils/i18n";
-import JankbotCmd from "../../../interfaces/JankbotCommand";
+import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
 import { Bot } from "../../../structs/Bot";
 
 export default class HelpCmd extends JankbotCmd {
@@ -11,7 +11,7 @@ export default class HelpCmd extends JankbotCmd {
         this.description = "Display all commands and descriptions";
     }
     
-    async run(bot: Bot, message: Message, _args: string[]) {
+    async run(bot: Bot, message: JbMessage, _args: string[]) {
         let commands = bot.commands;
         
         let helpEmbed = new EmbedBuilder()

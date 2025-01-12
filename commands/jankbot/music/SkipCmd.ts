@@ -1,9 +1,9 @@
-import { Message } from "discord.js";
 import { NoMoreSongsInQueueError } from "../../../structs/MusicQueue";
 import { i18n } from "../../../utils/i18n";
 import { canModifyQueue } from "../../../utils/queue";
 import { Bot } from "../../../structs/Bot";
 import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
+import { JbMessage } from "../../../interfaces/JankbotCommand";
 
 export default class SkipCmd extends JankbotMusicCmd {
     constructor(public bot: Bot) {
@@ -14,7 +14,7 @@ export default class SkipCmd extends JankbotMusicCmd {
         this.description = i18n.__("skip.description");
     }
     
-    async run(bot: Bot, message: Message) {
+    async run(bot: Bot, message: JbMessage) {
         const queue = bot.queues.get(message.guild!.id);
         
         if (!queue) return message.reply(i18n.__("skip.errorNotQueue")).catch(console.error);

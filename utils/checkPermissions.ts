@@ -1,12 +1,13 @@
 import { Message, PermissionResolvable } from "discord.js";
 import { Command } from "../interfaces/Command";
+import { JbMessage } from "../interfaces/JankbotCommand";
 
 interface PermissionResult {
     result: boolean;
     missing?: string[];
 }
 
-export async function checkPermissions(command: Command, message: Message): Promise<PermissionResult> {
+export async function checkPermissions(command: Command, message: JbMessage): Promise<PermissionResult> {
     const member = await message.guild!.members.fetch({ user: message.client.user!.id });
     const requiredPermissions = command.permissions as PermissionResolvable[];
 

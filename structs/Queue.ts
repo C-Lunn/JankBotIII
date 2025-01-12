@@ -57,7 +57,7 @@ export class AttemptToReplacePlayingSongError extends Error {
 export const wait = promisify(setTimeout);
 
 export class Queue {
-    public readonly message: Message;
+    public readonly message: JbMessage;
     public readonly connection: VoiceConnection;
     public readonly player: AudioPlayer;
     public readonly textChannel: TextChannel;

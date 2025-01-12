@@ -1,10 +1,10 @@
 import AsyncLock from "async-lock";
-import { Message } from "discord.js";
 import * as fs from "fs";
 import * as os from "os";
 import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
 import { Bot } from "../../../structs/Bot";
 import play from './PlayCmd';
+import { JbMessage } from "../../../interfaces/JankbotCommand";
 
 export let lock = new AsyncLock({ timeout: 200000 });
 
@@ -76,7 +76,7 @@ export default class TikTokCmd extends JankbotMusicCmd {
 
 
     private async _playTts(
-        message: Message,
+        message: JbMessage,
         speaker: string,
         text: string
     ) {
@@ -132,7 +132,7 @@ export default class TikTokCmd extends JankbotMusicCmd {
         this.bot = bot;
     }
 
-    public override async run(bot: Bot, message: Message, args: string[]) {
+    public override async run(bot: Bot, message: JbMessage, args: string[]) {
         lock.acquire('tts', async () => {
             let speaker;
             let text;

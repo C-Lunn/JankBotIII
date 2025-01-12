@@ -1,5 +1,4 @@
-import { Message, TextChannel } from "discord.js";
-import JankbotCmd from "../../../interfaces/JankbotCommand";
+import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
 import { Bot } from "../../../structs/Bot";
 import { readdirSync, readFileSync } from "fs";
 import { join } from "path";
@@ -15,7 +14,7 @@ export default class GenerateLogosCmd extends JankbotCmd {
         this.bot = bot;
     }
 
-    public override async run(bot: Bot, message: Message, args: string[]) {
+    public override async run(bot: Bot, message: JbMessage, args: string[]) {
         // upload images from the ../../resource/muselogos folder and save their URLs to a file in JSON format
         const urls = [];
         const logos = readdirSync(join(__dirname, "..", "..", "..", "resource", "durst"));

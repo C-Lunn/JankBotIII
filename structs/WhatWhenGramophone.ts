@@ -30,6 +30,8 @@ export class WhatWhenGramophone {
                 .setLabel("Gramophone Info")
         );
 
+        if (!msg.channel.isSendable()) return;
+
         await msg.channel.send({
             content: "Hey! If you want to know more about gramophone, check the pinned message in <#739173595955200121> or click the button below.",
             //@ts-ignore

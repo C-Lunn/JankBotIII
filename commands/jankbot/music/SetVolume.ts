@@ -1,8 +1,8 @@
-import { Message } from "discord.js";
 import { i18n } from "../../../utils/i18n";
 import { canModifyQueue } from "../../../utils/queue";
 import { Bot } from "../../../structs/Bot";
 import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
+import { JbMessage } from "../../../interfaces/JankbotCommand";
 
 export default class SetVolumeCmd extends JankbotMusicCmd {
     constructor(public bot: Bot) {
@@ -13,7 +13,7 @@ export default class SetVolumeCmd extends JankbotMusicCmd {
         this.description = "Change volume of currently playing music";
     }
     
-    async run(bot: Bot, message: Message, args: string[]) {
+    async run(bot: Bot, message: JbMessage, args: string[]) {
         const queue = bot.queues.get(message.guild!.id);
         
         if (!queue) return message.reply(i18n.__("volume.errorNotQueue")).catch(console.error);

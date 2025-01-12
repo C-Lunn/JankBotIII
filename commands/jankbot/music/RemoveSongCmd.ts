@@ -1,10 +1,10 @@
-import { Message } from "discord.js";
 import { AttemptToReplacePlayingSongError, QueueIndexOutofBoundsError } from "../../../structs/MusicQueue";
 import { i18n } from "../../../utils/i18n";
 import { icon } from "../../../utils/icons";
 import { canModifyQueue } from "../../../utils/queue";
 import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
 import { Bot } from "../../../structs/Bot";
+import { JbMessage } from "../../../interfaces/JankbotCommand";
 
 export default class RemoveSongCmd extends JankbotMusicCmd {
     constructor(public bot: Bot) {
@@ -15,7 +15,7 @@ export default class RemoveSongCmd extends JankbotMusicCmd {
         this.description = i18n.__("remove.description");
     }
     
-    async run(bot: Bot, message: Message, args: string[]) {
+    async run(bot: Bot, message: JbMessage, args: string[]) {
         const queue = bot.queues.get(message.guild!.id);
         
         if (!queue) return message.reply(i18n.__("remove.errorNotQueue")).catch(console.error);

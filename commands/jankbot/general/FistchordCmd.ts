@@ -1,6 +1,6 @@
 import { notDeepEqual } from "assert";
 import { Message, VoiceChannel } from "discord.js";
-import JankbotCmd from "../../../interfaces/JankbotCommand";
+import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
 import { Bot } from "../../../structs/Bot";
 
 export default class FistchordCmd extends JankbotCmd {
@@ -11,7 +11,7 @@ export default class FistchordCmd extends JankbotCmd {
         this.aliases = ["fistcord"];
     }
 
-    public override async run(bot: Bot, message: Message, args: string[]) {
+    public override async run(bot: Bot, message: JbMessage, args: string[]) {
         const now = new Date();
         if (now.getDay() === 5) {
             if (now.getHours() >= 17) {

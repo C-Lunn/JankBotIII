@@ -1,6 +1,5 @@
-import { Message } from "discord.js";
 import { i18n } from "../../../utils/i18n";
-import JankbotCmd from "../../../interfaces/JankbotCommand";
+import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
 import { Bot } from "../../../structs/Bot";
 
 export default class UptimeCmd extends JankbotCmd {
@@ -11,7 +10,7 @@ export default class UptimeCmd extends JankbotCmd {
         this.aliases = ['uptime'];
     }
     
-    async run(bot: Bot, message: Message) {
+    async run(bot: Bot, message: JbMessage) {
         let seconds = Math.floor(bot.client.uptime! / 1000);
         let minutes = Math.floor(seconds / 60);
         let hours = Math.floor(minutes / 60);

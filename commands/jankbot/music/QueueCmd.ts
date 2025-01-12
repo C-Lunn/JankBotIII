@@ -1,6 +1,5 @@
-import { Message } from "discord.js";
 import { i18n } from "../../../utils/i18n";
-import JankbotCmd from "../../../interfaces/JankbotCommand";
+import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
 import { Bot } from "../../../structs/Bot";
 
 export default class QueueCmd extends JankbotCmd {
@@ -14,7 +13,7 @@ export default class QueueCmd extends JankbotCmd {
         this.category = "music";
     }
     
-    async run(bot: Bot, message: Message) {
+    async run(bot: Bot, message: JbMessage) {
         const queue = bot.queues.get(message.guild!.id);
         if (!queue || !queue.songs.length) return message.reply("There are no queues active.");
         const [embed, row] = queue.generate_queue_embed();

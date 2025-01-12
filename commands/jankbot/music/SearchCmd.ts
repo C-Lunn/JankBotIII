@@ -1,7 +1,7 @@
 import { EmbedBuilder, Message, TextChannel } from "discord.js";
 import youtube from "youtube-sr";
 import { i18n } from "../../../utils/i18n";
-import JankbotCmd from "../../../interfaces/JankbotCommand";
+import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
 import { Bot } from "../../../structs/Bot";
 
 type CustomTextChannel = TextChannel & { activeCollector: boolean };
@@ -14,7 +14,7 @@ export default class SearchCmd extends JankbotCmd {
         this.category = "music";
     }
     
-    async run(bot: Bot, message: Message, args: string[]) {
+    async run(bot: Bot, message: JbMessage, args: string[]) {
         if (!args.length)
             return message
                 .reply(i18n.__mf("search.usageReply", { prefix: bot.prefix, name: module.exports.name }))

@@ -1,8 +1,8 @@
 import { getVoiceConnection } from "@discordjs/voice";
-import { Message } from "discord.js";
 import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
 import { Bot } from "../../../structs/Bot";
 import { icon } from "../../../utils/icons";
+import { JbMessage } from "../../../interfaces/JankbotCommand";
 
 export default class LeaveCmd extends JankbotMusicCmd {
     constructor(bot: Bot) {
@@ -12,7 +12,7 @@ export default class LeaveCmd extends JankbotMusicCmd {
         this.description = "leave";
     }
 
-    public override async run(bot: Bot, message: Message, args: string[]) {
+    public override async run(bot: Bot, message: JbMessage, args: string[]) {
         const queue = bot.queues.get(message.guild!.id);
         if (queue) {
             queue.stop(true);
@@ -26,6 +26,7 @@ export default class LeaveCmd extends JankbotMusicCmd {
                 return;
             }
         }
+        
         await message.channel.send("Leaving channel...");
     }
 }

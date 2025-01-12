@@ -3,6 +3,7 @@ import { i18n } from "../../../utils/i18n";
 import { canModifyQueue } from "../../../utils/queue";
 import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
 import { Bot } from "../../../structs/Bot";
+import { JbMessage } from "../../../interfaces/JankbotCommand";
 
 export default class PauseCmd extends JankbotMusicCmd {
     constructor(public bot: Bot) {
@@ -12,7 +13,7 @@ export default class PauseCmd extends JankbotMusicCmd {
         this.category = "music";
     }
     
-    async run(bot: Bot, message: Message) {
+    async run(bot: Bot, message: JbMessage) {
         const queue = bot.queues.get(message.guild!.id);
         
         if (!queue) return message.reply(i18n.__("pause.errorNotQueue")).catch(console.error);

@@ -1,6 +1,7 @@
 import { Message } from "discord.js";
 import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
 import { Bot } from "../../../structs/Bot";
+import { JbMessage } from "../../../interfaces/JankbotCommand";
 
 export default class FadeCmd extends JankbotMusicCmd {
     constructor(public bot: Bot) {
@@ -10,7 +11,7 @@ export default class FadeCmd extends JankbotMusicCmd {
         this.aliases = ['fadeout'];
     }
 
-    async run(bot: Bot, msg: Message, args: string[]) {
+    async run(bot: Bot, msg: JbMessage, args: string[]) {
         const guild_id = msg.guild?.id;
         if (!guild_id) return;
         const queue = bot.queues.get(guild_id);

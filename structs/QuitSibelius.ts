@@ -24,6 +24,8 @@ export class QuitSibelius {
                 .setLabel("Quit Sibelius")
         );
 
+        if (!msg.channel.isSendable()) return;
+
         await msg.channel.send({
             //@ts-ignore
             components: [row]

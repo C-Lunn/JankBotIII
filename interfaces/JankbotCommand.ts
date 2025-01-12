@@ -1,6 +1,8 @@
-import { Message, PermissionsString } from "discord.js";
+import { Message, PermissionsString, SendableChannels } from "discord.js";
 import { Bot } from "../structs/Bot";
 import { Command } from "./Command";
+
+export type JbMessage = Omit<Message, "channel"> & { channel: SendableChannels };
 
 export default class JankbotCmd implements Command {
     public name: string;
@@ -14,15 +16,17 @@ export default class JankbotCmd implements Command {
     constructor() {
     }
 
-    execute(message: Message, args: string[]) {
+    execute(message: JbMessage, args: string[]) {
         if (this._is_tantamod && !message.member!.roles.cache.has(this.bot.mod_role_id)) {
             message.react("🚫")
         } else {
+            if (!message.channel.isSendable()) return;
+            //@ts-ignore
             this.run(this.bot, message, args);
         }
     }
 
-    public async run(bot: Bot, message: Message, args: string[]): Promise<any> {
+    public async run(bot: Bot, message: JbMessage, args: string[]): Promise<any> {
         console.log("Command not implemented.");
     }
 
@@ -30,7 +34,7 @@ export default class JankbotCmd implements Command {
     public static factory(name: string,
         description: string,
         bot: Bot,
-        run: (bot: Bot, message: Message, args: string[]) => Promise<void>,
+        run: (bot: Bot, message: JbMessage, args: string[]) => Promise<void>,
         is_tantamod: boolean = false,
         aliases?: string[],
         permissions?: PermissionsString[],

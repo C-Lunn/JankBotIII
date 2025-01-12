@@ -1,5 +1,4 @@
-import { Message } from "discord.js";
-import JankbotCmd from "../../../interfaces/JankbotCommand";
+import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
 import { Bot } from "../../../structs/Bot";
 
 export default class SetDjCmd extends JankbotCmd {
@@ -12,7 +11,7 @@ export default class SetDjCmd extends JankbotCmd {
         this.bot = bot;
     }
 
-    public override async run(bot: Bot, message: Message, args: string[]) {
+    public override async run(bot: Bot, message: JbMessage, args: string[]) {
             if (args[0] == "on") {
                 if (bot.getDJMode(message.guildId!)) {
                     message.reply("DJ mode is already on.");

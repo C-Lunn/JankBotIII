@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonStyle, Message } from "discord.js";
 import { readdirSync, readFileSync } from "fs";
 import { join } from "path";
-import JankbotCmd from "../../../interfaces/JankbotCommand";
+import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
 import { Bot } from "../../../structs/Bot";
 
 export default class LogoCmd extends JankbotCmd {
@@ -38,7 +38,7 @@ export default class LogoCmd extends JankbotCmd {
         });
     }
 
-    public override async run(bot: Bot, message: Message, args: string[]) {
+    public override async run(bot: Bot, message: JbMessage, args: string[]) {
         let logo = this._logos[Math.floor(Math.random() * this._logos.length)];
         const row = new ActionRowBuilder().addComponents(
             new ButtonBuilder()

@@ -1,8 +1,8 @@
-import { Message } from "discord.js";
 import { i18n } from "../../../utils/i18n";
 import { canModifyQueue } from "../../../utils/queue";
 import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
 import { Bot } from "../../../structs/Bot";
+import { JbMessage } from "../../../interfaces/JankbotCommand";
 
 export default class ResumeCmd extends JankbotMusicCmd {
     constructor(public bot: Bot) {
@@ -13,7 +13,7 @@ export default class ResumeCmd extends JankbotMusicCmd {
         this.description = i18n.__("resume.description");
     }
     
-    async run(bot: Bot, message: Message) {
+    async run(bot: Bot, message: JbMessage) {
         const queue = bot.queues.get(message.guild!.id);
         
         if (!queue) return message.reply(i18n.__("resume.errorNotQueue")).catch(console.error);

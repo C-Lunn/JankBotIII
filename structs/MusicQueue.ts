@@ -19,6 +19,7 @@ import { config } from "../utils/config";
 import { shortformat } from "../utils/format";
 import { icon } from "../utils/icons";
 import { Song } from "./Song";
+import { JbMessage } from "../interfaces/JankbotCommand";
 
 const wait = promisify(setTimeout);
 
@@ -56,7 +57,7 @@ export class AttemptToReplacePlayingSongError extends Error {
 }
 
 export class MusicQueue {
-  public readonly message: Message;
+  public readonly message: JbMessage;
   public readonly connection: VoiceConnection;
   public readonly player: AudioPlayer;
   public readonly textChannel: TextChannel;

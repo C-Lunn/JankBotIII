@@ -1,10 +1,9 @@
 import axios from "axios";
-import { Message } from "discord.js";
 import { find } from "geo-tz";
 import { join } from "path";
 import sharp from "sharp";
 import { Config } from "../../../interfaces/Config";
-import JankbotCmd from "../../../interfaces/JankbotCommand";
+import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
 import { Bot } from "../../../structs/Bot";
 
 async function getGeoCodefromPlace(place_in: string) {
@@ -138,7 +137,7 @@ export default class TimeCmd extends JankbotCmd {
         this.bot = bot;
     }
 
-    public override async run(bot: Bot, message: Message, args: string[]) {
+    public override async run(bot: Bot, message: JbMessage, args: string[]) {
         if (args.length == 0) {
             const jank_time = new Date();
             const clock_buffer = await getClock(jank_time.getHours(), jank_time.getMinutes());
@@ -172,6 +171,7 @@ export default class TimeCmd extends JankbotCmd {
                     files: [clock_buffer]
                 });
                 if (where) {
+                    if (!message.channel.isSendable()) return;
                     message.channel.send(
                         `https://www.google.com/maps/search/?api=1&query=${geo_code[0]},${geo_code[1]}`
                     )

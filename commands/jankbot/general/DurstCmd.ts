@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonStyle, Message } from "discord.js";
-import { readdirSync, readFileSync } from "fs";
+import { readFileSync } from "fs";
 import { join } from "path";
-import JankbotCmd from "../../../interfaces/JankbotCommand";
+import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
 import { Bot } from "../../../structs/Bot";
 
 export default class DurstCmd extends JankbotCmd {
@@ -37,7 +37,7 @@ export default class DurstCmd extends JankbotCmd {
         });
     }
 
-    public override async run(_bot: Bot, message: Message, _args: string[]) {
+    public override async run(_bot: Bot, message: JbMessage, _args: string[]) {
         const durst = this._dursts[Math.floor(Math.random() * this._dursts.length)];
         const row = new ActionRowBuilder().addComponents(
             new ButtonBuilder()
@@ -46,6 +46,8 @@ export default class DurstCmd extends JankbotCmd {
                 .setLabel("Break Stuff")
                 .setDisabled(true)
         );
+
+        if (!message.channel.isSendable()) return;
 
         const msg = await message.channel.send({
             content: durst,
