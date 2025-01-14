@@ -1,1 +1,17 @@
-hi!
+{% extends "layout.html" %}
+{% set title = "Index" %}
+
+{% block head %}
+<link rel="stylesheet" href="/homepage.css">
+{% endblock %}
+
+{% block content %}
+<header>
+    {% include "bits/navbar.html" %}
+
+    <a href="">
+        <p class="episode-number">Episode #70</p>
+        <h1>Queerphone 3</h1>
+    </a>
+</header>
+{% endblock %}

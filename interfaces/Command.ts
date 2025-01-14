@@ -8,5 +8,6 @@ export interface Command {
     cooldown?: number;
     category?: string;
     is_tantamod?: boolean;
+    parse_quotes?: boolean,
     execute(...args: any): any;
 }

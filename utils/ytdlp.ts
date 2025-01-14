@@ -1,13 +1,13 @@
 import { spawn } from "node:child_process";
 
 export class YtDlp {
-    static stream_url(url: string) {
+    static stream_url(url: string, format = "opus") {
         console.log(`streaming ${url} with yt-dlp`)
         const cmd = spawn("yt-dlp", [
             url,
             "--extract-audio",
             "--no-playlist",
-            "--audio-format", "opus", // output opus
+            "--audio-format", format, // output opus
             "-o", "-" // output to stdout
         ]);
 

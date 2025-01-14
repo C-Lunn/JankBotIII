@@ -73,3 +73,5 @@ typings/
 config.json
 
 .DS_Store
+
+*.db*

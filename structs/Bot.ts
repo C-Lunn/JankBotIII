@@ -125,10 +125,12 @@ export class Bot {
             const prefixRegex = new RegExp(`^(<@!?${this.client.user!.id}>|${escapeRegex(this.prefix)})\\s*`);
             let command: Command | null = null;
             let args: string[] = [];
+            let raw_args;
             if (prefixRegex.test(message.content)) {
                 const [, matchedPrefix] = message.content.match(prefixRegex);
 
-                args = message.content.slice(matchedPrefix.length).trim().split(/ +/);
+                raw_args = message.content.slice(matchedPrefix.length).trim()
+                args = raw_args.split(/ +/);
                 const commandName = args.shift()?.toLowerCase();
 
                 // @ts-ignore
@@ -137,6 +139,12 @@ export class Bot {
                     this.commands.get(commandName!) ?? this.commands.find((cmd) => cmd.aliases?.includes(commandName));
 
                 if (!command) return;
+
+                if (command.parse_quotes) {
+                    const x = raw_args.slice(commandName?.length).trim();
+                    // split spaces except when they're in quotes
+                    args = Array.from(x.matchAll(/\([^)]+\)|(?<=")[^"]+(?=")|[^"^ ]+/g)).flat() as string[];
+                }
 
                 if (!this.cooldowns.has(command.name)) {
                     this.cooldowns.set(command.name, new Collection());

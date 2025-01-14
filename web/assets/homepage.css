@@ -1,0 +1,53 @@
+header {
+	background-image: linear-gradient(to bottom, transparent 60%, white 100%),
+		linear-gradient(180deg, #FF0051 11.5%, #FF4D00 34.5%);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 100% 100%, 100%;
+
+	height: 60vh;
+
+	display: grid;
+	grid-template-rows: max-content 1fr 15%;
+
+	--spring-easing: linear(0, 0.0013, 0.0052 1.01%, 0.0208 2.09%, 0.0464 3.25%, 0.0836 4.55%, 0.1667 6.93%, 0.3841 12.48%, 0.4851 15.22%, 0.585 18.25%, 0.6688 21.21%, 0.7407 24.24%, 0.773, 0.8019 27.42%, 0.8287, 0.8524 30.73%, 0.8749, 0.8944 34.34%, 0.9123 36.29%, 0.9281 38.31%, 0.9421 40.47%, 0.9543 42.78%, 0.9647 45.24%, 0.9733 47.83%, 0.9862 53.68%, 0.9937 60.17%, 0.998 68.47%, 0.9997 79.5%, 1.0001 99.99%);
+	--spring-duration: 1.665s;
+	transition: background-size var(--spring-duration) var(--spring-easing);
+
+	>a {
+		display: block;
+		place-self: end start;
+		padding: 2rem;
+		color: white;
+		text-decoration: none;
+		width: 100%;
+
+		.episode-number {
+			text-transform: uppercase;
+			font-weight: 700;
+			letter-spacing: 1px;
+			font-size: clamp(.7rem, 1.25vw, .95rem);
+			line-height: 1;
+		}
+
+		h1 {
+			font-size: clamp(3rem, 8vw, 8rem);
+			line-height: 1;
+			margin: 0;
+			font-family: var(--font-display);
+			text-shadow: 0 .025em rgb(from currentColor r g b / 0.4);
+			letter-spacing: -.025em;
+			margin-left: -.25rem;
+			/* mini optical adjustment */
+			transition: text-shadow 125ms ease-out;
+		}
+
+		&:hover h1 {
+			text-shadow: 0 0em 8px rgb(from currentColor r g b / 0.75);
+		}
+	}
+
+	&:has(a:hover) {
+		background-size: 100% 100%, 102.5%;
+	}
+}

@@ -13,6 +13,7 @@ import ThreadCmd from "./jankbot/general/ThreadTester";
 import TimeCmd from "./jankbot/general/TimeCmd";
 import UptimeCmd from "./jankbot/general/UptimeCmd";
 import XkcdCmd from "./jankbot/general/XckdCmd";
+import GramophoneCmd from "./jankbot/gramophone";
 import FadeCmd from "./jankbot/music/FadeCmd";
 import LeaveCmd from "./jankbot/music/LeaveCmd";
 import MoveCmd from "./jankbot/music/MoveCmd";
@@ -73,5 +74,6 @@ export default function command_registry(bot: Bot): Command[] {
         new SkipToCmd(bot),
         new StopCmd(bot),
         new SkipCmd(bot),
+        new GramophoneCmd(bot),
     ]
 }

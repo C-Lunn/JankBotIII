@@ -9,4 +9,6 @@ export interface Config {
     MOD_ROLE_ID: string;
     MQ_KEY?: string;
     PORT?: string;
+    ACOUSTID_KEY?: string;
+    WEBROOT?: string;
 }

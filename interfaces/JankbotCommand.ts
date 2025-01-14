@@ -11,6 +11,7 @@ export default class JankbotCmd implements Command {
     public permissions?: PermissionsString[];
     public cooldown?: number;
     public category?: string;
+    public parse_quotes?: boolean;
     protected bot: Bot;
     protected _is_tantamod: boolean;
     constructor() {

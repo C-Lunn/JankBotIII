@@ -17,6 +17,8 @@ try {
         MOD_ROLE_ID: process.env.MOD_ROLE_ID ?? "",
         MQ_KEY: process.env.MQ_KEY,
         PORT: process.env.PORT,
+        ACOUSTID_KEY: process.env.ACOUSTID_KEY,
+        WEBROOT: process.env.WEBROOT
     };
 }
 

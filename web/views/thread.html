@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% set title = "Index" %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+{% include "bits/navbar.html" %}
+
+<p class="episode-number">Episode #{{thread.number}}</p>
+<h1>{{thread.title}}</h1>
+
+{% for submission in submissions %}
+    {{submission["title"]}}
+{% endfor %}
+
+{% endblock %}

@@ -1,6 +1,7 @@
-import { EmbedAuthorData, Message, ThreadChannel } from "discord.js";
+import { Client, Collection, EmbedAuthorData, Guild, Message, ThreadChannel } from "discord.js";
 import { Bot } from "../structs/Bot";
 import { Response } from "express";
+import * as linkify from 'linkifyjs';
 
 const url_regex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[.\!\/\\w]*))?)/;
 
@@ -33,16 +34,6 @@ export async function get_thread_info(bot: Bot, id: string) {
         return;
     }
 }
-
-const allowed_content_types = [
-    "audio/mpeg",
-    "audio/ogg",
-    "audio/opus",
-    "audio/wave",
-    "audio/wav",
-    "audio/webm",
-    "audio/flac",
-];
 
 export async function scrape_thread(bot: Bot, id: string) {
     let messages, guild, channel;
@@ -164,6 +155,90 @@ export async function scrape_thread(bot: Bot, id: string) {
     };
 
     return data.map(o => Object.fromEntries(o));
+}
+
+export interface ParsedMessage {
+    url: string,
+    message: Message,
+}
+
+export type ParsedThread = {
+    id?: string,
+    [round: number]: {
+        [uid: string]: ParsedMessage,
+    }
+}
+
+export async function better_scrape_thread(client: Client, chan_id: string) {
+    const channel = await client.channels.fetch(chan_id);
+
+    if (!channel) {
+        throw new Error("not a real channel");
+    }
+
+    if (!channel.isThread()) {
+        throw new Error("not a thread");
+    }
+
+    const msgs = await channel.messages.fetch();
+    msgs.reverse()
+
+    let top_post = true;
+    const parsed = msgs.reduce((prev, message) => {
+        if (top_post) {
+            top_post = false;
+            return prev;
+        }
+
+        let round;
+
+        // figure out which round we're inserting into
+        // the old version of this had 3 layers of recursion
+        // so consider yourself lucky
+        let index = 1;
+        while (!round) {
+            if (index > 4) {
+                throw new Error("recursed too hard. worst mistake of my life");
+            }
+
+            const r = prev[index];
+    
+            // insert a new round if there isn't one
+            if (!r) {
+                round = {};
+                break;
+            }
+    
+            // if the user already has a song for this round, go again.
+            if (r[message.author.id]) {
+                index++;
+            } else {
+                round = r;
+            }
+        }
+
+        const [res] = linkify.find(message.content) ?? [];
+        if (!res) {
+            return prev;
+        }
+
+        // remove discord-specific markup
+        // i will never learn regex
+        const url = res.href.replaceAll("||", "").replaceAll(">", "").replaceAll("<", "");
+
+        const parsed: ParsedMessage = {
+            url,
+            message,
+        }
+
+        round[message.author.id] = parsed;
+        prev[index] = round;
+
+        return prev;
+    }, <ParsedThread>{});
+
+    parsed.id = chan_id;
+    return parsed;
 }
 
 export async function get_avatar(res: Response, bot: Bot, uid: string) {
