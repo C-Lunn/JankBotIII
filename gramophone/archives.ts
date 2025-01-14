@@ -74,13 +74,20 @@ export async function reload_song(id: string, new_mbid?: string) {
 
 export function normalise_url(url: string | URL): URL {
     url = new URL(url);
-    if (url.hostname == "youtube.com" || url.hostname == "www.youtube.com") {
+    if (url.hostname == "www.youtube.com") {
+        url.hostname = "youtube.com";
+    }
+    if (url.hostname == "youtube.com") {
         const video_id = url.searchParams.get("v");
         if (!video_id) {
             throw new Error("Invalid YouTube URL")
         }
         url.search = ""
         url.searchParams.set("v", video_id);
+    }
+    if (url.hostname == "youtu.be") {
+        const id = url.pathname.split("/")[1];
+        url = new URL("https://youtube.com/watch?v=" + id);
     }
     return url;
 }

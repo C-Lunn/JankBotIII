@@ -18,7 +18,8 @@ try {
         MQ_KEY: process.env.MQ_KEY,
         PORT: process.env.PORT,
         ACOUSTID_KEY: process.env.ACOUSTID_KEY,
-        WEBROOT: process.env.WEBROOT
+        WEBROOT: process.env.WEBROOT,
+        COOKIES_DOT_TXT: process.env.COOKIES_DOT_TXT,
     };
 }
 

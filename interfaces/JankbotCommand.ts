@@ -18,7 +18,11 @@ export default class JankbotCmd implements Command {
     }
 
     execute(message: JbMessage, args: string[]) {
-        if (this._is_tantamod && !message.member!.roles.cache.has(this.bot.mod_role_id)) {
+        const user_is_tantamod = this.bot.mod_role_id instanceof Array 
+            ? this.bot.mod_role_id.reduce((acc, x) => acc || message.member!.roles.cache.has(x), false)
+            : message.member!.roles.cache.has(this.bot.mod_role_id);
+            
+        if (this._is_tantamod && !user_is_tantamod) {
             message.react("🚫")
         } else {
             if (!message.channel.isSendable()) return;

@@ -42,50 +42,54 @@ async function do_the_thing(data: ParsedThread, parentPort: MessagePort) {
 
         for (const [author, data] of Object.entries(messages)) {
             const url = normalise_url(data.url).toString();
-            let song_id = exists_stmt.get(url) as string | undefined;
-            const submission_id = data.message.id;
 
-            // cool, we don't need to do anything extra
-            if (!song_id) {
-                // we *could* just not await here and then use a Promise.allSettled 
-                // to get the results but then we'd get rate limited to high hell 
-                // and i don't feel like implementing a queue system right now. 
-                // this is the lord's rate limit protection.
-                //
-                // you could also have these each be a different thread but to be
-                // honest all it does is spawn a bunch of external procs and then
-                // does some fetch requests so i don't think it'd do much good.
-                const song = await get_metadata(url);
-                console.log(song);
-                if (!song) {
-                    report.push({ status: "failure", url, author })
-                    continue;
+            try {
+                let song_id = exists_stmt.get(url) as string | undefined;
+                const submission_id = data.message.id;
+
+                if (!song_id) {
+                    song_id = crypto.randomUUID();
+                    // we *could* just not await here and then use a Promise.allSettled 
+                    // to get the results but then we'd get rate limited to high hell 
+                    // and i don't feel like implementing a queue system right now. 
+                    // this is the lord's rate limit protection.
+                    //
+                    // you could also have these each be a different thread but to be
+                    // honest all it does is spawn a bunch of external procs and then
+                    // does some fetch requests so i don't think it'd do much good.
+                    const song = await get_metadata(url);
+                    if (!song) {
+                        throw new Error("Failed to get metadata :(")
+                    }
+
+                    insert_song_stmt.run({
+                        id: song_id,
+                        url,
+                        ...song,
+                        cover_id: null,
+                    });
+
+                    report.push({ status: "success", url, author, submission_id })
+                } else {
+                    report.push({ status: "reused", url, author, submission_id })
                 }
 
-                insert_song_stmt.run({
-                    id: song_id,
-                    url,
-                    ...song,
-                    cover_id: null,
+                insert_submission_stmt.run({
+                    id: submission_id,
+                    song_id,
+                    author_id: data.message.author.id,
+                    message: data.message.content,
+                    profile: JSON.stringify({
+                        avatar: data.message.author.avatarURL,
+                        display_name: data.message.author.displayName,
+                    }),
+                    thread_id,
+                    round,
                 });
-
-                report.push({ status: "success", url, author, submission_id })
-            } else {
-                report.push({ status: "reused", url, author, submission_id })
+            } catch (e) {
+                console.error(`error on ${url}:`, e)
+                report.push({ status: "failure", url, author, because: e as Error })
             }
-
-            insert_submission_stmt.run({
-                id: submission_id,
-                song_id,
-                author_id: data.message.author.id, 
-                message: data.message.content,
-                profile: JSON.stringify({
-                    avatar: data.message.author.avatarURL,
-                    display_name: data.message.author.displayName,
-                }), 
-                thread_id, 
-                round,
-            });
         }
     }
     console.log("hi i'm a grub and i live in the soil");

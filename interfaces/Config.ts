@@ -6,9 +6,10 @@ export interface Config {
     STAY_TIME: number;
     DEFAULT_VOLUME: number;
     LOCALE: string;
-    MOD_ROLE_ID: string;
+    MOD_ROLE_ID: string | string[];
     MQ_KEY?: string;
     PORT?: string;
     ACOUSTID_KEY?: string;
     WEBROOT?: string;
+    COOKIES_DOT_TXT?: string;
 }

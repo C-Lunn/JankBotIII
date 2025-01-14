@@ -1,20 +1,28 @@
 import { spawn } from "node:child_process";
+import { config } from "./config";
 
 export class YtDlp {
     static stream_url(url: string, format = "opus") {
         console.log(`streaming ${url} with yt-dlp`)
-        const cmd = spawn("yt-dlp", [
+        const args = [
             url,
             "--extract-audio",
             "--no-playlist",
             "--audio-format", format, // output opus
             "-o", "-" // output to stdout
-        ]);
+        ];
+        if (config.COOKIES_DOT_TXT) args.push("--cookies", config.COOKIES_DOT_TXT);
+
+        const cmd = spawn("yt-dlp", args);
 
         cmd.stderr.on("data", (error) => {
             // in stdout mode yt-dlp likes to use stderr for things that
             // AREN'T ERRORS. hence the lack of ceremony here.
             console.log(`yt-dlp: ${error}`);
+
+            // if (String(error).startsWith("ERROR:")) {
+            //     throw new Error("YtDlp Error", { cause: error })
+            // }
         });
 
         cmd.on("close", (code) => {

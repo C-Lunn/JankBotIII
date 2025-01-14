@@ -99,8 +99,9 @@ export async function lookup_recording(mbid: string): Promise<SongMetadata> {
         title,
         releases,
         "first-release-date": release_date,
-        "artist-credit": [{ name: artist_name, id: artist_mbid }],
+        "artist-credit": [{ name: artist_name, artist: { id: artist_mbid1 }, id: artist_mbid2 }],
     } = json;
+    const artist_mbid = artist_mbid2 || artist_mbid1;
 
     let album_mbid, album_title;
     for (const release of releases ?? []) {

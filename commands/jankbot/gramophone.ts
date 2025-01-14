@@ -5,6 +5,7 @@ import { Bot } from "../../structs/Bot";
 import { reload_song, start_archiving } from "../../gramophone/archives";
 import { config } from "../../utils/config";
 import db from "../../utils/db";
+import { inspect } from "node:util";
 
 export default class GramophoneCmd extends JankbotCmd {
     constructor(bot: Bot) {
@@ -52,7 +53,7 @@ export default class GramophoneCmd extends JankbotCmd {
         const successful = report.filter(x => x.status == "success");
         const failed = report.filter(x => x.status == "failure");
         const preview_url = new URL(
-            "/preview/" + thread_id, 
+            "/preview/" + thread_id,
             config.WEBROOT ?? "https://gramophone.space"
         );
 
@@ -66,7 +67,7 @@ ${successful.length == 0
 
 ${failed.length == 0
                 ? "(none)"
-                : failed.map(x => `⛔️ <${x.url}> from <@${x.author}> (${x.because})`).join("\n")}
+                : failed.map(x => `⛔️ <${x.url}> from <@${x.author}> (${inspect(x.because)})`).join("\n")}
 ### Reused
 -# (These songs were already in the Gramophone database)
 ${reused.length == 0
@@ -76,11 +77,28 @@ ${reused.length == 0
 * Preview this thread at ${preview_url}.
 * Publish it with \`${config.PREFIX}gramophone publish ${thread_id}\`.
 `;
+        const splitted = content.match(/.{1,2000}/g);
 
-        message.reply({
-            content,
-            allowedMentions: { parse: [] }
-        })
+        // this is here to satisfy discord's message length limit
+        const lines = content.split("\n");
+        let acc = "";
+        let first_message = true;
+        for (const [idx, line] of lines.entries()) {
+            if (line.length + acc.length > 2000 || idx == lines.length - 1) {
+                const opt = {
+                    content: acc,
+                    allowedMentions: { parse: [] },
+                };
+                if (first_message) { await message.reply(opt); }
+                else { await message.channel.send(opt); }
+
+                first_message = false;
+                acc = "";
+            } else {
+                acc += line + "\n"
+            }
+        }
+
     }
 
     async reload(_bot: Bot, message: JbMessage, args: string[]) {
@@ -108,7 +126,7 @@ ${reused.length == 0
         db.prepare("UPDATE thread SET published = 1 WHERE id = ?").run(id)
 
         const preview_url = new URL(
-            "/gramophone/" + number, 
+            "/gramophone/" + number,
             config.WEBROOT ?? "https://gramophone.space"
         );
 
