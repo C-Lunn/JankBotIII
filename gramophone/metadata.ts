@@ -1,7 +1,7 @@
 import child_process from "child_process";
 import { Readable } from "node:stream";
-import { config } from "../utils/config";
-import { YtDlp } from "../utils/ytdlp";
+import { config } from "../utils/config.ts";
+import { YtDlp } from "../utils/ytdlp.ts";
 
 export async function get_metadata(url: string) {
     const stream = YtDlp.stream_url(url);

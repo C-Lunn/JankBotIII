@@ -1,11 +1,11 @@
-import { DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
+import { type DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
 import { EmbedBuilder } from "discord.js";
-import { MusicQueue } from "../../../structs/MusicQueue";
-import { Playlist } from "../../../structs/Playlist";
-import { i18n } from "../../../utils/i18n";
-import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
-import { Bot } from "../../../structs/Bot";
-import { JbMessage } from "../../../interfaces/JankbotCommand";
+import { MusicQueue } from "../../../structs/MusicQueue.ts";
+import { Playlist } from "../../../structs/Playlist.ts";
+import { i18n } from "../../../utils/i18n.ts";
+import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand.ts";
+import { Bot } from "../../../structs/Bot.ts";
+import type { JbMessage } from "../../../interfaces/JankbotCommand.ts";
 
 export default class PlaylistCmd extends JankbotMusicCmd {
     constructor(public bot: Bot) {

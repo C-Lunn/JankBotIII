@@ -1,6 +1,6 @@
-import { Message, PermissionResolvable } from "discord.js";
-import { Command } from "../interfaces/Command";
-import { JbMessage } from "../interfaces/JankbotCommand";
+import type { PermissionResolvable } from "discord.js";
+import type { Command } from "../interfaces/Command.ts";
+import type { JbMessage } from "../interfaces/JankbotCommand.ts";
 
 interface PermissionResult {
     result: boolean;

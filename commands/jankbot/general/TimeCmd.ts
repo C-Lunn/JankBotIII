@@ -2,9 +2,9 @@ import axios from "axios";
 import { find } from "geo-tz";
 import { join } from "path";
 import sharp from "sharp";
-import { Config } from "../../../interfaces/Config";
-import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
-import { Bot } from "../../../structs/Bot";
+import type { Config } from "../../../interfaces/Config.ts";
+import JankbotCmd, { type JbMessage } from "../../../interfaces/JankbotCommand.ts";
+import { Bot } from "../../../structs/Bot.ts";
 
 async function getGeoCodefromPlace(place_in: string) {
     let config: Config | undefined;
@@ -76,7 +76,7 @@ function extractPlaceNameFromMsg(msg_in: string) {
 }
 
 async function getClock(hour: number, minute: number, is_angry = false): Promise<Buffer> {
-    const images_folder = join(__dirname, "..", "..", "..", "resource", "images");
+    const images_folder = join(import.meta.dirname, "..", "..", "..", "resource", "images");
     const hr_rotation = hour * 30 + minute * 0.5;
     const min_rotation = minute * 6;
     let images = [

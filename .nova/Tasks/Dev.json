@@ -1,0 +1,10 @@
+{
+  "actions" : {
+    "run" : {
+      "enabled" : true,
+      "script" : "#!\/bin\/sh\nnpm run dev"
+    }
+  },
+  "openLogOnRun" : "start",
+  "persistent" : true
+}

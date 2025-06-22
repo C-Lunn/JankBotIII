@@ -1,6 +1,6 @@
 import { TextChannel } from "discord.js";
-import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
-import { Bot } from "../../../structs/Bot";
+import JankbotCmd, { type JbMessage } from "../../../interfaces/JankbotCommand.ts";
+import { Bot } from "../../../structs/Bot.ts";
 
 export default class SayCmd extends JankbotCmd {
     constructor(bot: Bot) {

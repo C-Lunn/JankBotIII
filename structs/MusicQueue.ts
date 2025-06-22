@@ -1,5 +1,5 @@
 import {
-  AudioPlayer, AudioPlayerState,
+  AudioPlayer, type AudioPlayerState,
   AudioPlayerStatus,
   AudioResource,
   createAudioPlayer,
@@ -7,19 +7,19 @@ import {
   NoSubscriberBehavior,
   VoiceConnection,
   VoiceConnectionDisconnectReason,
-  VoiceConnectionState,
+  type VoiceConnectionState,
   VoiceConnectionStatus
 } from "@discordjs/voice";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, EmbedBuilder, Message, TextChannel } from "discord.js";
 import { promisify } from "node:util";
 import { splitBar } from "string-progressbar";
-import { bot } from "../index";
-import { QueueOptions } from "../interfaces/QueueOptions";
-import { config } from "../utils/config";
-import { shortformat } from "../utils/format";
-import { icon } from "../utils/icons";
-import { Song } from "./Song";
-import { JbMessage } from "../interfaces/JankbotCommand";
+import { bot } from "../index.ts";
+import type { QueueOptions } from "../interfaces/QueueOptions.ts";
+import { config } from "../utils/config.ts";
+import { shortformat } from "../utils/format.ts";
+import { icon } from "../utils/icons.ts";
+import { Song } from "./Song.ts";
+import type { JbMessage } from "../interfaces/JankbotCommand.ts";
 
 const wait = promisify(setTimeout);
 

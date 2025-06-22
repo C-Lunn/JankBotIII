@@ -1,8 +1,8 @@
 import { MessagePort, parentPort } from "node:worker_threads";
-import db from "../utils/db";
-import type { ParsedThread } from "../utils/thread_scraper";
-import { ArchiveReport, normalise_url } from "./archives";
-import { get_metadata } from "./metadata";
+import db from "../utils/db.ts";
+import type { ParsedThread } from "../utils/thread_scraper.ts";
+import { ArchiveReport, normalise_url } from "./archives.ts";
+import { get_metadata } from "./metadata.ts";
 
 if (parentPort) {
     parentPort.on("message", m => {

@@ -4,7 +4,7 @@ import pfs from "fs/promises";
 import internal from "stream";
 import * as web_streams from "stream/web";
 import youtube from "youtube-sr";
-import { YtDlp } from "../utils/ytdlp";
+import { YtDlp } from "../utils/ytdlp.ts";
 
 export interface SongData {
     url: URL;

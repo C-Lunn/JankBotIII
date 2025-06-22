@@ -1,8 +1,8 @@
 import { EmbedBuilder, Message, TextChannel } from "discord.js";
 import youtube from "youtube-sr";
-import { i18n } from "../../../utils/i18n";
-import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
-import { Bot } from "../../../structs/Bot";
+import { i18n } from "../../../utils/i18n.ts";
+import JankbotCmd, { type JbMessage } from "../../../interfaces/JankbotCommand.ts";
+import { Bot } from "../../../structs/Bot.ts";
 
 type CustomTextChannel = TextChannel & { activeCollector: boolean };
 

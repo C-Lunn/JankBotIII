@@ -1,6 +1,6 @@
-import { Message, PermissionsString, SendableChannels } from "discord.js";
-import { Bot } from "../structs/Bot";
-import { Command } from "./Command";
+import { Message, type PermissionsString, type SendableChannels } from "discord.js";
+import { Bot } from "../structs/Bot.ts";
+import type { Command } from "./Command.ts";
 
 export type JbMessage = Omit<Message, "channel"> & { channel: SendableChannels };
 

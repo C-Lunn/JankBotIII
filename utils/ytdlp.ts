@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { config } from "./config";
+import { config } from "./config.ts";
 
 export class YtDlp {
     static stream_url(url: string, format = "opus") {

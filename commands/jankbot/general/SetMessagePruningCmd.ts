@@ -1,8 +1,8 @@
 import { writeFile } from "fs";
-import { Config } from "../../../interfaces/Config";
-import { i18n } from "../../../utils/i18n";
-import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
-import { Bot } from "../../../structs/Bot";
+import type { Config } from "../../../interfaces/Config.ts";
+import { i18n } from "../../../utils/i18n.ts";
+import JankbotCmd, { type JbMessage } from "../../../interfaces/JankbotCommand.ts";
+import { Bot } from "../../../structs/Bot.ts";
 
 export default class SetMessagePruningCmd extends JankbotCmd {
     constructor(public bot: Bot) {

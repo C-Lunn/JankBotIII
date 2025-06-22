@@ -1,8 +1,0 @@
-{
-    "execMap": {
-        "ts": "node -r ts-node/register index.ts"
-    },
-    "env": {
-        "NODE_ENV": "development"
-    }
-}

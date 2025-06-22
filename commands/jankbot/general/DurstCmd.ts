@@ -1,8 +1,8 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonStyle, Message } from "discord.js";
 import { readFileSync } from "fs";
 import { join } from "path";
-import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
-import { Bot } from "../../../structs/Bot";
+import JankbotCmd, { type JbMessage } from "../../../interfaces/JankbotCommand.ts";
+import { Bot } from "../../../structs/Bot.ts";
 
 export default class DurstCmd extends JankbotCmd {
     private _dursts: string[];
@@ -11,7 +11,7 @@ export default class DurstCmd extends JankbotCmd {
         this.name = "durst";
         this.description = "Get a random durst.";
         this.aliases = [];
-        this._dursts = JSON.parse(readFileSync(join(__dirname, "..", "..", "..", "resource", "dursts.json"))!.toString());
+        this._dursts = JSON.parse(readFileSync(join(import.meta.dirname, "..", "..", "..", "resource", "dursts.json"))!.toString());
 
         bot.client.on("interactionCreate", async (interaction) => {
             if (!interaction.isButton()) return;

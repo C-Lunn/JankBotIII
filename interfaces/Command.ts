@@ -1,4 +1,4 @@
-import { PermissionsString } from "discord.js";
+import type { PermissionsString } from "discord.js";
 
 export interface Command {
     name: string;

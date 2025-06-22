@@ -1,6 +1,6 @@
 import youtube, { Playlist as YoutubePlaylist } from "youtube-sr";
-import { config } from "../utils/config";
-import { Song, SongType } from "./Song";
+import { config } from "../utils/config.ts";
+import { Song, SongType } from "./Song.ts";
 const pattern = /^.*(youtu.be\/|list=)([^#\&\?]*).*/i;
 
 export class Playlist {

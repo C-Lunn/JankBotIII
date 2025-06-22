@@ -1,11 +1,11 @@
 import path from "node:path";
 import { Worker } from "node:worker_threads"
-import { Bot } from "../structs/Bot";
-import { better_scrape_thread } from "../utils/thread_scraper";
+import { Bot } from "../structs/Bot.ts";
+import { better_scrape_thread } from "../utils/thread_scraper.ts";
 import { Message } from "discord.js";
-import { JbMessage } from "../interfaces/JankbotCommand";
-import { lookup_recording } from "./metadata";
-import db from "../utils/db";
+import type { JbMessage } from "../interfaces/JankbotCommand.ts";
+import { lookup_recording } from "./metadata.ts";
+import db from "../utils/db.ts";
 
 export type ArchiveReport = {
     status: "success" | "failure" | "reused",
@@ -36,7 +36,7 @@ export async function start_archiving({
     const data = await better_scrape_thread(request.client, thread_id);
 
     const p = new Promise<ArchiveReport>((resolve, reject) => {
-        const worker = new Worker(path.resolve(__dirname, './archive_doer.ts'));
+        const worker = new Worker(path.resolve(import.meta.dirname, './archive_doer.ts'));
 
         worker.on("online", () => {
             worker.postMessage(data);

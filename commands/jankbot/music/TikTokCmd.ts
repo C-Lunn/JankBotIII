@@ -1,10 +1,10 @@
 import AsyncLock from "async-lock";
 import * as fs from "fs";
 import * as os from "os";
-import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
-import { Bot } from "../../../structs/Bot";
-import play from './PlayCmd';
-import { JbMessage } from "../../../interfaces/JankbotCommand";
+import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand.ts";
+import { Bot } from "../../../structs/Bot.ts";
+import play from './PlayCmd.ts';
+import type { JbMessage } from "../../../interfaces/JankbotCommand.ts";
 
 export let lock = new AsyncLock({ timeout: 200000 });
 

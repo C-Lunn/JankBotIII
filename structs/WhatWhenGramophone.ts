@@ -1,5 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Message, TextChannel } from "discord.js";
-import { Bot } from "./Bot";
+import { Bot } from "./Bot.ts";
 
 export class WhatWhenGramophone {
     public constructor(bot: Bot) {

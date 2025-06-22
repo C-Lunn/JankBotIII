@@ -1,6 +1,6 @@
-import { Message, PermissionsString } from "discord.js";
-import { Bot } from "../structs/Bot";
-import JankbotCmd, { JbMessage } from "./JankbotCommand";
+import type { PermissionsString } from "discord.js";
+import { Bot } from "../structs/Bot.ts";
+import JankbotCmd, { type JbMessage } from "./JankbotCommand.ts";
 
 export default class JankbotMusicCmd extends JankbotCmd {
     constructor() {

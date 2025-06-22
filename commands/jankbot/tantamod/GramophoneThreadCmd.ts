@@ -1,7 +1,7 @@
 import {  ThreadChannel } from "discord.js";
-import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
-import { Bot } from "../../../structs/Bot";
-import { parseSubmission } from "../../../utils/gramophone";
+import JankbotCmd, { type JbMessage } from "../../../interfaces/JankbotCommand.ts";
+import { Bot } from "../../../structs/Bot.ts";
+import { parseSubmission } from "../../../utils/gramophone.ts";
 
 export default class GramophoneThreadCmd extends JankbotCmd {
     constructor(bot: Bot) {

@@ -1,5 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Message } from "discord.js";
-import { Bot } from "./Bot";
+import { Bot } from "./Bot.ts";
 
 export class QuitSibelius {
     _bot: Bot;

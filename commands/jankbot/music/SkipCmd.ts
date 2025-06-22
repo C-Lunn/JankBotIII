@@ -1,9 +1,9 @@
-import { NoMoreSongsInQueueError } from "../../../structs/MusicQueue";
-import { i18n } from "../../../utils/i18n";
-import { canModifyQueue } from "../../../utils/queue";
-import { Bot } from "../../../structs/Bot";
-import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
-import { JbMessage } from "../../../interfaces/JankbotCommand";
+import { NoMoreSongsInQueueError } from "../../../structs/MusicQueue.ts";
+import { i18n } from "../../../utils/i18n.ts";
+import { canModifyQueue } from "../../../utils/queue.ts";
+import { Bot } from "../../../structs/Bot.ts";
+import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand.ts";
+import type { JbMessage } from "../../../interfaces/JankbotCommand.ts";
 
 export default class SkipCmd extends JankbotMusicCmd {
     constructor(public bot: Bot) {

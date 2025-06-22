@@ -1,6 +1,6 @@
-import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
-import { Bot } from "../../../structs/Bot";
-import { i18n } from "../../../utils/i18n";
+import JankbotCmd, { type JbMessage } from "../../../interfaces/JankbotCommand.ts";
+import { Bot } from "../../../structs/Bot.ts";
+import { i18n } from "../../../utils/i18n.ts";
 
 export default class NowPlayingCmd extends JankbotCmd {
     constructor(public bot: Bot) {

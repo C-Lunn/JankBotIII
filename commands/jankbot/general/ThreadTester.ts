@@ -1,6 +1,6 @@
-import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
-import { Bot } from "../../../structs/Bot";
-import { scrape_thread } from "../../../utils/thread_scraper";
+import JankbotCmd, { type JbMessage } from "../../../interfaces/JankbotCommand.ts";
+import { Bot } from "../../../structs/Bot.ts";
+import { scrape_thread } from "../../../utils/thread_scraper.ts";
 
 export default class ThreadCmd extends JankbotCmd {
     constructor(bot: Bot) {

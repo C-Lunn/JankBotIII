@@ -1,8 +1,8 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonStyle, Message } from "discord.js";
 import { readdirSync, readFileSync } from "fs";
 import { join } from "path";
-import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
-import { Bot } from "../../../structs/Bot";
+import JankbotCmd, { type JbMessage } from "../../../interfaces/JankbotCommand.ts";
+import { Bot } from "../../../structs/Bot.ts";
 
 export default class LogoCmd extends JankbotCmd {
     private _logos: string[];
@@ -11,7 +11,7 @@ export default class LogoCmd extends JankbotCmd {
         this.name = "logo";
         this.description = "Get a random logo.";
         this.aliases = [];
-        this._logos = JSON.parse(readFileSync(join(__dirname, "..", "..", "..", "resource", "muselogos.json"))!.toString());
+        this._logos = JSON.parse(readFileSync(join(import.meta.dirname, "..", "..", "..", "resource", "muselogos.json"))!.toString());
 
         bot.client.on("interactionCreate", async (interaction) => {
             if (!interaction.isButton()) return;

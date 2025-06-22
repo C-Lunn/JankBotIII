@@ -1,11 +1,11 @@
 import "dotenv/config";
-import { Config } from "../interfaces/Config";
+import type { Config } from "../interfaces/Config.ts";
 
 let config: Config;
 
 try {
-    config = require("../config.json");
-} catch (error) {
+    config = (await import("../config.json", { with: { type: "json" } })).default;
+} catch {
     config = {
         TOKEN: process.env.TOKEN || "",
         PREFIX: process.env.PREFIX || "!",

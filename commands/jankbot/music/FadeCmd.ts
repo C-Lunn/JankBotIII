@@ -1,7 +1,7 @@
 import { Message } from "discord.js";
-import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
-import { Bot } from "../../../structs/Bot";
-import { JbMessage } from "../../../interfaces/JankbotCommand";
+import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand.ts";
+import { Bot } from "../../../structs/Bot.ts";
+import type { JbMessage } from "../../../interfaces/JankbotCommand.ts";
 
 export default class FadeCmd extends JankbotMusicCmd {
     constructor(public bot: Bot) {

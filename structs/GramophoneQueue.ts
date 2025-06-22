@@ -1,7 +1,7 @@
 import { VoiceConnectionState, VoiceConnectionStatus, VoiceConnectionDisconnectReason, entersState, AudioPlayerState, AudioPlayerStatus } from "@discordjs/voice";
-import { JCIMessage } from "../interfaces/JCIMessage";
-import { QueueOptions } from "../interfaces/QueueOptions";
-import { NoMoreSongsInQueueError, Queue, wait } from "./Queue";
+import { JCIMessage } from "../interfaces/JCIMessage.ts";
+import { QueueOptions } from "../interfaces/QueueOptions.ts";
+import { NoMoreSongsInQueueError, Queue, wait } from "./Queue.ts";
 import { ChannelType } from "discord.js";
 
 

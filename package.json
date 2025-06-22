@@ -8,6 +8,7 @@
   "homepage": "https://github.com/eritislami/evobot",
   "repository": "github:eritislami/evobot",
   "bugs": "https://github.com/eritislami/evobot/issues",
+  "type": "module",
   "engines": {
     "node": ">=16.11.0"
   },
@@ -71,5 +72,9 @@
       "disableScopeLowerCase": false,
       "disableSubjectLowerCase": false
     }
+  },
+  "nodemonConfig": {
+    "ext": "*.ts",
+    "exec": "NODE_ENV=development node --experimental-transform-types --experimental-specifier-resolution=node index.ts"
   }
 }

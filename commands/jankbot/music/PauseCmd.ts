@@ -1,9 +1,8 @@
-import { Message } from "discord.js";
-import { i18n } from "../../../utils/i18n";
-import { canModifyQueue } from "../../../utils/queue";
-import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
-import { Bot } from "../../../structs/Bot";
-import { JbMessage } from "../../../interfaces/JankbotCommand";
+import type { JbMessage } from "../../../interfaces/JankbotCommand.ts";
+import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand.ts";
+import { Bot } from "../../../structs/Bot.ts";
+import { i18n } from "../../../utils/i18n.ts";
+import { canModifyQueue } from "../../../utils/queue.ts";
 
 export default class PauseCmd extends JankbotMusicCmd {
     constructor(public bot: Bot) {

@@ -1,8 +1,8 @@
 import { getVoiceConnection } from "@discordjs/voice";
-import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
-import { Bot } from "../../../structs/Bot";
-import { icon } from "../../../utils/icons";
-import { JbMessage } from "../../../interfaces/JankbotCommand";
+import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand.ts";
+import { Bot } from "../../../structs/Bot.ts";
+import { icon } from "../../../utils/icons.ts";
+import type { JbMessage } from "../../../interfaces/JankbotCommand.ts";
 
 export default class LeaveCmd extends JankbotMusicCmd {
     constructor(bot: Bot) {

@@ -1,14 +1,15 @@
-import { ActivityType, Client, Collection, Snowflake } from "discord.js";
-import { Command } from "../interfaces/Command";
-import { checkPermissions } from "../utils/checkPermissions";
-import { config } from "../utils/config";
-import { i18n } from "../utils/i18n";
-import { MissingPermissionsException } from "../utils/MissingPermissionsException";
-import { MusicQueue } from "./MusicQueue";
-import { QuitSibelius } from "./QuitSibelius";
-import { WhatWhenGramophone } from "./WhatWhenGramophone";
-import command_registry from "../commands/registry";
-import WebService from "../web";
+import { ActivityType, Client, Collection, type Snowflake } from "discord.js";
+import type { Command } from "../interfaces/Command.ts";
+import { checkPermissions } from "../utils/checkPermissions.ts";
+import { config } from "../utils/config.ts";
+import { i18n } from "../utils/i18n.ts";
+import { MissingPermissionsException } from "../utils/MissingPermissionsException.ts";
+import { MusicQueue } from "./MusicQueue.ts";
+import { QuitSibelius } from "./QuitSibelius.ts";
+import { WhatWhenGramophone } from "./WhatWhenGramophone.ts";
+import command_registry from "../commands/registry.ts";
+import WebService from "../web/index.ts";
+import RadioSession from "../gramophone/radio/session.ts";
 
 const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -201,4 +202,6 @@ export class Bot {
         this.queues.delete(guildId);
         // leave here?
     }
+
+    radio_session?: RadioSession;
 }

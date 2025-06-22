@@ -1,7 +1,6 @@
-import { notDeepEqual } from "assert";
-import { Message, VoiceChannel } from "discord.js";
-import JankbotCmd, { JbMessage } from "../../../interfaces/JankbotCommand";
-import { Bot } from "../../../structs/Bot";
+import { VoiceChannel } from "discord.js";
+import JankbotCmd, { type JbMessage } from "../../../interfaces/JankbotCommand.ts";
+import { Bot } from "../../../structs/Bot.ts";
 
 export default class FistchordCmd extends JankbotCmd {
     constructor(bot: Bot) {

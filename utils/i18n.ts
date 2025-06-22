@@ -1,6 +1,6 @@
 import i18n from "i18n";
 import { join } from "path";
-import { config } from "./config";
+import { config } from "./config.ts";
 
 i18n.configure({
     locales: [
@@ -30,7 +30,7 @@ i18n.configure({
         "zh_sg",
         "zh_tw"
     ],
-    directory: join(__dirname, "..", "locales"),
+    directory: join(import.meta.dirname, "..", "locales"),
     defaultLocale: "en",
     retryInDefaultLocale: true,
     objectNotation: true,

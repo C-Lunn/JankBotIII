@@ -1,12 +1,12 @@
-import { AudioPlayerStatus, DiscordGatewayAdapterCreator, joinVoiceChannel, VoiceConnection } from "@discordjs/voice";
-import { VoiceBasedChannel } from "discord.js";
-import { MusicQueue } from "../../../structs/MusicQueue";
-import { NotAMusicError, Song } from "../../../structs/Song";
-import { i18n } from "../../../utils/i18n";
-import { icon } from "../../../utils/icons";
-import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
-import { Bot } from "../../../structs/Bot";
-import { JbMessage } from "../../../interfaces/JankbotCommand";
+import { AudioPlayerStatus, type DiscordGatewayAdapterCreator, joinVoiceChannel, VoiceConnection } from "@discordjs/voice";
+import type { VoiceBasedChannel } from "discord.js";
+import { MusicQueue } from "../../../structs/MusicQueue.ts";
+import { NotAMusicError, Song } from "../../../structs/Song.ts";
+import { i18n } from "../../../utils/i18n.ts";
+import { icon } from "../../../utils/icons.ts";
+import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand.ts";
+import { Bot } from "../../../structs/Bot.ts";
+import type { JbMessage } from "../../../interfaces/JankbotCommand.ts";
 
 export default class PlayCmd extends JankbotMusicCmd {
     constructor(public bot: Bot) {

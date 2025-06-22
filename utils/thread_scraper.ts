@@ -1,7 +1,7 @@
-import { Client, Collection, EmbedAuthorData, Guild, Message, ThreadChannel } from "discord.js";
-import { Bot } from "../structs/Bot";
-import { Response } from "express";
+import { Client, type EmbedAuthorData, Message, ThreadChannel } from "discord.js";
+import type { Response } from "express";
 import * as linkify from 'linkifyjs';
+import { Bot } from "../structs/Bot.ts";
 
 const url_regex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[.\!\/\\w]*))?)/;
 
@@ -169,6 +169,17 @@ export type ParsedThread = {
     }
 }
 
+const allowed_hostnames = [
+    "youtube.com",
+    "www.youtube.com",
+    "youtu.be",
+    "www.youtu.be",
+    "soundcloud.com",
+    "www.soundcloud.com",
+    "bandcamp.com",
+    "www.bandcamp.com",
+]
+
 export async function better_scrape_thread(client: Client, chan_id: string) {
     const channel = await client.channels.fetch(chan_id);
 
@@ -217,14 +228,31 @@ export async function better_scrape_thread(client: Client, chan_id: string) {
             }
         }
 
-        const [res] = linkify.find(message.content) ?? [];
-        if (!res) {
-            return prev;
+        let url, content = message.content;
+        while (!url) {
+            const [res] = linkify.find(content) ?? [];
+            if (!res) {
+                break;
+            }
+    
+            // remove discord-specific markup
+            // i will never learn regex
+            const maybe = URL.parse(res.href.replaceAll("||", "").replaceAll(">", "").replaceAll("<", ""));
+            
+            if (maybe && allowed_hostnames.includes(maybe.hostname)) {
+                url = maybe.toString();
+            }
+
+            content = content.replace(res.href, "");
         }
 
-        // remove discord-specific markup
-        // i will never learn regex
-        const url = res.href.replaceAll("||", "").replaceAll(">", "").replaceAll("<", "");
+        const attachments = Array.from(message.attachments);
+        if (attachments.length != 0) {
+            const [[, attachment]] = attachments;
+            url = attachment.url;
+        }
+
+        if (!url) return prev;
 
         const parsed: ParsedMessage = {
             url,

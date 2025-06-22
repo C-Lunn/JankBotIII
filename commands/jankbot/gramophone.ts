@@ -1,10 +1,10 @@
-import JankbotCmd, { JbMessage } from "../../interfaces/JankbotCommand";
+import JankbotCmd, { type JbMessage } from "../../interfaces/JankbotCommand.ts";
 import commandLineArgs from 'command-line-args'
 
-import { Bot } from "../../structs/Bot";
-import { reload_song, start_archiving } from "../../gramophone/archives";
-import { config } from "../../utils/config";
-import db from "../../utils/db";
+import { Bot } from "../../structs/Bot.ts";
+import { reload_song, start_archiving } from "../../gramophone/archives.ts";
+import { config } from "../../utils/config.ts";
+import db from "../../utils/db.ts";
 import { inspect } from "node:util";
 
 export default class GramophoneCmd extends JankbotCmd {

@@ -1,8 +1,8 @@
-import { i18n } from "../../../utils/i18n";
-import { canModifyQueue } from "../../../utils/queue";
-import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand";
-import { Bot } from "../../../structs/Bot";
-import { JbMessage } from "../../../interfaces/JankbotCommand";
+import { i18n } from "../../../utils/i18n.ts";
+import { canModifyQueue } from "../../../utils/queue.ts";
+import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand.ts";
+import { Bot } from "../../../structs/Bot.ts";
+import type { JbMessage } from "../../../interfaces/JankbotCommand.ts";
 
 export default class ResumeCmd extends JankbotMusicCmd {
     constructor(public bot: Bot) {
