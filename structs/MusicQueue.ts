@@ -20,6 +20,7 @@ import { shortformat } from "../utils/format.ts";
 import { icon } from "../utils/icons.ts";
 import { Song } from "./Song.ts";
 import type { JbMessage } from "../interfaces/JankbotCommand.ts";
+import EventEmitter from "node:events";
 
 const wait = promisify(setTimeout);
 
@@ -56,7 +57,7 @@ export class AttemptToReplacePlayingSongError extends Error {
   }
 }
 
-export class MusicQueue {
+export class MusicQueue extends EventEmitter<{ "update": [] }> {
   public readonly message: JbMessage;
   public readonly connection: VoiceConnection;
   public readonly player: AudioPlayer;
@@ -79,6 +80,8 @@ export class MusicQueue {
   private _button_listener?: (interaction: any) => void;
 
   public constructor(options: QueueOptions) {
+    super();
+
     Object.assign(this, options);
 
     this.textChannel = options.message.channel as TextChannel;
@@ -148,6 +151,7 @@ export class MusicQueue {
       } else if (oldState.status === AudioPlayerStatus.Buffering && newState.status === AudioPlayerStatus.Playing) {
         // this.sendPlayingMessage(newState);
       }
+      this.emit("update")
     });
 
     this.player.on("error", (error) => {
@@ -163,6 +167,7 @@ export class MusicQueue {
   public async push(song: Song) {
     this.songs.push(song);
     if (this._state === QueueState.Init) {
+      this._active_idx = this.songs.length - 1;
       this.playNext();
     }
   }
@@ -207,6 +212,7 @@ export class MusicQueue {
       }
     } finally {
       this.queueLock = false;
+      this.emit("update");
     }
   }
 
@@ -214,6 +220,11 @@ export class MusicQueue {
     if (this._state === QueueState.Finished) return;
     this.player.stop();
     this._state = QueueState.Finished;
+    // don't destroy the queue if the radio is still going
+    if (bot.radio_session) {
+      this._state = QueueState.Init;
+      return;
+    }
     if (this._last_queue_msg) {
       this._last_queue_msg.edit({ components: [] });
     }
@@ -379,7 +390,7 @@ export class MusicQueue {
         queue_lines.push(`${icon("transparent")} **${i + 1}.** ${title} \`[${shortformat(this.songs[i].duration * 1000)}]\` (<@${this.songs[i].added_by}>)`);
       }
     }
-    
+
     queue_lines.push(`${icon("transparent")} **Total**: \`[${shortformat(total_time * 1000)}]\``);
 
     this._last_from_to = [opt.from, opt.to];

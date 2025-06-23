@@ -1,6 +1,7 @@
 import { Message, type PermissionsString, type SendableChannels } from "discord.js";
 import { Bot } from "../structs/Bot.ts";
 import type { Command } from "./Command.ts";
+import { is_tantamod } from "../utils/checkPermissions.ts";
 
 export type JbMessage = Omit<Message, "channel"> & { channel: SendableChannels };
 
@@ -11,6 +12,7 @@ export default class JankbotCmd implements Command {
     public permissions?: PermissionsString[];
     public cooldown?: number;
     public category?: string;
+    /** treat quoted text as a single argument (default false) */
     public parse_quotes?: boolean;
     protected bot: Bot;
     protected _is_tantamod: boolean;
@@ -18,9 +20,7 @@ export default class JankbotCmd implements Command {
     }
 
     execute(message: JbMessage, args: string[]) {
-        const user_is_tantamod = this.bot.mod_role_id instanceof Array 
-            ? this.bot.mod_role_id.reduce((acc, x) => acc || message.member!.roles.cache.has(x), false)
-            : message.member!.roles.cache.has(this.bot.mod_role_id);
+        const user_is_tantamod = is_tantamod(message.member!, this.bot);
             
         if (this._is_tantamod && !user_is_tantamod) {
             message.react("🚫")

@@ -2,15 +2,24 @@ import child_process from "child_process";
 import { Readable } from "node:stream";
 import { config } from "../utils/config.ts";
 import { YtDlp } from "../utils/ytdlp.ts";
+import { type SongData, SongType } from "../structs/Song.ts";
 
-export async function get_metadata(url: string) {
-    const stream = YtDlp.stream_url(url);
+export async function get_metadata(url: string | URL): Promise<SongMetadata | SongData | undefined> {
+    const { stream, metadata } = YtDlp.stream_url(url.toString());
+    const meta = await metadata;
+    let data: SongData = {
+        duration: meta.duration,
+        kind: SongType.YtDlp,
+        title: meta.title,
+        url: new URL(url),
+    };
+
     const { fingerprint, duration } = await calc_fingerprint(stream);
     const mbid = await lookup_fingerprint(fingerprint, duration);
     if (!mbid) {
-        // todo
+        return data;
     } else {
-        const song = await lookup_recording(mbid);
+        const song = await lookup_recording(data, mbid);
         return song;
     }
 }
@@ -63,8 +72,11 @@ async function lookup_fingerprint(fingerprint: string, duration: number) {
     }
 
     const json = await res.json();
-    if (json["status"] != "ok" || json["results"].length == 0) {
+    if (json["status"] != "ok") {
         throw new Error("Fingerprint lookup failed", { cause: json });
+    }
+    if (json["results"].length == 0) {
+        return null;
     }
 
     try {
@@ -76,7 +88,7 @@ async function lookup_fingerprint(fingerprint: string, duration: number) {
 
 const mb_root = new URL("https://musicbrainz.org/ws/2/");
 
-interface SongMetadata {
+interface SongMetadata extends SongData {
     mbid: string;
     title: string;
     release_date: string;
@@ -87,7 +99,7 @@ interface SongMetadata {
     artist_name: string;
 }
 
-export async function lookup_recording(mbid: string): Promise<SongMetadata> {
+export async function lookup_recording(data: SongData, mbid: string): Promise<SongMetadata> {
     const res = await fetch(
         new URL(`recording/${mbid}?fmt=json&inc=release-groups+releases+artists`, mb_root),
         { headers }
@@ -112,6 +124,7 @@ export async function lookup_recording(mbid: string): Promise<SongMetadata> {
     }
 
     return {
+        ...data,
         mbid: id,
         title,
         album_mbid,

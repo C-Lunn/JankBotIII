@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import pfs from "fs/promises";
 import internal from "stream";
 import * as web_streams from "stream/web";
-import youtube from "youtube-sr";
+import { YouTube } from "youtube-sr";
 import { YtDlp } from "../utils/ytdlp.ts";
 
 export interface SongData {
@@ -46,16 +46,22 @@ export class Song {
     public added_by: string;
     public kind: SongType;
 
-    public constructor({ url, title, kind, duration }: SongData, added_by: string) {
+    added_at: Date;
+    metadata: SongData;
+
+    public constructor(data: SongData, added_by: string, added_at?: Date) {
+        const { url, title, kind, duration } = data
         this.url = url;
         this.title = title;
         this.kind = kind;
         this.duration = duration;
         this.added_by = added_by;
+        this.added_at = added_at ?? new Date(Date.now());
+        this.metadata = data;
     }
 
-    public static async from(
-        url: string = "",
+    public static async lookup(
+        url: string | URL = "",
         search: string = "",
         added_by: string = ""
     ): Promise<Song> {
@@ -67,7 +73,7 @@ export class Song {
         }
 
         if (!url_parsed) {
-            const result = await youtube.searchOne(search);
+            const result = await YouTube.searchOne(search);
             url_parsed = new URL(`https://youtube.com/watch?v=${result.id}`);
         }
 
@@ -86,7 +92,7 @@ export class Song {
             );
     }
 
-    private static async fetch_songinfo(url: URL): Promise<SongData | undefined> {
+    static async fetch_songinfo(url: URL): Promise<SongData | undefined> {
         if (allowed_hosts.includes(url.hostname)) {
             // TODO: handle yt-dlp not existing
             const info = await YtDlp.fetch_thing_details(url.toString());
@@ -197,9 +203,10 @@ export class Song {
             : StreamType.Arbitrary;
 
         let stream = await (async () => {
+            console.log("here")
             switch (this.kind) {
                 // TODO: handle yt-dlp or ffmpeg not existing
-                case SongType.YtDlp: return YtDlp.stream_url(this.url.toString());
+                case SongType.YtDlp: return YtDlp.stream_url(this.url.toString()).stream;
                 case SongType.File: return fs.createReadStream(this.url.pathname);
                 case SongType.ExternalAudio: {
                     const rs = (await fetch(this.url)).body;
@@ -214,7 +221,7 @@ export class Song {
 
         return createAudioResource(
             stream,
-            { metadata: this, inputType: type, inlineVolume: true }
+            { metadata: this, inputType: type, inlineVolume: true, silencePaddingFrames: 64 }
         );
     }
 }

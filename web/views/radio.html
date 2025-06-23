@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+{% set title = "Radio" %}
+
+{% block head %}
+<link rel="stylesheet" href="/radio.css">
+{% endblock %}
+
+{% block content %}
+<header>
+    {% include "./logo.svg" %}
+</header>
+
+{% macro img(the) %}
+{% if the.metadata.mbid %}
+<img src="https://coverartarchive.org/release-group/{{the.metadata.album_mbid}}/front-250"
+    alt="Album art for {{the.metadata.album_title}}" class="cover">
+{% elif thumb(the.url) %}
+<img src="{{thumb(the.url)}}" alt="Album art for {{the.metadata.album_title}}"
+    class="thumb">
+{% endif %}
+{% endmacro %}
+
+{% macro song(the) %}
+<article class="song">
+    {{img(the)}}
+    <div class="meta">
+        <h3>{{the.title}}</h3>
+        {% if the.metadata.mbid %}
+        <p class="artist">{{the.metadata.artist_name}}</p>
+        {% endif %}
+    </div>
+</article>
+{% endmacro %}
+
+<main>
+    {% if current %}
+    <section style="grid-column: 1 / span 2; grid-row: 1;">
+        <div class="np">
+            <div class="backdrop">{{img(current)}}</div>
+            {{song(current)}}
+        </div>
+    </section>
+    {% endif %}
+
+    <div style="grid-column: 2; grid-row: 2;">
+        <section style="grid-column: 2;">
+            <h2>Up Next</h2>
+            <ol>
+                {% for s in next %}
+                <li>
+                    {{song(s)}}
+                </li>
+                {% else %}
+                <i>nothing's queued!</i>
+                {% endfor %}
+            </ol>
+        </section>
+    </div>
+    <section style="grid-column: 1; grid-row: 2;">
+        <h2>Previous Tracks</h2>
+        <ol>
+            {% for s in past | reverse %}
+            <li>
+                {{song(s)}}
+            </li>
+            {% else %}
+            <i>nothing's been played yet!</i>
+            {% endfor %}
+        </ol>
+    </section>
+</main>
+{% endblock %}

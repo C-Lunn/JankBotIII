@@ -1,5 +1,5 @@
 import { EmbedBuilder, Message, TextChannel } from "discord.js";
-import youtube from "youtube-sr";
+import {YouTube} from "youtube-sr";
 import { i18n } from "../../../utils/i18n.ts";
 import JankbotCmd, { type JbMessage } from "../../../interfaces/JankbotCommand.ts";
 import { Bot } from "../../../structs/Bot.ts";
@@ -33,7 +33,7 @@ export default class SearchCmd extends JankbotCmd {
             .setColor("#F8AA2A");
         
         try {
-            const results = await youtube.search(search, { limit: 10, type: "video" });
+            const results = await YouTube.search(search, { limit: 10, type: "video" });
         
             results.map((video, index) =>
                 resultsEmbed.addFields({

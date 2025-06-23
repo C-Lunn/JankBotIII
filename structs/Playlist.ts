@@ -1,4 +1,4 @@
-import youtube, { Playlist as YoutubePlaylist } from "youtube-sr";
+import { YouTube, Playlist as YoutubePlaylist } from "youtube-sr";
 import { config } from "../utils/config.ts";
 import { Song, SongType } from "./Song.ts";
 const pattern = /^.*(youtu.be\/|list=)([^#\&\?]*).*/i;
@@ -28,10 +28,10 @@ export class Playlist {
         let playlist;
 
         if (urlValid) {
-            playlist = await youtube.getPlaylist(url);
+            playlist = await YouTube.getPlaylist(url);
         } else {
-            const result = await youtube.searchOne(search, "playlist");
-            playlist = await youtube.getPlaylist(result.url!);
+            const result = await YouTube.searchOne(search, "playlist");
+            playlist = await YouTube.getPlaylist(result.url!);
         }
 
         return new this(playlist, added_by);

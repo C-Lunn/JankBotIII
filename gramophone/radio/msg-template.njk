@@ -1,5 +1,21 @@
-
-## Up Next
-{% for song in playlists %}
-    
+{%- if current.metadata.mbid -%}
+### Now Playing
+> [**{{current.title | safe}}**](<{{current.url | safe}}>)
+> 🎙️ {{ current.metadata.artist_name | safe }}
+> 💽 {{ current.metadata.album_title | safe }}
+>    
+> *Submitted by <@{{current.added_by}}>*
+{%- elif current -%}
+> [**{{current.title | safe}}**](<{{current.url | safe}}>)
+>    
+> *Submitted by <@{{current.added_by}}>*
+{%- endif %}
+### Up Next
+{% for song in playlist -%}
+* **{{song.title | safe}}**, added by <@{{song.added_by}}>
+{% else -%}
+*The playlist is empty.*
 {% endfor %}
+
+* Use the button below or `{{config.PREFIX}}p` to add a song.
+* Head on over to {{playlist_url}} to see everything that's already been played.

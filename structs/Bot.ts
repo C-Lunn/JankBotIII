@@ -52,6 +52,7 @@ export class Bot {
 
         this.register_commands();
         this.onMessageCreate();
+        this.client.on("interactionCreate", x => RadioSession.on_interaction(this, x));
         this._qs = new QuitSibelius(this);
         this._wg = new WhatWhenGramophone(this);
     }

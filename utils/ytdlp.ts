@@ -1,35 +1,49 @@
 import { spawn } from "node:child_process";
 import { config } from "./config.ts";
+import Stream from "node:stream";
 
 export class YtDlp {
-    static stream_url(url: string, format = "opus") {
+
+    static stream_url(url: string, format = "opus")
+        : { stream: Stream.Readable, metadata: Promise<{ title: string, duration: number }> } {
         console.log(`streaming ${url} with yt-dlp`)
         const args = [
             url,
             "--extract-audio",
             "--no-playlist",
+            "-O", `%(.{title,duration})j`,
+            "--no-simulate",
             "--audio-format", format, // output opus
-            "-o", "-" // output to stdout
+            "-o", "-", // output to stdout
         ];
         if (config.COOKIES_DOT_TXT) args.push("--cookies", config.COOKIES_DOT_TXT);
 
         const cmd = spawn("yt-dlp", args);
 
-        cmd.stderr.on("data", (error) => {
-            // in stdout mode yt-dlp likes to use stderr for things that
-            // AREN'T ERRORS. hence the lack of ceremony here.
-            console.log(`yt-dlp: ${error}`);
+        const meta_promise = new Promise<{ title: string, duration: number }>((resolve) => {
+            cmd.stderr.on("data", (error) => {
+                // yt-dlp outputs the json we need to stderr because we're busy using stdin.
+                try {
+                    const text = error.toString("utf8");
+                    const json = JSON.parse(text);
+                    resolve(json)
+                } catch {
+                    console.log(`yt-dlp: ${error}`);
+                }
 
-            // if (String(error).startsWith("ERROR:")) {
-            //     throw new Error("YtDlp Error", { cause: error })
-            // }
+                // if (String(error).startsWith("ERROR:")) {
+                //     throw new Error("YtDlp Error", { cause: error })
+                // }
+            });
         });
 
         cmd.on("close", (code) => {
             console.log(`yt-dlp exited with code ${code}`)
         });
 
-        return cmd.stdout;
+        console.log("hwm", cmd.stdout.readableHighWaterMark)
+
+        return { stream: cmd.stdout, metadata: meta_promise };
     }
 
     static async fetch_thing_details(url: string): Promise<Record<string, unknown>> {

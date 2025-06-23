@@ -23,6 +23,26 @@ export default class WebService {
         this.app.use(express.static(assets));
 
         this.app.get('/', (req, res) => res.render("index.html"));
+        this.app.get('/radio', (req, res) => {
+            const s = bot.radio_session;
+            if (!s) {
+                return res.status(404).send("The radio is offline.");
+            }
+
+            res.render("radio.html", {
+                current: s.queue.activeSong(),
+                next: s.queue.songs.slice(s.queue.activeIndex + 1),
+                past: s.queue.songs.slice(0, s.queue.activeIndex),
+                config,
+                thumb: (url: URL | string) => {
+                    url = new URL(url);
+                    if (url.hostname.includes("youtube.com")) {
+                        const id = url.searchParams.get("v");
+                        return `https://img.youtube.com/vi/${id}/sddefault.jpg`
+                    }
+                }
+            })
+        });
 
         this.app.get('/gramophone/:number', this.threadview)
         this.app.get('/preview/:id', this.threadpreview)

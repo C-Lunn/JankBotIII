@@ -1,6 +1,7 @@
-import type { PermissionResolvable } from "discord.js";
+import type { GuildMember, PermissionResolvable } from "discord.js";
 import type { Command } from "../interfaces/Command.ts";
 import type { JbMessage } from "../interfaces/JankbotCommand.ts";
+import { Bot } from "../structs/Bot.ts";
 
 interface PermissionResult {
     result: boolean;
@@ -20,4 +21,10 @@ export async function checkPermissions(command: Command, message: JbMessage): Pr
     }
 
     return { result: true };
+}
+
+export function is_tantamod(member: GuildMember, bot: Bot) {
+    return bot.mod_role_id instanceof Array
+        ? bot.mod_role_id.reduce((acc, x) => acc || member.roles.cache.has(x), false)
+        : member.roles.cache.has(bot.mod_role_id);
 }
