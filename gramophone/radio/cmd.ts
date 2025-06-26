@@ -3,7 +3,7 @@ import JankbotCmd, { type JbMessage } from "../../interfaces/JankbotCommand.ts";
 import { Bot } from "../../structs/Bot.ts";
 import { ChannelType, DiscordAPIError } from 'discord.js';
 import RadioSession from './session.ts';
-
+import pfs from "fs/promises";
 
 export default class RadioCmd extends JankbotCmd {
     constructor(bot: Bot) {
@@ -25,6 +25,7 @@ export default class RadioCmd extends JankbotCmd {
 
         switch (command) {
             case "init": { this.init(bot, message, argv); break; }
+            case "restore": { this.restore(bot, message, argv); break; }
             default: message.reply(`unknown radio command "${command}"`)
         }
     }
@@ -79,5 +80,23 @@ export default class RadioCmd extends JankbotCmd {
         await bot.radio_session.self_destruct();
         bot.radio_session = undefined;
         message.reply("Done.");
+    }
+
+    async restore(bot: Bot, message: JbMessage, args?: string[]) {
+        if (bot.radio_session) {
+            message.reply("A radio session is already active");
+        }
+
+        try { await pfs.stat("radio.json") } catch {
+            return message.reply("Nothing to restore.");
+        }
+
+        try {
+            this.bot.radio_session = await RadioSession.restore(bot);
+        } catch (e) {
+            message.reply(`Error: \`${e}\``)
+        }
+
+        message.react("✅");
     }
 }

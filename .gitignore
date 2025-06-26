@@ -75,3 +75,6 @@ config.json
 .DS_Store
 
 *.db*
+
+bumpers/
+radio.json

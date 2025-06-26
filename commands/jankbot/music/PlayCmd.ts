@@ -1,5 +1,5 @@
 import { AudioPlayerStatus, type DiscordGatewayAdapterCreator, joinVoiceChannel, VoiceConnection } from "@discordjs/voice";
-import { BaseInteraction, type Interaction, type ModalSubmitInteraction, type VoiceBasedChannel } from "discord.js";
+import { BaseInteraction, Message, type Interaction, type ModalSubmitInteraction, type VoiceBasedChannel } from "discord.js";
 import type { JbMessage } from "../../../interfaces/JankbotCommand.ts";
 import JankbotMusicCmd from "../../../interfaces/JankbotMusicCommand.ts";
 import { Bot } from "../../../structs/Bot.ts";
@@ -17,9 +17,15 @@ export default class PlayCmd extends JankbotMusicCmd {
         this.category = "music";
         this.description = i18n.__("play.description");
         this.permissions = ["Connect", "Speak", "AddReactions", "ManageMessages"];
+        this.radio_safe = true;
     }
 
     async run(bot: Bot, message: JbMessage, args: string[]) {
+        console.log(message.guild?.id, bot.radio_session?.guild.id, message.guild?.id == bot.radio_session?.guild.id);
+        if (message.guild?.id == bot.radio_session?.guild.id) {
+            bot.radio_session?.add_song(args[0], message as Message)
+            return;
+        }
         const { channel } = message.member!.voice;
         if (!channel) return message.reply(i18n.__("play.errorNotChannel")).catch(console.error);
 
@@ -107,8 +113,5 @@ export default class PlayCmd extends JankbotMusicCmd {
 
         return conn;
     }
-}
-
-function play_song(url: string, ) {
 
 }

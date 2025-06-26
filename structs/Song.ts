@@ -46,7 +46,7 @@ export class Song {
     public added_by: string;
     public kind: SongType;
 
-    added_at: Date;
+    added_on: Date;
     metadata: SongData;
 
     public constructor(data: SongData, added_by: string, added_at?: Date) {
@@ -56,7 +56,7 @@ export class Song {
         this.kind = kind;
         this.duration = duration;
         this.added_by = added_by;
-        this.added_at = added_at ?? new Date(Date.now());
+        this.added_on = added_at ?? new Date(Date.now());
         this.metadata = data;
     }
 
@@ -203,7 +203,6 @@ export class Song {
             : StreamType.Arbitrary;
 
         let stream = await (async () => {
-            console.log("here")
             switch (this.kind) {
                 // TODO: handle yt-dlp or ffmpeg not existing
                 case SongType.YtDlp: return YtDlp.stream_url(this.url.toString()).stream;

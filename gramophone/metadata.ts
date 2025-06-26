@@ -15,6 +15,7 @@ export async function get_metadata(url: string | URL): Promise<SongMetadata | So
     };
 
     const { fingerprint, duration } = await calc_fingerprint(stream);
+    console.log("fingerprint is", fingerprint);
     const mbid = await lookup_fingerprint(fingerprint, duration);
     if (!mbid) {
         return data;
@@ -72,6 +73,7 @@ async function lookup_fingerprint(fingerprint: string, duration: number) {
     }
 
     const json = await res.json();
+    console.log("acoustid lookup:", json);
     if (json["status"] != "ok") {
         throw new Error("Fingerprint lookup failed", { cause: json });
     }

@@ -1,10 +1,11 @@
 import express from "express";
-import { Bot } from "../structs/Bot.ts";
-import { get_avatar, get_thread_info, scrape_thread } from "../utils/thread_scraper.ts";
-import { config } from "../utils/config.ts";
-import path from "path";
 import nunjucks from "nunjucks";
+import path from "path";
+import { env } from "process";
+import { Bot } from "../structs/Bot.ts";
+import { config } from "../utils/config.ts";
 import db from "../utils/db.ts";
+import { get_avatar, get_thread_info, scrape_thread } from "../utils/thread_scraper.ts";
 
 export default class WebService {
     app = express();
@@ -22,7 +23,9 @@ export default class WebService {
         this.app.set('view engine', 'html');
         this.app.use(express.static(assets));
 
-        this.app.get('/', (req, res) => res.render("index.html"));
+        if (env.NODE_ENV == "development") {
+            this.app.get('/', (req, res) => res.render("index.html"));
+        }
         this.app.get('/radio', (req, res) => {
             const s = bot.radio_session;
             if (!s) {

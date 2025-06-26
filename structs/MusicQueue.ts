@@ -64,6 +64,8 @@ export class MusicQueue extends EventEmitter<{ "update": [] }> {
   public readonly textChannel: TextChannel;
   public readonly bot = bot;
 
+  play_bumper?: () => (void | Promise<void>);
+
   public resource: AudioResource;
   public songs: Song[] = [];
   public volume = config.DEFAULT_VOLUME || 100;
@@ -130,6 +132,11 @@ export class MusicQueue extends EventEmitter<{ "update": [] }> {
     });
 
     this.player.on("stateChange" as any, async (oldState: AudioPlayerState, newState: AudioPlayerState) => {
+      //@ts-ignore this is fine
+      if (newState.resource?.metadata?.bumper) {
+        console.log("GO FUCK YOURSELF");
+        return;
+      }
       if (oldState.status !== AudioPlayerStatus.Idle && newState.status === AudioPlayerStatus.Idle) {
         let success = false;
         while (!success) {
@@ -170,6 +177,7 @@ export class MusicQueue extends EventEmitter<{ "update": [] }> {
       this._active_idx = this.songs.length - 1;
       this.playNext();
     }
+    this.emit("update");
   }
 
   public async unshift(song: Song) {
@@ -177,6 +185,7 @@ export class MusicQueue extends EventEmitter<{ "update": [] }> {
     if (this._state === QueueState.Init) {
       this.playNext();
     }
+    this.emit("update");
   }
 
   public async playNext() {
@@ -191,6 +200,7 @@ export class MusicQueue extends EventEmitter<{ "update": [] }> {
         const active_song = this.songs[this._active_idx];
         this.resource = (await active_song.makeResource()!) as AudioResource;
         this._state = QueueState.Playing;
+        await this.play_bumper?.();
         this.player.play(this.resource);
         return active_song;
       }
@@ -203,6 +213,7 @@ export class MusicQueue extends EventEmitter<{ "update": [] }> {
         }
         const active_song = this.songs[++this._active_idx];
         this.resource = (await active_song.makeResource()!) as AudioResource;
+        await this.play_bumper?.();
         this.player.play(this.resource);
         if (this._last_queue_msg) {
           const [mbed, _] = this.generate_queue_embed({ from: this._last_from_to[0], to: this._last_from_to[1] });
@@ -266,7 +277,7 @@ export class MusicQueue extends EventEmitter<{ "update": [] }> {
     }
     try {
       this.queueLock = true;
-      if (index < 0 || index >= this.songs.length) {
+      if (index < 0 || index > this.songs.length) {
         throw new QueueIndexOutofBoundsError("na", this.songs.length);
       }
       this._active_idx = index - 1;
@@ -274,6 +285,7 @@ export class MusicQueue extends EventEmitter<{ "update": [] }> {
     } finally {
       this.queueLock = false;
     }
+    this.emit("update");
   }
 
   public move(from: number, to: number) {
@@ -291,6 +303,7 @@ export class MusicQueue extends EventEmitter<{ "update": [] }> {
     if (this._last_queue_msg) {
       this.update_last_queue_message();
     }
+    this.emit("update");
   }
 
   public activeSong() {
@@ -478,6 +491,7 @@ export class MusicQueue extends EventEmitter<{ "update": [] }> {
     if (this._last_queue_msg) {
       this.update_last_queue_message();
     }
+    this.emit("update");
 
     return s[0].title;
   }

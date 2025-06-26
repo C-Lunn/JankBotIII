@@ -27,7 +27,8 @@ h2 {
     align-items: center;
     grid-auto-rows: auto;
 
-    h3, p {
+    h3,
+    p {
         margin: 0;
         grid-column: 2;
         text-wrap: balance;
@@ -48,10 +49,15 @@ h2 {
         border-radius: 4px;
         outline: 2px solid rgb(from currentColor r g b / .1);
         grid-column: 1;
+        object-fit: cover;
     }
+
     .cover {
         aspect-ratio: 1 / 1;
-        object-fit: cover;
+    }
+
+    .thumb {
+        aspect-ratio: 16 / 9;
     }
 }
 
@@ -93,6 +99,7 @@ h2 {
     .backdrop {
         display: contents;
     }
+
     .backdrop img {
         position: absolute;
         display: block;

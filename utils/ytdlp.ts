@@ -41,8 +41,6 @@ export class YtDlp {
             console.log(`yt-dlp exited with code ${code}`)
         });
 
-        console.log("hwm", cmd.stdout.readableHighWaterMark)
-
         return { stream: cmd.stdout, metadata: meta_promise };
     }
 

@@ -36,6 +36,7 @@
     "linkifyjs": "^4.2.0",
     "mp3-duration-estimate": "^1.0.1",
     "nunjucks": "^3.2.4",
+    "p-queue": "^8.1.0",
     "sharp": "^0.34.2",
     "string-progressbar": "^1.0.4",
     "typescript": "^5.4.3",
