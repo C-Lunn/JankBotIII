@@ -133,7 +133,7 @@ export class MusicQueue extends EventEmitter<{ "update": [] }> {
 
     this.player.on("stateChange" as any, async (oldState: AudioPlayerState, newState: AudioPlayerState) => {
       //@ts-ignore this is fine
-      if (newState.resource?.metadata?.bumper) {
+      if (newState.resource?.metadata?.bumper || oldState.resource?.metadata?.bumper) {
         console.log("GO FUCK YOURSELF");
         return;
       }

@@ -3,6 +3,7 @@ import { Readable } from "node:stream";
 import { config } from "../utils/config.ts";
 import { YtDlp } from "../utils/ytdlp.ts";
 import { type SongData, SongType } from "../structs/Song.ts";
+import { inspect } from "node:util";
 
 export async function get_metadata(url: string | URL): Promise<SongMetadata | SongData | undefined> {
     const { stream, metadata } = YtDlp.stream_url(url.toString());
@@ -73,7 +74,7 @@ async function lookup_fingerprint(fingerprint: string, duration: number) {
     }
 
     const json = await res.json();
-    console.log("acoustid lookup:", json);
+    console.log("acoustid lookup:", inspect(json, { depth: 6 }));
     if (json["status"] != "ok") {
         throw new Error("Fingerprint lookup failed", { cause: json });
     }

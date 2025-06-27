@@ -23,11 +23,16 @@ export class YtDlp {
         const meta_promise = new Promise<{ title: string, duration: number }>((resolve) => {
             cmd.stderr.on("data", (error) => {
                 // yt-dlp outputs the json we need to stderr because we're busy using stdin.
+                const text: string = error.toString("utf8");
                 try {
-                    const text = error.toString("utf8");
                     const json = JSON.parse(text);
                     resolve(json)
                 } catch {
+                    if (text.includes("ERROR:")) {
+                        throw new Error("Yt-Dlp Error", {
+                            cause: text,
+                        });
+                    }
                     console.log(`yt-dlp: ${error}`);
                 }
 
