@@ -10,6 +10,9 @@ export async function get_metadata(url: string | URL): Promise<{ ok: boolean, so
 
         const { stream, metadata } = YtDlp.stream_url(url.toString(), "opus", { strict: true });
         const meta = await metadata;
+        if (!meta.ok) {
+            return { ok: false }
+        }
         let data: SongData = {
             duration: meta.duration,
             kind: SongType.YtDlp,

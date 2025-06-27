@@ -2,10 +2,11 @@ import { spawn } from "node:child_process";
 import { config } from "./config.ts";
 import Stream from "node:stream";
 
-export class YtDlp {
+type MetadataResult = { title: string, duration: number, ok: true } | { ok: false };
 
+export class YtDlp {
     static stream_url(url: string, format = "opus", opt?: { strict?: boolean })
-        : { stream: Stream.Readable, metadata: Promise<{ title: string, duration: number }> } {
+        : { stream: Stream.Readable, metadata: Promise<MetadataResult> } {
         console.log(`streaming ${url} with yt-dlp`)
         const args = [
             url,
@@ -20,18 +21,16 @@ export class YtDlp {
 
         const cmd = spawn("yt-dlp", args);
 
-        const meta_promise = new Promise<{ title: string, duration: number }>((resolve) => {
+        const meta_promise = new Promise<MetadataResult>((resolve) => {
             cmd.stderr.on("data", (error) => {
                 // yt-dlp outputs the json we need to stderr because we're busy using stdin.
                 const text: string = error.toString("utf8");
                 try {
                     const json = JSON.parse(text);
-                    resolve(json)
+                    resolve({ ...json, ok: true })
                 } catch {
                     if (text.includes("ERROR:") && !text.includes("Broken") && opt?.strict) {
-                        throw new Error("Yt-Dlp Error", {
-                            cause: text,
-                        });
+                        resolve({ ok: false })
                     }
                     console.log(`yt-dlp: ${error}`);
                 }
