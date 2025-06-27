@@ -15,7 +15,7 @@
   "scripts": {
     "dev": "nodemon index.ts",
     "debug": "nodemon -r dotenv/config index.ts -- --inspect",
-    "start": "node -r ts-node/register index.ts",
+    "start": "node --experimental-transform-types --experimental-specifier-resolution=node index.ts",
     "build": "tsc --build",
     "prod": "npm run build && node ./dist/index.js",
     "commit": "cz",
