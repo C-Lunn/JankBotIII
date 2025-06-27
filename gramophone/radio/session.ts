@@ -115,7 +115,7 @@ export default class RadioSession {
 
         this.queue.play_bumper = async () => await this.bumper_queue.play();
 
-         this.update_status();
+        this.update_status();
         await this.setup_stage();
 
         this.#ready_resolve()

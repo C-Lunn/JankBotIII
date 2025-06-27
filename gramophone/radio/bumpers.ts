@@ -5,7 +5,6 @@ import path from "path";
 
 class Bumper {
     constructor(public path: string) {
-        console.log(path);
     };
 
     into_resource(): AudioResource {
@@ -18,13 +17,15 @@ class Bumper {
 }
 
 export default class BumperQueue {
-    constructor(public player: AudioPlayer) { 
+    constructor(public player: AudioPlayer) {
         this.queue = BumperQueue.new_queue();
+        this.next_bumper = BumperQueue.calc_next_bumper();
         console.log("bumper queue: ", this.queue);
+        console.log("next bumper at: ", this.next_bumper);
     };
 
     queue: Bumper[];
-    next_bumper = BumperQueue.calc_next_bumper();
+    next_bumper: Date;
 
     static new_queue(): Bumper[] {
         // schwartzian transform (so O(n log n)) because i cba to do fisher-yates.

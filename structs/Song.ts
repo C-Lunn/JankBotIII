@@ -48,6 +48,8 @@ export class Song {
 
     added_on: Date;
     metadata: SongData;
+    voteskips: Set<string> = new Set;
+
 
     public constructor(data: SongData, added_by: string, added_at?: Date) {
         const { url, title, kind, duration } = data

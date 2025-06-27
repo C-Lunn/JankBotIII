@@ -1,4 +1,5 @@
 import RadioCmd from "../gramophone/radio/cmd.ts";
+import VoteskipCmd from "../gramophone/radio/voteskip.ts";
 import type { Command } from "../interfaces/Command.ts";
 import { Bot } from "../structs/Bot.ts";
 import CatCmd from "./jankbot/general/CatCmd.ts";
@@ -77,5 +78,6 @@ export default function command_registry(bot: Bot): Command[] {
         new SkipCmd(bot),
         new GramophoneCmd(bot),
         new RadioCmd(bot),
+        new VoteskipCmd(bot),
     ]
 }
