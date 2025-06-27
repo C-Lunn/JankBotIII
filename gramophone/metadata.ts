@@ -6,7 +6,7 @@ import { type SongData, SongType } from "../structs/Song.ts";
 import { inspect } from "node:util";
 
 export async function get_metadata(url: string | URL): Promise<SongMetadata | SongData | undefined> {
-    const { stream, metadata } = YtDlp.stream_url(url.toString());
+    const { stream, metadata } = YtDlp.stream_url(url.toString(), "opus", { strict: true });
     const meta = await metadata;
     let data: SongData = {
         duration: meta.duration,

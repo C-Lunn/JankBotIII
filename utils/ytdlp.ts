@@ -4,7 +4,7 @@ import Stream from "node:stream";
 
 export class YtDlp {
 
-    static stream_url(url: string, format = "opus")
+    static stream_url(url: string, format = "opus", opt?: { strict?: boolean })
         : { stream: Stream.Readable, metadata: Promise<{ title: string, duration: number }> } {
         console.log(`streaming ${url} with yt-dlp`)
         const args = [
@@ -28,7 +28,7 @@ export class YtDlp {
                     const json = JSON.parse(text);
                     resolve(json)
                 } catch {
-                    if (text.includes("ERROR:")) {
+                    if (text.includes("ERROR:") && opt?.strict) {
                         throw new Error("Yt-Dlp Error", {
                             cause: text,
                         });

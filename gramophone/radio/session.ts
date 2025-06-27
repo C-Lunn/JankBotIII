@@ -183,7 +183,13 @@ export default class RadioSession {
         }
         const reply = (msg: any) => m instanceof Message ? m.reply(msg) : m.editReply(msg);
         try {
-            const metadata = await this.lookup_queue.add(async () => await get_metadata(url));
+            const metadata = await this.lookup_queue.add(async () => {
+                try {
+                    return await get_metadata(url)
+                } catch {
+                    return
+                }
+            });
             console.log(metadata);
 
             song = metadata
