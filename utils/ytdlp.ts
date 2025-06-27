@@ -28,7 +28,7 @@ export class YtDlp {
                     const json = JSON.parse(text);
                     resolve(json)
                 } catch {
-                    if (text.includes("ERROR:") && opt?.strict) {
+                    if (text.includes("ERROR:") && !text.includes("Broken") && opt?.strict) {
                         throw new Error("Yt-Dlp Error", {
                             cause: text,
                         });

@@ -5,24 +5,29 @@ import { YtDlp } from "../utils/ytdlp.ts";
 import { type SongData, SongType } from "../structs/Song.ts";
 import { inspect } from "node:util";
 
-export async function get_metadata(url: string | URL): Promise<SongMetadata | SongData | undefined> {
-    const { stream, metadata } = YtDlp.stream_url(url.toString(), "opus", { strict: true });
-    const meta = await metadata;
-    let data: SongData = {
-        duration: meta.duration,
-        kind: SongType.YtDlp,
-        title: meta.title,
-        url: new URL(url),
-    };
+export async function get_metadata(url: string | URL): Promise<{ ok: boolean, song?: SongMetadata | SongData }> {
+    try {
 
-    const { fingerprint, duration } = await calc_fingerprint(stream);
-    console.log("fingerprint is", fingerprint);
-    const mbid = await lookup_fingerprint(fingerprint, duration);
-    if (!mbid) {
-        return data;
-    } else {
-        const song = await lookup_recording(data, mbid);
-        return song;
+        const { stream, metadata } = YtDlp.stream_url(url.toString(), "opus", { strict: true });
+        const meta = await metadata;
+        let data: SongData = {
+            duration: meta.duration,
+            kind: SongType.YtDlp,
+            title: meta.title,
+            url: new URL(url),
+        };
+
+        const { fingerprint, duration } = await calc_fingerprint(stream);
+        console.log("fingerprint is", fingerprint);
+        const mbid = await lookup_fingerprint(fingerprint, duration);
+        if (!mbid) {
+            return { ok: true, song: data };
+        } else {
+            const song = await lookup_recording(data, mbid);
+            return { ok: true, song };
+        }
+    } catch {
+        return { ok: false }
     }
 }
 

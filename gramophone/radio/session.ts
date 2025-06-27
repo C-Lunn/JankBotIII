@@ -183,13 +183,13 @@ export default class RadioSession {
         }
         const reply = (msg: any) => m instanceof Message ? m.reply(msg) : m.editReply(msg);
         try {
-            const metadata = await this.lookup_queue.add(async () => {
-                try {
-                    return await get_metadata(url)
-                } catch {
-                    return
-                }
-            });
+            const stuff = await this.lookup_queue.add(async () => await get_metadata(url));
+            if (!stuff) return;
+            const { ok, song: metadata } = stuff;
+            if (!ok) {
+                reply("Couldn't process this link.")
+                return;
+            }
             console.log(metadata);
 
             song = metadata
