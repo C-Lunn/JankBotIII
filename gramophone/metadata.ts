@@ -18,7 +18,11 @@ export async function get_metadata(url: string | URL): Promise<{ ok: boolean, so
         url: new URL(url),
     };
 
-    const { fingerprint, duration } = await calc_fingerprint(stream);
+    const fp = await calc_fingerprint(stream);
+    if (!fp.ok) {
+        return { ok: false };
+    }
+    const { fingerprint, duration } = fp;
     console.log("fingerprint is", fingerprint);
     const mbid = await lookup_fingerprint(fingerprint, duration);
     if (!mbid) {
@@ -29,12 +33,12 @@ export async function get_metadata(url: string | URL): Promise<{ ok: boolean, so
     }
 }
 
-async function calc_fingerprint(stream: Readable) {
+async function calc_fingerprint(stream: Readable): Promise<{ ok: false } | { ok: true, fingerprint: string, duration: number }> {
     const fp_proc = child_process.spawn("fpcalc", ["-json", "-"], {
         stdio: [stream],
     });
 
-    const p = new Promise<{ fingerprint: string, duration: number }>((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         fp_proc.stdout!.on("data", m => {
             if (!(m instanceof Buffer)) { return }
             const data = m.toString("utf8");
@@ -43,18 +47,16 @@ async function calc_fingerprint(stream: Readable) {
             // we're done here
             stream.destroy();
 
-            resolve(json);
+            resolve({ ok: true, ...json });
         });
 
         fp_proc.stderr!.on("data", m => {
             if (!(m instanceof Buffer)) { return }
             const data = m.toString("utf8")
             console.error("aaaaahhh!!!:", data, stream.closed);
-            reject(data);
+            resolve({ ok: false });
         });
     });
-
-    return p;
 }
 
 const lookup_url = "https://api.acoustid.org/v2/lookup"
