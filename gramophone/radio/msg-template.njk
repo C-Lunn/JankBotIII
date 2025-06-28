@@ -16,6 +16,9 @@
 {% else -%}
 *The playlist is empty.*
 {% endfor %}
+{%- if rest -%}
+* *and {{rest}} more*
+{%- endif %}
 
 * Use the button below or `{{config.PREFIX}}p` to add a song.
 * Head on over to {{playlist_url}} to see everything that's already been played.
