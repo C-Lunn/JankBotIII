@@ -1,3 +1,4 @@
+import { MessageFlags } from "discord.js";
 import type { JbMessage } from "../../interfaces/JankbotCommand.ts";
 import JankbotMusicCmd from "../../interfaces/JankbotMusicCommand.ts";
 import { Bot } from "../../structs/Bot.ts";
@@ -20,20 +21,22 @@ export default class VoteskipCmd extends JankbotMusicCmd {
     async run(bot: Bot, message: JbMessage) {
         if (!bot.radio_session) return message.reply("The radio is off.");
 
-        
         const song = bot.radio_session.queue.activeSong();
         song.voteskips.add(message.author.id);
         const members = bot.radio_session.stage.members.size - 1; // don't count the bot user
 
         const voteskip_threshold = Math.ceil(Math.sqrt(members));
         const threshold = Math.min(voteskip_threshold, members);
-        
-        message.react(reactions[Math.min(song.voteskips.size, voteskip_threshold)]);
+
+        message.react(reactions[Math.min(song.voteskips.size, voteskip_threshold)] ?? "➕");
 
         if (song.voteskips.size >= threshold) {
             const idx = Math.floor(Math.random() * messages.length)
             message.channel.send(messages[idx]);
             bot.radio_session.queue.player.stop();
+        } else {
+            const left = threshold - song.voteskips.size;
+            message.reply(`<@${message.author.id}> wants to skip this song. ${left} more ${left == 1 ? "vote is" : "votes are"} needed.`)
         }
     }
 }
