@@ -134,8 +134,8 @@ export default class RadioSession {
 
         const content = status_template.render({
             current: this.queue.activeSong(),
-            playlist: this.queue.songs.slice(this.queue.activeIndex + 1, 15),
-            rest: this.queue.songs.slice(this.queue.activeIndex + 1 + 15).length,
+            playlist: this.queue.songs.slice(this.queue.activeIndex + 1, this.queue.activeIndex + 1 + 10),
+            rest: this.queue.songs.slice(this.queue.activeIndex + 1 + 10).length,
             config,
             playlist_url,
         })
