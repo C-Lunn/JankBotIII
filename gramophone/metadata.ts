@@ -20,10 +20,10 @@ export async function get_metadata(url: string | URL): Promise<{ ok: boolean, so
 
     const fp = await calc_fingerprint(stream);
     if (!fp.ok) {
-        return { ok: false };
+        return { ok: true, song: data };
     }
     const { fingerprint, duration } = fp;
-    console.log("fingerprint is", fingerprint);
+    console.log("fingerprint is", fingerprint, "duration is", duration);
     const mbid = await lookup_fingerprint(fingerprint, duration);
     if (!mbid) {
         return { ok: true, song: data };
