@@ -2,6 +2,9 @@
     background-color: rgb(250, 243, 233);
     color: rgb(62, 42, 14);
     font-size: .9rem;
+
+    --spring-easing: linear(0, 0.0828 4.43%, 0.6179 17.72%, 0.7541, 0.8541, 0.9225, 0.9659, 0.9913, 1.0044, 1.01, 1.0111, 1.01 57.59%, 1.0015 79.74%, 0.9999 97.46%);
+    --spring-duration: 0.2125s;
 }
 
 main {
@@ -20,12 +23,42 @@ h2 {
     font-weight: 500;
 }
 
-.song {
+.np,
+.song a {
+    transition: var(--spring-duration) var(--spring-easing);
+}
+
+.np {
+    transition-duration: 250ms;
+}
+
+.song a {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: .75rem;
     align-items: center;
     grid-auto-rows: auto;
+
+    padding: 1rem;
+    margin: -1rem;
+
+    text-decoration: none;
+    color: inherit;
+    border-radius: 12px;
+
+    .np:has(&:hover),
+    ol &:hover {
+        transform: scale(1.025);
+    }
+
+    ol &:hover {
+        background-color: rgb(from currentColor r g b / .1);
+    }
+
+    .np:has(&:hover:active),
+    ol &:hover:active {
+        transform: scale(.975);
+    }
 
     h3,
     p {
@@ -59,6 +92,7 @@ h2 {
     .thumb {
         aspect-ratio: 16 / 9;
     }
+
 }
 
 .np {
@@ -111,6 +145,8 @@ h2 {
         z-index: -1;
         object-fit: cover;
         filter: blur(10px) brightness(0.4);
+        background-color: currentColor;
+
     }
 
 }

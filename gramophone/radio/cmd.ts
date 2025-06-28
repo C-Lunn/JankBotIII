@@ -26,6 +26,7 @@ export default class RadioCmd extends JankbotCmd {
         switch (command) {
             case "init": { this.init(bot, message, argv); break; }
             case "restore": { this.restore(bot, message, argv); break; }
+            case "end": { this.end(bot, message, []); break; }
             default: message.reply(`unknown radio command "${command}"`)
         }
     }

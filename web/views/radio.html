@@ -3,6 +3,7 @@
 
 {% block head %}
 <link rel="stylesheet" href="/radio.css">
+<script src="/vendor/htmx.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -22,17 +23,20 @@
 
 {% macro song(the) %}
 <article class="song">
-    {{img(the)}}
-    <div class="meta">
-        <h3>{{the.title}}</h3>
-        {% if the.metadata.mbid %}
-        <p class="artist">{{the.metadata.artist_name}}</p>
-        {% endif %}
-    </div>
+    <a href="{{the.url}}">
+        {{img(the)}}
+        <div class="meta">
+            <h3>{{the.title}}</h3>
+            {% if the.metadata.mbid %}
+            <p class="artist">{{the.metadata.artist_name}}</p>
+            {% endif %}
+        </div>
+    </a>
 </article>
 {% endmacro %}
 
-<main>
+<div hx-get="/radio" hx-trigger="every 5s" hx-select="#main">
+<main id="main">
     {% if current %}
     <section style="grid-column: 1 / span 2; grid-row: 1;">
         <div class="np">
@@ -69,4 +73,5 @@
         </ol>
     </section>
 </main>
+</div>
 {% endblock %}

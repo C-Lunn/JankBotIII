@@ -182,6 +182,13 @@ export default class RadioSession {
             await m.deferReply({ flags: MessageFlags.Ephemeral });
         }
         const reply = (msg: any) => m instanceof Message ? m.reply(msg) : m.editReply(msg);
+
+        const next = this.queue.songs.slice(this.queue.activeIndex + 1);
+        if (next.find(x => x.added_by == added_by)) {
+            reply("Please wait until your song has been played before submitting a new one.");
+            return;
+        }
+
         try {
             const stuff = await this.lookup_queue.add(async () => await get_metadata(url));
             if (!stuff) return;
@@ -223,6 +230,8 @@ export default class RadioSession {
 
     async self_destruct() {
         this.queue.stop(true);
+        const state = await this.guild.voiceStates.fetch(this.bot.client.user!.id);
+        state.disconnect();
     }
 
     async save() {
